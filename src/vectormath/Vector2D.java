@@ -3,6 +3,7 @@ package vectormath;
 import java.awt.geom.Point2D;
 
 public class Vector2D extends Vector<Vector2D> {
+    private static final int SIZE = 2;
     public Vector2D(final double x, final double y) {
         super(x, y);
     }
@@ -38,11 +39,22 @@ public class Vector2D extends Vector<Vector2D> {
         return new Vector2D(point.getX(), point.getY());
     }
 
-    public static Vector2D newVector(final double... components) {
+    public static Vector2D displacement(Point2D p1, Point2D p2) {
+        return new Vector2D(p1.getX() - p2.getX(), p1.getY() - p2.getY());
+    }
+
+    public static Vector2D empty() {
+        double[] newComponents = new double[SIZE];
+        return new Vector2D(newComponents);
+    }
+
+    @Override
+    public Vector2D newVector(final double... components) {
         return new Vector2D(components);
     }
 
-    protected static int size() {
-        return 2;
+    @Override
+    protected int size() {
+        return SIZE;
     }
 }

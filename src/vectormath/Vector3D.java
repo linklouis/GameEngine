@@ -1,6 +1,7 @@
 package vectormath;
 
 public class Vector3D extends Vector<Vector3D> {
+    private static final int SIZE = 3;
 
     public Vector3D(final double x, final double y, final double z) {
         super(x, y, z);
@@ -33,11 +34,18 @@ public class Vector3D extends Vector<Vector3D> {
         return newVector(resultComponents);
     }
 
-    public static Vector3D newVector(final double... components) {
+    public static Vector3D empty() {
+        double[] newComponents = new double[SIZE];
+        return new Vector3D(newComponents);
+    }
+
+    @Override
+    public  Vector3D newVector(final double... components) {
         return new Vector3D(components);
     }
 
-    protected static int size() {
-        return 3;
+    @Override
+    protected  int size() {
+        return SIZE;
     }
 }
