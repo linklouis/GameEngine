@@ -6,16 +6,16 @@ public abstract class GameObject {
 
     public GameObject() {
         modifiers = new Modifier[0];
-        instantiate();
     }
 
 
-    public GameObject(Modifier[] modifiers) {
+//    public GameObject(Modifier[] modifiers) {
+//        this.modifiers = modifiers;
+//    }
+
+    public GameObject(Modifier... modifiers) {
         this.modifiers = modifiers;
-        instantiate();
     }
-
-    public abstract void instantiate(Object... args); // Move to Modifier??
 
     public Modifier[] getModifiers() {
         return modifiers;

@@ -5,7 +5,7 @@ public class Circle extends GameObject {
     private final double R;
 
     public Circle(double x, double y, double r, Color color, long mass) {
-        super(new Visual)
+        super(new Visual);
         super(x, y, new Row[(int)( r / ROW_HEIGHT)], color, mass);
         R = r;
         populateRows();
@@ -31,5 +31,10 @@ public class Circle extends GameObject {
             double x = Math.sqrt(getR() - Math.pow(y, 2));
             newRow(i, -x, x);
         }
+    }
+
+    @Override
+    public void instantiate(Object... args) {
+
     }
 }

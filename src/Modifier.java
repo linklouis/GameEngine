@@ -1,17 +1,24 @@
 import java.util.List;
 
 public abstract class Modifier extends GameObject {
-    private final GameObject parent;
+    private GameObject parent;
+    private boolean instantiated = false;
 
-    public Modifier(GameObject parent) {
+    public Modifier() {
         super();
-        this.parent = parent;
     }
 
-    public Modifier(GameObject parent, Modifier[] modifiers) {
+    public Modifier(Modifier[] modifiers) {
         super(modifiers);
-        this.parent = parent;
     }
+
+    public void instantiate(GameObject parent, Object... args) {
+        if (!instantiated) {
+            this.parent = parent;
+            instantiated = true;
+        }
+    }
+
 
     public GameObject getParent() {
         return parent;

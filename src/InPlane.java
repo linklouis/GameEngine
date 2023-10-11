@@ -2,15 +2,15 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InPlain extends Modifier {
+public class InPlane extends Modifier {
     private Point2D.Double location;
 
-    public InPlain(GameObject parent) {
-        super(parent);
+    public InPlane() {
+        super();
     }
 
-    public InPlain(GameObject parent, Modifier[] modifiers) {
-        super(parent, modifiers);
+    public InPlane(Modifier[] modifiers) {
+        super(modifiers);
     }
 
     @Override
@@ -19,13 +19,15 @@ public class InPlain extends Modifier {
     }
 
     @Override
-    public void instantiate(Object... args) {
+    public void instantiate(GameObject parent, Object... args) {
+        super.instantiate(parent);
         if (args[0] instanceof Double && args[1] instanceof Double) {
             location = new Point2D.Double((Double) args[0], (Double) args[1]);
         } else if (args[0] instanceof Point2D.Double) {
             location = (Point2D.Double) args[0];
+        } else {
+            throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
     }
 
     public void setLocation(double x, double y) {
@@ -53,7 +55,7 @@ public class InPlain extends Modifier {
     }
 
     public double distance(GameObject gObj) {
-        assert gObj.containsModifier(InPlain.class);
-        return getLocation().distance(gObj.get(InPlain.class).location);
+        assert gObj.containsModifier(InPlane.class);
+        return getLocation().distance(gObj.get(InPlane.class).location);
     }
 }

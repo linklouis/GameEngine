@@ -10,7 +10,7 @@ public final class Collision implements Comparable<Collision> {
         if (physObj1 == physObj2) {
             throw new IllegalArgumentException("Collision objects must be unique.");
         }
-        if (!physObj1.isColliding(physObj2)) {
+        if (!physObj1.getCollider().isColliding(physObj2.getCollider())) {
             throw new IllegalArgumentException("Collision objects must be colliding.");
         }
         this.obj1 = physObj1;
@@ -18,7 +18,7 @@ public final class Collision implements Comparable<Collision> {
     }
 
     public boolean newCollision(final PhysicsObject physObj1, final PhysicsObject physObj2) {
-        if (physObj1 == physObj2 || !physObj1.isColliding(physObj2)) {
+        if (physObj1 == physObj2 || !physObj1.getCollider().isColliding(physObj2.getCollider())) {
             return false;
         }
         Collision collision = new Collision(physObj1, physObj2);
@@ -32,7 +32,7 @@ public final class Collision implements Comparable<Collision> {
     }
 
     public boolean occurring() {
-        return obj1.isColliding(obj2) && obj2.isColliding(obj1);
+        return obj1.getCollider().isColliding(obj2) && obj2.getCollider().isColliding(obj1);
     }
 
     public void handle() {

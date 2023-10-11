@@ -14,20 +14,19 @@ public class Collidable extends Modifier {
 
     private Row[] rows;
 
-    public Collidable(GameObject parent) {
-        super(parent);
+    public Collidable() {
+        super();
     }
 
-    public Collidable(GameObject parent, Modifier[] modifiers) {
-        super(parent, modifiers);
+    public Collidable(Modifier[] modifiers) {
+        super(modifiers);
     }
 
     @Override
-    public void instantiate(Object... args) {
+    public void instantiate(GameObject parent, Object... args) {
+        super.instantiate(parent);
         if (args[0] instanceof Row[]) {
             rows = (Row[]) args[0];
-        } else {
-            throw new IllegalArgumentException();
         }
     }
 
@@ -35,28 +34,32 @@ public class Collidable extends Modifier {
     public List<Class<? extends Modifier>> getDependencies() {
         return new ArrayList<>() {
             {
-                add(InPlain.class);
+                add(InPlane.class);
             }
         };
     }
 
     protected Point2D.Double getLocation() { // TODO take in a location in instantiate?
-        return getParent().get(InPlain.class).getLocation();
+        return getParent().get(InPlane.class).getLocation();
     }
 
     private double getX() {
-        return getParent().get(InPlain.class).getX();
+        return getParent().get(InPlane.class).getX();
     }
 
     private double getY() {
-        return getParent().get(InPlain.class).getY();
+        return getParent().get(InPlane.class).getY();
     }
 
     public boolean isColliding(GameObject gObj) {
         assert gObj.containsModifier(Collidable.class);
+        Collidable coll = gObj.get(Collidable.class);
+        return isColliding(coll);
+    }
+
+    public boolean isColliding(Collidable coll) {
 //        double thisMaxX = maxX();
 //        double thisMinX = minX();
-        Collidable coll = gObj.get(Collidable.class);
         if (
                 (
                         maxY() > coll.minY() && minY() < coll.maxY() ||
@@ -75,7 +78,7 @@ public class Collidable extends Modifier {
         return false;
     }
 
-    public Row getColliding(GameObject gObj) {
+    public Row getColliding(GameObject gObj) { // TODO
         assert gObj.containsModifier(Collidable.class);
         Collidable coll = gObj.get(Collidable.class);
         if (

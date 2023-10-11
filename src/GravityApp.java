@@ -12,7 +12,7 @@ import java.util.List;
 
 public class GravityApp extends Application {
 
-    private List<PhysicsObject> objects = new ArrayList<>();
+    private List<GameObject> objects = new ArrayList<>();
     private Visual pointer;
 
     public static void main(String[] args) {
@@ -43,8 +43,8 @@ public class GravityApp extends Application {
 //
 //        objects.add(pointer);
 
-        objects.add(new Circle(100, 100, 80, Color.RED, 100000000000L));
-        objects.add(new Circle(200, 200, 80, Color.BLUE, 100000000000L));
+        objects.add(new Ball(100, 100, 80, Color.RED, 100000000000L));
+        objects.add(new Ball(200, 200, 80, Color.BLUE, 100000000000L));
     }
 
     @Override
@@ -82,11 +82,16 @@ public class GravityApp extends Application {
             public void handle(long l) {
                 gc.clearRect(0, 0, SIZE, SIZE);
                 objects.forEach(object -> {
-                    object.updateForces(objects.toArray(new PhysicsObject[0]), 60);
-                    object.updatePosition(60);
+                    object.get(PhysicsObject.class).updateForces(
+                            objects.stream()
+                                    .map(gObj -> gObj.get(PhysicsObject.class))
+                                    .toList()
+                                    .toArray(new PhysicsObject[0])
+                            , 60);
+                    object.get(PhysicsObject.class).updatePosition(60);
                 });
 //                Collision.handleCollisions();
-                objects.forEach(object -> object.paint(gc));
+                objects.forEach(object -> object.get(PhysicsObject.class).paint(gc));
 //                if (pointer.isColliding(objects.get(0))) {
 //                    pointer.setColor(Color.RED);
 //                    gc.setFill(Color.RED);

@@ -1,27 +1,32 @@
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import vectormath.Vector2D;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
-public class PhysicsObject extends Collidable {
+public class PhysicsObject extends Visual {
     private static final double G = 6.67408 * Math.pow(10, -11);
 
     private long mass;
     private Vector2D velocity = Vector2D.empty();
+    private Color color;
 
-    public PhysicsObject(GameObject parent) {
-        super(parent);
+    public PhysicsObject() {
+        super();
     }
 
-    public PhysicsObject(GameObject parent, Modifier[] modifiers) {
-        super(parent, modifiers);
+    public PhysicsObject(Modifier[] modifiers) {
+        super(modifiers);
     }
 
     @Override
-    public void instantiate(Object... args) {
-        super.instantiate(args);
-        if (args[1] instanceof Long) {
-            mass = (long) args[1];
+    public void instantiate(GameObject parent, Object... args) {
+        super.instantiate(parent);
+        if (args[0] instanceof Long && args[1] instanceof Color) {
+            mass = (long) args[0];
+            setColor((Color) args[1]);
         } else {
             throw new IllegalArgumentException();
         }
@@ -29,15 +34,43 @@ public class PhysicsObject extends Collidable {
 
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
-        List<Class<? extends Modifier>> dependencies = super.getDependencies();
-        dependencies.add(Visual.class);
-        return dependencies;
+        return new ArrayList<>() {
+            {
+                add(InPlane.class);
+                add(Collidable.class);
+            }
+        };
+    }
+
+    @Override
+    public void paint(GraphicsContext gc) {
+        gc.setFill(getColor());
+        for (Collidable.Row row : getParent().get(Collidable.class).getRows()) {
+            Collidable.Row adjustedRow = row.at(getLocation());
+            adjustedRow.paint(gc);
+        }
     }
 
     public Vector2D forceOfGravity(PhysicsObject po1) {
 //        assert po1.containsModifier(PhysicsObject.class);
         double scalarForce = G * getMass() * po1.getMass() / Math.pow(getLocation().distance(po1.getLocation()) / 100, 2);
         return Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce);
+    }
+
+    protected Point2D.Double getLocation() { // TODO take in a location in instantiate?
+        return getParent().get(InPlane.class).getLocation();
+    }
+
+    protected Collidable getCollider() {
+        return getParent().get(Collidable.class);
+    }
+
+    private double getX() {
+        return getParent().get(InPlane.class).getX();
+    }
+
+    private double getY() {
+        return getParent().get(InPlane.class).getY();
     }
 
     public void updateForces(PhysicsObject[] objects, int frameRate) {
@@ -73,22 +106,31 @@ public class PhysicsObject extends Collidable {
     public void setVelocity(Vector2D velocity) {
         this.velocity = velocity;
     }
-    protected class PhysicsDraw extends Visual {
 
-        public PhysicsDraw(GameObject parent) {
-            super(parent);
-        }
-
-        @Override
-        public void paint(GraphicsContext gc) {
-            {
-                gc.setFill(getColor());
-                for (Row row : getRows()) {
-                    Row adjustedRow = row.at(getLocation());
-                    adjustedRow.paint(gc);
-                }
-            }
-        }
+    public Color getColor() {
+        return color;
     }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+//    protected class PhysicsDraw extends Visual {
+//
+//        public PhysicsDraw(GameObject parent) {
+//            super(parent);
+//        }
+//
+//        @Override
+//        public void paint(GraphicsContext gc) {
+//            {
+//                gc.setFill(getColor());
+//                for (Collidable.Row row : getParent().get(Collidable.class).getRows()) {
+//                    Collidable.Row adjustedRow = row.at(getLocation());
+//                    adjustedRow.paint(gc);
+//                }
+//            }
+//        }
+//    }
 
 }
