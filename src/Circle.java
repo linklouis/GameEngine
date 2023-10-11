@@ -1,9 +1,11 @@
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class CircleGameObj extends PhysicsObject {
+public class Circle extends GameObject {
     private final double R;
 
-    public CircleGameObj(double x, double y, double r, Color color, long mass) {
+    public Circle(double x, double y, double r, Color color, long mass) {
+        super(new Visual)
         super(x, y, new Row[(int)( r / ROW_HEIGHT)], color, mass);
         R = r;
         populateRows();

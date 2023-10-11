@@ -13,7 +13,7 @@ import java.util.List;
 public class GravityApp extends Application {
 
     private List<PhysicsObject> objects = new ArrayList<>();
-    private GameObject pointer;
+    private Visual pointer;
 
     public static void main(String[] args) {
         launch();
@@ -43,8 +43,8 @@ public class GravityApp extends Application {
 //
 //        objects.add(pointer);
 
-        objects.add(new CircleGameObj(100, 100, 80, Color.RED, 100000000000L));
-        objects.add(new CircleGameObj(200, 200, 80, Color.BLUE, 100000000000L));
+        objects.add(new Circle(100, 100, 80, Color.RED, 100000000000L));
+        objects.add(new Circle(200, 200, 80, Color.BLUE, 100000000000L));
     }
 
     @Override
