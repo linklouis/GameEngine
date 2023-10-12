@@ -8,9 +8,6 @@ import gameengine.prebuilt.physics.PhysicsObject;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.paint.Color;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 public class Ball extends GameObject {
     private final double R;
 

@@ -4,20 +4,21 @@ import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.InPlane;
 import gameengine.prebuilt.Visual;
+import gameengine.vectormath.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import gameengine.vectormath.Vector2D;
 
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PhysicsObject extends Visual {
     private static final double G = 6.67408 * Math.pow(10, -11);
 
-    private BigDecimal mass;
+    private long mass;
     private Vector2D velocity = Vector2D.empty();
     private Color color;
 
@@ -29,36 +30,83 @@ public class PhysicsObject extends Visual {
         super(modifiers);
     }
 
+//    @Override
+//    public void instantiate(GameObject parent, Object... args) {
+//        super.instantiate(parent);
+//        if (args.length == 2) { //  TODO update all other instantiates to check args length
+//            if (args[0] instanceof Number && args[1] instanceof Color) {
+//                mass = ((Number) args[0]).longValue();
+//                setColor((Color) args[1]);
+//            } else {
+//                throw new IllegalArgumentException();
+//            }
+//        } else if (args.length == 3) {
+//            if (args[0] instanceof Number && args[1] instanceof Color && args[2] instanceof Vector2D) {
+//                mass = ((Number) args[0]).longValue();
+//                setColor((Color) args[1]);
+//                setVelocity((Vector2D) args[2]);
+//            } else {
+//                throw new IllegalArgumentException();
+//            }
+//        } else {
+//            throw new IllegalArgumentException();
+//        }
+//    }
+
     @Override
     public void instantiate(GameObject parent, Object... args) {
         super.instantiate(parent);
+        Integer illegalArgumentIndex = null;
         if (args.length == 2) { //  TODO update all other instantiates to check args length
-            if (args[0] instanceof Number && args[1] instanceof Color) {
-                if (args[0] instanceof BigDecimal) {
-                    mass = (BigDecimal) args[0];
-                } else {
-                    mass = BigDecimal.valueOf(((Number) args[0]).longValue());
-                }
-                setColor((Color) args[1]);
+            if (args[0] instanceof Number) {
+                mass = ((Number) args[0]).longValue();
             } else {
-                throw new IllegalArgumentException();
+                illegalArgumentIndex = 0;
+            }
+            if (args[1] instanceof Color) {
+                setColor((Color) args[1]);
+            }
+            else {
+                illegalArgumentIndex = 1;
             }
         } else if (args.length == 3) {
-            if (args[0] instanceof Number && args[1] instanceof Color && args[2] instanceof Vector2D) {
-                if (args[0] instanceof BigDecimal) {
-                    mass = (BigDecimal) args[0];
-                } else {
-                    mass = BigDecimal.valueOf(((Number) args[0]).longValue());
-                }
+            if (args[0] instanceof Number) {
+                mass = ((Number) args[0]).longValue();
+            } else {
+                illegalArgumentIndex = 0;
+            }
+            if (args[1] instanceof Color) {
                 setColor((Color) args[1]);
+            } else {
+                illegalArgumentIndex = 1;
+            }
+            if (args[2] instanceof Vector2D) {
                 setVelocity((Vector2D) args[2]);
             } else {
-                throw new IllegalArgumentException();
+                illegalArgumentIndex = 2;
             }
         } else {
-            throw new IllegalArgumentException();
+            throw new gameengine.utilities.
+                    IllegalModifierInstantiationArgumentException(
+                            args, PhysicsObject.class, new int[] { 2, 3 });
         }
 
+        if (illegalArgumentIndex != null) {
+            Map<String, Class<?>> validArgumentTypes = switch (illegalArgumentIndex) {
+                case (0) -> new HashMap<>() { {put("mass", Number.class);} };
+                case (1) -> new HashMap<>() { {put("color", Color.class);} };
+                case (2) -> new HashMap<>() { {
+                    put("", null);
+                    put("velocity", Vector2D.class);
+                } };
+                default -> throw new IllegalStateException(
+                        "Unexpected value for illegalArgumentIndex: " + illegalArgumentIndex);
+            };
+            throw new gameengine.utilities.
+                    IllegalModifierInstantiationArgumentException(
+                            illegalArgumentIndex, args[illegalArgumentIndex],
+                            PhysicsObject.class, validArgumentTypes);
+        }
     }
 
     @Override

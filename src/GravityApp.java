@@ -52,12 +52,7 @@ public class GravityApp extends Application {
 //        objects.add(pointer);
 
         //100000000000L
-        char[] decimals = new char[20];
-        decimals[0] = '7';
-        for (int i = 1; i < decimals.length; i++) {
-            decimals[i] = '0';
-        }
-        BigDecimal mass =  new BigDecimal(decimals);//(long) (7L * Math.pow(10, 16));
+        long mass =  (long) (7L * Math.pow(10, 16));
         objects.add(new Ball(100, 100, 80, Color.RED, mass));//, new Vector2D(10, 0)));
         objects.add(new Ball(200, 200, 80, Color.BLUE, mass));
         objects.add(new Ball(300, 100, 80, Color.GREEN, mass));//, new Vector2D(15, -5)));

@@ -21,8 +21,6 @@ public abstract class Modifier extends GameObject {
             parent.ensureDependencies();
         }
     }
-
-
     public GameObject getParent() {
         return parent;
     }
