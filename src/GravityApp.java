@@ -1,3 +1,10 @@
+import gameengine.objects.GameObject;
+import gameengine.prebuilt.gameobjects.Ball;
+import gameengine.prebuilt.physics.Collidable;
+import gameengine.prebuilt.physics.Collision;
+import gameengine.prebuilt.physics.PhysicsObject;
+import gameengine.prebuilt.Visual;
+import gameengine.vectormath.Vector2D;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -8,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GravityApp extends Application {
@@ -22,7 +30,7 @@ public class GravityApp extends Application {
     private static int SIZE = 600;
 
     private void populateObjects() {
-//        objects.add(new GameObject(200, 200, new GameObject.Row[100], Color.BLANCHEDALMOND) {
+//        objects.add(new gameengine.objects.GameObject(200, 200, new gameengine.objects.GameObject.Row[100], Color.BLANCHEDALMOND) {
 //            {
 //                for (int i = 0; i < getRows().length; i++) {
 //                    newRow(i, (Math.sin(40 * i) - 2) * 50, (Math.sin(40 * i) + 1) * 50);
@@ -30,7 +38,7 @@ public class GravityApp extends Application {
 //            }
 //        });
 
-//        pointer = new GameObject(0, 0, new GameObject.Row[10], Color.ALICEBLUE) {
+//        pointer = new gameengine.objects.GameObject(0, 0, new gameengine.objects.GameObject.Row[10], Color.ALICEBLUE) {
 //            {
 //                for (int i = 0; i < getRows().length; i++) {
 //                    double y2rd = Math.pow(i - getRows().length / 2.0, 2);
@@ -43,8 +51,9 @@ public class GravityApp extends Application {
 //
 //        objects.add(pointer);
 
-        objects.add(new Ball(100, 100, 80, Color.RED, 100000000000L));
+        objects.add(new Ball(100, 100, 80, Color.RED, 100000000000L, new Vector2D(10, 0)));
         objects.add(new Ball(200, 200, 80, Color.BLUE, 100000000000L));
+        objects.add(new Ball(300, 100, 80, Color.GREEN, 100000000000L, new Vector2D(15, -5)));
     }
 
     @Override
@@ -81,25 +90,33 @@ public class GravityApp extends Application {
             @Override
             public void handle(long l) {
                 gc.clearRect(0, 0, SIZE, SIZE);
+
+                PhysicsObject[] physicsObjects = objects.stream()
+                        .map(gObj -> gObj.get(PhysicsObject.class))
+                        .toList()
+                        .toArray(new PhysicsObject[0]);
+
+                Collidable[] colliders = objects.stream()
+                        .map(gObj -> gObj.get(Collidable.class))
+                        .toList()
+                        .toArray(new Collidable[0]);
+
                 objects.forEach(object -> {
-                    object.get(PhysicsObject.class).updateForces(
-                            objects.stream()
-                                    .map(gObj -> gObj.get(PhysicsObject.class))
-                                    .toList()
-                                    .toArray(new PhysicsObject[0])
-                            , 60);
-                    object.get(PhysicsObject.class).updatePosition(60);
+                    object.get(PhysicsObject.class).updateForces(physicsObjects, 60);
+                    for (int i = 0; i < 4; i++) {
+                        object.get(PhysicsObject.class).updatePosition(60 * 4);
+                        gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders);
+                    }
                 });
-//                Collision.handleCollisions();
-                objects.forEach(object -> object.get(PhysicsObject.class).paint(gc));
-//                if (pointer.isColliding(objects.get(0))) {
-//                    pointer.setColor(Color.RED);
-//                    gc.setFill(Color.RED);
-//                    pointer.getColliding(objects.get(0)).at(objects.get(0)).paint(gc);
-//                } else {
-//                    pointer.setColor(Color.WHITE);
+
+//                gameengine.prebuilt.physics.Collision.findCollisions(collidables);
+//                if (Collision.getCollisions().length > 0) {
+//                    System.out.println(Arrays.toString(Collision.getCollisions()));
 //                }
-//                pointer.paint(gc);
+//                gameengine.prebuilt.physics.Collision.handleCollisions();
+                gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders);
+
+                objects.forEach(object -> object.get(PhysicsObject.class).paint(gc));
             }
         };
     }

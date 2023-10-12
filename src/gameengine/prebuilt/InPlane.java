@@ -1,3 +1,8 @@
+package gameengine.prebuilt;
+
+import gameengine.objects.GameObject;
+import gameengine.objects.Modifier;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +14,7 @@ public class InPlane extends Modifier {
         super();
     }
 
-    public InPlane(Modifier[] modifiers) {
+    public InPlane(Modifier... modifiers) {
         super(modifiers);
     }
 

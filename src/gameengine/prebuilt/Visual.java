@@ -1,3 +1,6 @@
+package gameengine.prebuilt;
+
+import gameengine.objects.Modifier;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ public abstract class Visual extends Modifier {
         super();
     }
 
-    public Visual(Modifier[] modifiers) {
+    public Visual(Modifier... modifiers) {
         super(modifiers);
     }
 

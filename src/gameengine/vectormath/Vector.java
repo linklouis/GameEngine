@@ -1,6 +1,4 @@
-package vectormath;
-
-import jdk.jshell.spi.ExecutionControl;
+package gameengine.vectormath;
 
 import java.util.Arrays;
 

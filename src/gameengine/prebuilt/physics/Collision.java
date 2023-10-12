@@ -1,24 +1,28 @@
+package gameengine.prebuilt.physics;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public final class Collision implements Comparable<Collision> {
     private static final List<Collision> COLLISIONS = new ArrayList<>();
-    private final PhysicsObject obj1;
-    private final PhysicsObject obj2;
+    private final Collidable obj1;
+    private final Collidable obj2;
 
-    private Collision(final PhysicsObject physObj1, final PhysicsObject physObj2) {
+    private Collision(final Collidable physObj1, final Collidable physObj2) {
         if (physObj1 == physObj2) {
-            throw new IllegalArgumentException("Collision objects must be unique.");
+            throw new IllegalArgumentException("gameengine.prebuilt.physics.Collision objects must be unique.");
         }
-        if (!physObj1.getCollider().isColliding(physObj2.getCollider())) {
-            throw new IllegalArgumentException("Collision objects must be colliding.");
+        if (!physObj1.isColliding(physObj2)) {
+            throw new IllegalArgumentException("gameengine.prebuilt.physics.Collision objects must be colliding.");
         }
         this.obj1 = physObj1;
         this.obj2 = physObj2;
     }
 
-    public boolean newCollision(final PhysicsObject physObj1, final PhysicsObject physObj2) {
-        if (physObj1 == physObj2 || !physObj1.getCollider().isColliding(physObj2.getCollider())) {
+    public static boolean newCollision(final Collidable physObj1, final Collidable physObj2) {
+        if (physObj1 == physObj2 || !physObj1.isColliding(physObj2)) {
             return false;
         }
         Collision collision = new Collision(physObj1, physObj2);
@@ -32,26 +36,47 @@ public final class Collision implements Comparable<Collision> {
     }
 
     public boolean occurring() {
-        return obj1.getCollider().isColliding(obj2) && obj2.getCollider().isColliding(obj1);
+        return obj1.isColliding(obj2) && obj2.isColliding(obj1);
     }
 
-    public void handle() {
-        if (occurring()) {
-            obj1.setVelocity(obj1.getVelocity().scalarMultiply(-1));
-            obj2.setVelocity(obj2.getVelocity().scalarMultiply(-1));
-            while (occurring()) {
-                obj1.move(obj1.getVelocity().unitVector());
-                obj2.move(obj2.getVelocity().unitVector());
-            }
+    public void handle(Collidable[] colliders) {
+        if (getObj1().getHandler().getClass().equals(getObj2().getHandler().getClass())) {
+            getObj1().getHandler().handle(this, colliders);
         }
     }
 
-    public static void handleCollisions() {
-        COLLISIONS.forEach(Collision::handle);
+    public static void handleCollisions(Collidable[] colliders) {
+        COLLISIONS.forEach(collision -> collision.handle(colliders));
         COLLISIONS.clear();
     }
 
-    public static boolean exists(final PhysicsObject physObj1, final PhysicsObject physObj2) {
+    public static void getAndHandleCollisions(Collidable[] colliders) {
+        findCollisions(colliders);
+        while (getCollisions().length > 0) {
+            COLLISIONS.forEach(collision -> collision.handle(colliders));
+            COLLISIONS.clear();
+            findCollisions(colliders);
+        }
+    }
+
+    public static void findCollisions(Collidable[] objects) {
+        Iterator<Collidable> iter = Arrays.stream(objects).iterator();
+        while (iter.hasNext()) {
+            Collidable current = iter.next();
+//            boolean collided = false;
+            for (Collidable checking : objects) {
+                if (current.isColliding(checking)) {
+                    newCollision(current, checking);
+//                    collided = true;
+                }
+            }
+//            if (collided) {
+//                iter.remove();
+//            }
+        }
+    }
+
+    public static boolean exists(final Collidable physObj1, final Collidable physObj2) {
         Collision toCheck = new Collision(physObj1, physObj2);
         for (Collision collision : COLLISIONS) {
             if (toCheck.compareTo(collision) == 0) {
@@ -61,12 +86,16 @@ public final class Collision implements Comparable<Collision> {
         return false;
     }
 
-    public PhysicsObject getObj1() {
+    public Collidable getObj1() {
         return obj1;
     }
 
-    public PhysicsObject getObj2() {
+    public Collidable getObj2() {
         return obj2;
+    }
+
+    public static Collision[] getCollisions() {
+        return COLLISIONS.toArray(new Collision[0]);
     }
 
     /**
@@ -107,6 +136,12 @@ public final class Collision implements Comparable<Collision> {
                 || (this.getObj1() == o.getObj2() && this.getObj2() == o.getObj1())) {
             return 0;
         }
+//        System.out.println(this + ", " + o);
         return 1;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + this.getObj1() + ", " + this.getObj2() + ")";
     }
 }

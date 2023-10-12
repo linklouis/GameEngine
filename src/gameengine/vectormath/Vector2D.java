@@ -1,4 +1,4 @@
-package vectormath;
+package gameengine.vectormath;
 
 import java.awt.geom.Point2D;
 

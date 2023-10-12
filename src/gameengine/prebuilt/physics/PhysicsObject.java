@@ -1,6 +1,12 @@
+package gameengine.prebuilt.physics;
+
+import gameengine.objects.GameObject;
+import gameengine.objects.Modifier;
+import gameengine.prebuilt.InPlane;
+import gameengine.prebuilt.Visual;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import vectormath.Vector2D;
+import gameengine.vectormath.Vector2D;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -24,12 +30,25 @@ public class PhysicsObject extends Visual {
     @Override
     public void instantiate(GameObject parent, Object... args) {
         super.instantiate(parent);
-        if (args[0] instanceof Long && args[1] instanceof Color) {
-            mass = (long) args[0];
-            setColor((Color) args[1]);
+        if (args.length == 2) { //  TODO update all other instantiates to check args length
+            if (args[0] instanceof Long && args[1] instanceof Color) {
+                mass = (long) args[0];
+                setColor((Color) args[1]);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } else if (args.length == 3) {
+            if (args[0] instanceof Long && args[1] instanceof Color && args[2] instanceof Vector2D) {
+                mass = (long) args[0];
+                setColor((Color) args[1]);
+                setVelocity((Vector2D) args[2]);
+            } else {
+                throw new IllegalArgumentException();
+            }
         } else {
             throw new IllegalArgumentException();
         }
+
     }
 
     @Override
@@ -52,7 +71,7 @@ public class PhysicsObject extends Visual {
     }
 
     public Vector2D forceOfGravity(PhysicsObject po1) {
-//        assert po1.containsModifier(PhysicsObject.class);
+//        assert po1.containsModifier(gameengine.prebuilt.physics.PhysicsObject.class);
         double scalarForce = G * getMass() * po1.getMass() / Math.pow(getLocation().distance(po1.getLocation()) / 100, 2);
         return Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce);
     }
@@ -115,9 +134,9 @@ public class PhysicsObject extends Visual {
         this.color = color;
     }
 
-//    protected class PhysicsDraw extends Visual {
+//    protected class PhysicsDraw extends gameengine.prebuilt.Visual {
 //
-//        public PhysicsDraw(GameObject parent) {
+//        public PhysicsDraw(gameengine.objects.GameObject parent) {
 //            super(parent);
 //        }
 //
@@ -125,8 +144,8 @@ public class PhysicsObject extends Visual {
 //        public void paint(GraphicsContext gc) {
 //            {
 //                gc.setFill(getColor());
-//                for (Collidable.Row row : getParent().get(Collidable.class).getRows()) {
-//                    Collidable.Row adjustedRow = row.at(getLocation());
+//                for (gameengine.prebuilt.physics.Collidable.Row row : getParent().get(gameengine.prebuilt.physics.Collidable.class).getRows()) {
+//                    gameengine.prebuilt.physics.Collidable.Row adjustedRow = row.at(getLocation());
 //                    adjustedRow.paint(gc);
 //                }
 //            }

@@ -1,11 +1,11 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class Circle extends GameObject {
+public class Circle extends gameengine.objects.GameObject {
     private final double R;
 
     public Circle(double x, double y, double r, Color color, long mass) {
-        super(new Visual);
+        super(new gameengine.prebuilt.Visual);
         super(x, y, new Row[(int)( r / ROW_HEIGHT)], color, mass);
         R = r;
         populateRows();
@@ -16,11 +16,11 @@ public class Circle extends GameObject {
     }
 
     @Override
-    public void updateForces(PhysicsObject[] objects, int frameRate) {
+    public void updateForces(gameengine.prebuilt.physics.PhysicsObject[] objects, int frameRate) {
         super.updateForces(objects, frameRate);
-        for (PhysicsObject object : objects) {
+        for (gameengine.prebuilt.physics.PhysicsObject object : objects) {
             if (object != this && isColliding(object)) {
-//                Collision.newCollision(this, object);
+//                gameengine.prebuilt.physics.Collision.newCollision(this, object);
             }
         }
     }

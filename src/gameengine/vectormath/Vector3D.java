@@ -1,4 +1,4 @@
-package vectormath;
+package gameengine.vectormath;
 
 public class Vector3D extends Vector<Vector3D> {
     private static final int SIZE = 3;

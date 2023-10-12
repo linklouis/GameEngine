@@ -1,3 +1,8 @@
+package gameengine.experimental;
+
+import gameengine.objects.GameObject;
+import gameengine.prebuilt.InPlane;
+
 import java.awt.geom.Point2D;
 
 public interface UsesLocation {

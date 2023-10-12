@@ -1,3 +1,5 @@
+package gameengine.objects;
+
 import java.util.List;
 
 public abstract class Modifier extends GameObject {
@@ -8,7 +10,7 @@ public abstract class Modifier extends GameObject {
         super();
     }
 
-    public Modifier(Modifier[] modifiers) {
+    public Modifier(Modifier... modifiers) {
         super(modifiers);
     }
 
@@ -16,6 +18,7 @@ public abstract class Modifier extends GameObject {
         if (!instantiated) {
             this.parent = parent;
             instantiated = true;
+            parent.ensureDependencies();
         }
     }
 

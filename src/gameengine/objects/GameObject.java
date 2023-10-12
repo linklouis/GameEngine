@@ -1,3 +1,5 @@
+package gameengine.objects;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ public abstract class GameObject {
     }
 
 
-//    public GameObject(Modifier[] modifiers) {
+//    public gameengine.objects.GameObject(gameengine.objects.Modifier[] modifiers) {
 //        this.modifiers = modifiers;
 //    }
 

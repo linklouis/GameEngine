@@ -1,3 +1,8 @@
+package gameengine.prebuilt.physics;
+
+import gameengine.objects.GameObject;
+import gameengine.objects.Modifier;
+import gameengine.prebuilt.InPlane;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.awt.geom.Point2D;
@@ -18,25 +23,32 @@ public class Collidable extends Modifier {
         super();
     }
 
-    public Collidable(Modifier[] modifiers) {
+    private CollisionHandler handler; // TODO make a CollisionHandler interface and just pass in the handler type + have collection of default handlers?
+
+
+    public Collidable(Modifier... modifiers) {
         super(modifiers);
     }
 
     @Override
     public void instantiate(GameObject parent, Object... args) {
         super.instantiate(parent);
-        if (args[0] instanceof Row[]) {
+        if (args[0] instanceof Row[] && args[1] instanceof CollisionHandler) {
             rows = (Row[]) args[0];
+            handler = (CollisionHandler) args[1];
+        } else {
+            throw new IllegalArgumentException(); // TODO
         }
     }
 
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>() {
-            {
-                add(InPlane.class);
-            }
-        };
+        List<Class<? extends Modifier>> modifiers = new ArrayList<>();
+        modifiers.add(InPlane.class);
+        if (handler instanceof PhysicsCollisionHandler) {
+            modifiers.add(PhysicsObject.class);
+        }
+        return modifiers;
     }
 
     protected Point2D.Double getLocation() { // TODO take in a location in instantiate?
@@ -54,6 +66,11 @@ public class Collidable extends Modifier {
     public boolean isColliding(GameObject gObj) {
         assert gObj.containsModifier(Collidable.class);
         Collidable coll = gObj.get(Collidable.class);
+        return isColliding(coll);
+    }
+
+    public boolean isColliding(PhysicsObject pObj) {
+        Collidable coll = pObj.getParent().get(Collidable.class);
         return isColliding(coll);
     }
 
@@ -143,6 +160,10 @@ public class Collidable extends Modifier {
         return getRows().length * ROW_HEIGHT;
     }
 
+    public CollisionHandler getHandler() {
+        return handler;
+    }
+
     public Row[] getRows() {
         return rows;
     }
@@ -166,7 +187,7 @@ public class Collidable extends Modifier {
     public Row rowAt(double y) {
         if (y > maxY() || y < minY()) {
             throw new IllegalArgumentException("y value of "
-                    + y + " out of bounds for GameObject of height "
+                    + y + " out of bounds for gameengine.objects.GameObject of height "
                     + height() + " at (" + getX() + ", " + getY() + ")"
             );
         }
