@@ -3,6 +3,7 @@ import gameengine.prebuilt.InPlane;
 import gameengine.prebuilt.Visual;
 import gameengine.prebuilt.gameobjects.Ball;
 import gameengine.prebuilt.physics.Collidable;
+import gameengine.prebuilt.physics.PhysicsEngine;
 import gameengine.prebuilt.physics.PhysicsObject;
 import gameengine.vectormath.Vector2D;
 import javafx.animation.AnimationTimer;
@@ -20,7 +21,6 @@ import java.util.List;
 
 public class GravityApp extends Application {
 
-    private List<GameObject> objects = new ArrayList<>();
     private Visual pointer;
 
     public static void main(String[] args) {
@@ -28,6 +28,7 @@ public class GravityApp extends Application {
     }
 
     private static int SIZE = 600;
+    private static PhysicsEngine physicsEngine = new PhysicsEngine(4, 60);
 
     private void populateObjects() {
 //        objects.add(new gameengine.objects.GameObject(200, 200, new gameengine.objects.GameObject.Row[100], Color.BLANCHEDALMOND) {
@@ -53,11 +54,11 @@ public class GravityApp extends Application {
 
         //100000000000L
         long mass =  (long) (7L * Math.pow(10, 16));
-        objects.add(new Ball(100, 100, 80, Color.RED, mass));//, new Vector2D(10, 0)));
-        objects.add(new Ball(200, 200, 80, Color.BLUE, mass));
-        objects.add(new Ball(300, 100, 80, Color.GREEN, mass));//, new Vector2D(15, -5)));
-        objects.add(new Ball(600, 200, 80, Color.OLDLACE, mass));//, new Vector2D(1, -50)));
-        objects.add(new Ball(400, 400, 80, Color.ORCHID, mass));//, new Vector2D(-7, 6)));
+        physicsEngine.add(new Ball(100, 100, 80, Color.RED, mass));//, new Vector2D(10, 0)));
+        physicsEngine.add(new Ball(200, 200, 80, Color.BLUE, mass));
+        physicsEngine.add(new Ball(300, 100, 80, Color.GREEN, mass));//, new Vector2D(15, -5)));
+        physicsEngine.add(new Ball(600, 200, 80, Color.OLDLACE, mass));//, new Vector2D(1, -50)));
+        physicsEngine.add(new Ball(400, 400, 80, Color.ORCHID, mass));//, new Vector2D(-7, 6)));
     }
 
     @Override
@@ -82,6 +83,7 @@ public class GravityApp extends Application {
 //        });
 
         getAnimationTimer(canvas.getGraphicsContext2D()).start();
+        physicsEngine.setGraphicsContext(canvas.getGraphicsContext2D());
 
         stage.setScene(scene);
         stage.setTitle("Gravity Sim Test");
@@ -96,84 +98,69 @@ public class GravityApp extends Application {
                 gc.clearRect(0, 0, SIZE, SIZE);
                 // TODO add "Game" class or smth to take care of all this shit
 
-                PhysicsObject[] physicsObjects = objects.stream()
-                        .map(gObj -> gObj.get(PhysicsObject.class))
-                        .toList()
-                        .toArray(new PhysicsObject[0]);
-
-                Collidable[] colliders = objects.stream()
-                        .map(gObj -> gObj.get(Collidable.class))
-                        .toList()
-                        .toArray(new Collidable[0]);
-
-                objects.forEach(object -> {
-                    object.get(PhysicsObject.class).updateForces(physicsObjects, 60);
-                    for (int i = 0; i < 4; i++) {
-                        object.get(PhysicsObject.class).updatePosition(60 * 4);
-                        if (object.get(InPlane.class).getX() < Math.abs(object.get(Collidable.class).minX())) {
-                            object.get(InPlane.class).setX(Math.abs(object.get(Collidable.class).minX()));
-                            object.get(PhysicsObject.class)
-                                    .setVelocity(
-                                            object.get(PhysicsObject.class).getVelocity()
-                                                    .subtract(
-                                                            new Vector2D(
-                                                                    1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
-                                                                    0
-                                                            )
-                                                    )
-                                    );
-                        }
-                        if (object.get(InPlane.class).getY() < Math.abs(object.get(Collidable.class).minY())) {
-                            object.get(InPlane.class).setY(Math.abs(object.get(Collidable.class).minY()));
-                            object.get(PhysicsObject.class)
-                                    .setVelocity(
-                                            object.get(PhysicsObject.class).getVelocity()
-                                                    .subtract(
-                                                            new Vector2D(
-                                                                    0,
-                                                                    1.9 * object.get(PhysicsObject.class).getVelocity().getY()
-                                                            )
-                                                    )
-                                    );
-                        }
-                        if (object.get(InPlane.class).getX() > SIZE) {
-                            object.get(InPlane.class).setX(SIZE);
-                            object.get(PhysicsObject.class)
-                                    .setVelocity(
-                                            object.get(PhysicsObject.class).getVelocity()
-                                                    .subtract(
-                                                            new Vector2D(
-                                                                    1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
-                                                                    0
-                                                            )
-                                                    )
-                                    );
-                        }
-                        if (object.get(InPlane.class).getY() > SIZE) {
-                            object.get(InPlane.class).setY(SIZE);
-                            object.get(PhysicsObject.class)
-                                    .setVelocity(
-                                            object.get(PhysicsObject.class).getVelocity()
-                                                    .subtract(
-                                                            new Vector2D(
-                                                                    0,
-                                                                    1.9 * object.get(PhysicsObject.class).getVelocity().getY()
-                                                            )
-                                                    )
-                                    );
-                        }
-                        gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders);
+                physicsEngine.updateObjects(true);
+                List.of(physicsEngine.getGameObjects()).forEach(object -> {
+                    if (object.get(InPlane.class).getX() < Math.abs(object.get(Collidable.class).minX())) {
+                        object.get(InPlane.class).setX(Math.abs(object.get(Collidable.class).minX()));
+                        object.get(PhysicsObject.class)
+                                .setVelocity(
+                                        object.get(PhysicsObject.class).getVelocity()
+                                                .subtract(
+                                                        new Vector2D(
+                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
+                                                                0
+                                                        )
+                                                )
+                                );
+                    }
+                    if (object.get(InPlane.class).getY() < Math.abs(object.get(Collidable.class).minY())) {
+                        object.get(InPlane.class).setY(Math.abs(object.get(Collidable.class).minY()));
+                        object.get(PhysicsObject.class)
+                                .setVelocity(
+                                        object.get(PhysicsObject.class).getVelocity()
+                                                .subtract(
+                                                        new Vector2D(
+                                                                0,
+                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getY()
+                                                        )
+                                                )
+                                );
+                    }
+                    if (object.get(InPlane.class).getX() > SIZE) {
+                        object.get(InPlane.class).setX(SIZE);
+                        object.get(PhysicsObject.class)
+                                .setVelocity(
+                                        object.get(PhysicsObject.class).getVelocity()
+                                                .subtract(
+                                                        new Vector2D(
+                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
+                                                                0
+                                                        )
+                                                )
+                                );
+                    }
+                    if (object.get(InPlane.class).getY() > SIZE) {
+                        object.get(InPlane.class).setY(SIZE);
+                        object.get(PhysicsObject.class)
+                                .setVelocity(
+                                        object.get(PhysicsObject.class).getVelocity()
+                                                .subtract(
+                                                        new Vector2D(
+                                                                0,
+                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getY()
+                                                        )
+                                                )
+                                );
                     }
                 });
+
 
 //                gameengine.prebuilt.physics.Collision.findCollisions(collidables);
 //                if (Collision.getCollisions().length > 0) {
 //                    System.out.println(Arrays.toString(Collision.getCollisions()));
 //                }
 //                gameengine.prebuilt.physics.Collision.handleCollisions();
-                gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders);
-
-                objects.forEach(object -> object.get(PhysicsObject.class).paint(gc));
+//                gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders);
             }
         };
     }

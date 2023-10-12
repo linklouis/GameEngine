@@ -9,6 +9,7 @@ public final class Collision implements Comparable<Collision> {
     private static final List<Collision> COLLISIONS = new ArrayList<>();
     private final Collidable obj1;
     private final Collidable obj2;
+    private boolean handled = false;
 
     private Collision(final Collidable physObj1, final Collidable physObj2) {
         if (physObj1 == physObj2) {
@@ -40,8 +41,9 @@ public final class Collision implements Comparable<Collision> {
     }
 
     public void handle(Collidable[] colliders) {
-        if (getObj1().getHandler().getClass().equals(getObj2().getHandler().getClass())) {
+        if (!handled && getObj1().getHandler().getClass().equals(getObj2().getHandler().getClass())) {
             getObj1().getHandler().handle(this, colliders);
+            handled = true;
         }
     }
 
@@ -59,6 +61,35 @@ public final class Collision implements Comparable<Collision> {
         }
     }
 
+    public static void getAndHandleCollisions(Collidable[] colliders, boolean recheck) {
+        findCollisions(colliders);
+        if (recheck) {
+            while (getCollisions().length > 0) {
+                COLLISIONS.forEach(collision -> collision.handle(colliders));
+                COLLISIONS.clear();
+                findCollisions(colliders);
+            }
+        } else {
+            COLLISIONS.forEach(collision -> collision.handle(colliders));
+            COLLISIONS.clear();
+        }
+    }
+
+    public static void getAndHandleCollisions(Collidable[] colliders, boolean recheck, Collidable collider) {
+        findCollisions(collider, colliders);
+        if (recheck) {
+            while (getCollisions().length > 0) {
+                COLLISIONS.forEach(collision -> collision.handle(colliders));
+                COLLISIONS.clear();
+                findCollisions(collider, colliders);
+            }
+        } else {
+            COLLISIONS.forEach(collision -> collision.handle(colliders));
+            COLLISIONS.removeIf(collision -> !collision.occurring());
+//            COLLISIONS.clear();
+        }
+    }
+
     public static void findCollisions(Collidable[] objects) {
         Iterator<Collidable> iter = Arrays.stream(objects).iterator();
         while (iter.hasNext()) {
@@ -73,6 +104,18 @@ public final class Collision implements Comparable<Collision> {
 //            if (collided) {
 //                iter.remove();
 //            }
+        }
+    }
+
+    public static void findCollisions(Collidable collider, Collidable[] objects) {
+        Iterator<Collidable> iter = Arrays.stream(objects).iterator();
+        while (iter.hasNext()) {
+            Collidable current = iter.next();
+            for (Collidable checking : objects) {
+                if (current != collider && current.isColliding(checking)) {
+                    newCollision(current, checking);
+                }
+            }
         }
     }
 
@@ -96,6 +139,10 @@ public final class Collision implements Comparable<Collision> {
 
     public static Collision[] getCollisions() {
         return COLLISIONS.toArray(new Collision[0]);
+    }
+
+    public static void clearCollisions() {
+        COLLISIONS.clear();
     }
 
     /**

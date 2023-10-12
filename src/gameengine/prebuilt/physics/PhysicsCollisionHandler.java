@@ -1,6 +1,7 @@
 package gameengine.prebuilt.physics;
 
 import gameengine.objects.Modifier;
+import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 
 import java.util.ArrayList;
@@ -55,14 +56,29 @@ public class PhysicsCollisionHandler extends CollisionHandler {
         PhysicsObject pObj2 = collision.getObj2().getParent().get(PhysicsObject.class);
 
         if (collision.occurring()) {
+//            while (collision.occurring()) {
+//                pObj1.updatePosition(80);
+//                pObj2.updatePosition(80);
+//            }
 //            inDifferentDirections(collision, otherCollidersA);
-            inSameDirection(collision, otherCollidersA);
-//            if (pObj1.getVelocity().dotProduct(pObj2.getVelocity()) < pObj1.getVelocity().magnitude() / 6) {
+//            inSameDirection(collision, otherCollidersA);
+            if (pObj1.getVelocity().dotProduct(pObj2.getVelocity()) < 0){//pObj1.getVelocity().magnitude() / 6) {
+                updateVelocity(pObj1, pObj2);
 //                inDifferentDirections(collision, otherCollidersA);
-//            } else {
+            }
+//            else {
+//                pObj1.updatePosition(80);
+//                pObj2.updatePosition(80);
+//                System.out.println("a");
+//            }
+//            else {
 //                inSameDirection(collision, otherCollidersA);
 //            }
         }
+    }
+
+    public ModifierInstantiateParameter<?>[][] getValidArguments() throws NoSuchFieldException {
+        return new ModifierInstantiateParameter<?>[0][0];
     }
 
     private void inDifferentDirections(Collision collision, Collidable[] otherCollidersA) {
@@ -85,7 +101,7 @@ public class PhysicsCollisionHandler extends CollisionHandler {
             for (Collidable collidable : otherColliders) {
                 PhysicsObject pObj = collidable.getParent().get(PhysicsObject.class);
                 if (collision.getObj1().isColliding(collidable)) {
-                    handle(collidable, collision.getObj1(), otherCollidersA);
+                    handleOneMover(collidable, collision.getObj1(), otherCollidersA, false);
 //                        if (pObj.getVelocity().dotProduct(Vector2D.displacement(pObj.getLocation(), pObj1.getLocation())) < 0) {
 //                            pObj.updatePosition(60);
 //                        } else {
@@ -95,7 +111,7 @@ public class PhysicsCollisionHandler extends CollisionHandler {
 //                        }
                 }
                 if (collision.getObj2().isColliding(collidable)) {
-                    handle(collidable, collision.getObj2(), otherCollidersA);
+                    handleOneMover(collidable, collision.getObj2(), otherCollidersA, false);
 //                        if (pObj.getVelocity().dotProduct(Vector2D.displacement(pObj.getLocation(), pObj2.getLocation())) < 0) {
 //                            pObj.updatePosition(60);
 //                        } else {
@@ -108,39 +124,7 @@ public class PhysicsCollisionHandler extends CollisionHandler {
         }
         pObj1.move(pObj1.getVelocity().unitVector().scalarDivide(-iterations * 2));
         pObj2.move(pObj2.getVelocity().unitVector().scalarDivide(-iterations * 2));
-        Vector2D displacement = Vector2D.displacement(pObj2.getLocation(), pObj1.getLocation()).unitVector();
-//            pObj1.setVelocity(
-//                    displacement.scalarMultiply(
-//                            pObj1.getVelocity().dotProduct(displacement.scalarMultiply(-1))
-//                    ).scalarMultiply(2)
-//            );
-//
-//            displacement = Vector2D.displacement(pObj1.getLocation(), pObj2.getLocation()).unitVector();
-//            pObj2.setVelocity(
-//                    displacement.scalarMultiply(
-//                            pObj2.getVelocity().dotProduct(displacement.scalarMultiply(-1))
-//                    ).scalarMultiply(2)
-//            );
-        pObj1.setVelocity(
-                pObj1.getVelocity()
-                        .subtract(
-                                displacement.unitVector().scalarMultiply(
-                                        pObj1.getVelocity().dotProduct(displacement)
-                                ).scalarMultiply(2)
-                        )
-                        .scalarMultiply(getDampening())
-        );
-
-        displacement = Vector2D.displacement(pObj1.getLocation(), pObj2.getLocation()).unitVector();
-        pObj2.setVelocity(
-                pObj2.getVelocity()
-                        .subtract(
-                                displacement.scalarMultiply(
-                                        pObj2.getVelocity().dotProduct(displacement)
-                                ).scalarMultiply(2)
-                        )
-                        .scalarMultiply(getDampening())
-        );
+        updateVelocity(pObj1, pObj2);
     }
 
     private void inSameDirection(Collision collision, Collidable[] otherCollidersA) {
@@ -199,6 +183,10 @@ public class PhysicsCollisionHandler extends CollisionHandler {
 //            }
 //        }
 
+        updateVelocity(pObj1, pObj2);
+    }
+
+    public void updateVelocity(PhysicsObject pObj1, PhysicsObject pObj2) {
         Vector2D displacement = Vector2D.displacement(pObj2.getLocation(), pObj1.getLocation()).unitVector();
 //            pObj1.setVelocity(
 //                    displacement.scalarMultiply(
@@ -235,7 +223,7 @@ public class PhysicsCollisionHandler extends CollisionHandler {
     }
 
 
-    public void handle(Collidable obj1, Collidable obj2, Collidable[] otherCollidersA) {
+    public void handleOneMover(Collidable obj1, Collidable obj2, Collidable[] otherCollidersA, boolean updateVelocity) {
         List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
         otherList.remove(obj1);
         otherList.remove(obj2);
@@ -280,21 +268,13 @@ public class PhysicsCollisionHandler extends CollisionHandler {
             for (Collidable collidable : otherColliders) {
                 PhysicsObject pObj = collidable.getParent().get(PhysicsObject.class);
                 if (mover.getCollider().isColliding(collidable)) {
-                    handle(mover.getCollider(), collidable, otherCollidersA);
+                    handleOneMover(mover.getCollider(), collidable, otherCollidersA, false);
                 }
             }
 
-//            mover.move(mover.getVelocity().unitVector().scalarDivide(-iterations * 60));
-//            Vector2D displacement = Vector2D.displacement(other.getLocation(), mover.getLocation()) .unitVector();
-//            mover.setVelocity(
-//                    mover.getVelocity()
-//                            .subtract(
-//                                    displacement.unitVector().scalarMultiply(
-//                                            mover.getVelocity().dotProduct(displacement)
-//                                    ).scalarMultiply(2)
-//                            )
-//                            .scalarMultiply(getDampening())
-//            );
+            if (updateVelocity) {
+                updateVelocity(mover, other);
+            }
         }
     }
 
