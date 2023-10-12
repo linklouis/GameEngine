@@ -1,5 +1,7 @@
 package gameengine.vectormath;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 
 public abstract class Vector<T extends Vector> {
@@ -47,10 +49,27 @@ public abstract class Vector<T extends Vector> {
         return newVector(resultComponents);
     }
 
+    public T scalarMultiply(final BigDecimal scalar) {
+        double[] resultComponents = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            resultComponents[i] = scalar.multiply(BigDecimal.valueOf(this.getComponents()[i])).doubleValue();
+        }
+        return newVector(resultComponents);
+    }
+
+
     public T scalarDivide(final double scalar) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
             resultComponents[i] = this.getComponents()[i] / scalar;
+        }
+        return newVector(resultComponents);
+    }
+
+    public T scalarDivide(final BigDecimal scalar) {
+        double[] resultComponents = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            resultComponents[i] = BigDecimal.valueOf(this.getComponents()[i]).divide(scalar, RoundingMode.HALF_DOWN).doubleValue();
         }
         return newVector(resultComponents);
     }

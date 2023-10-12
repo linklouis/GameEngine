@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsCollisionHandler extends CollisionHandler {
+    // TODO Change so that instead of moving between frames, applies a force away from center of intersecting objects??
+    //  Would always be able to use velocity to determine amount to move, and would be able to use rest of physics engine rather than weird rules and math.
+    //  Would also be less expensive bc no iterating!!!
 
     private final double dampening;
     private static final double DEFAULT_DAMPENING = 1;

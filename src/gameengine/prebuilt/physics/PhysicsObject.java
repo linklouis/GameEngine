@@ -9,13 +9,15 @@ import javafx.scene.paint.Color;
 import gameengine.vectormath.Vector2D;
 
 import java.awt.geom.Point2D;
+import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsObject extends Visual {
     private static final double G = 6.67408 * Math.pow(10, -11);
 
-    private long mass;
+    private BigDecimal mass;
     private Vector2D velocity = Vector2D.empty();
     private Color color;
 
@@ -31,15 +33,23 @@ public class PhysicsObject extends Visual {
     public void instantiate(GameObject parent, Object... args) {
         super.instantiate(parent);
         if (args.length == 2) { //  TODO update all other instantiates to check args length
-            if (args[0] instanceof Long && args[1] instanceof Color) {
-                mass = (long) args[0];
+            if (args[0] instanceof Number && args[1] instanceof Color) {
+                if (args[0] instanceof BigDecimal) {
+                    mass = (BigDecimal) args[0];
+                } else {
+                    mass = BigDecimal.valueOf(((Number) args[0]).longValue());
+                }
                 setColor((Color) args[1]);
             } else {
                 throw new IllegalArgumentException();
             }
         } else if (args.length == 3) {
-            if (args[0] instanceof Long && args[1] instanceof Color && args[2] instanceof Vector2D) {
-                mass = (long) args[0];
+            if (args[0] instanceof Number && args[1] instanceof Color && args[2] instanceof Vector2D) {
+                if (args[0] instanceof BigDecimal) {
+                    mass = (BigDecimal) args[0];
+                } else {
+                    mass = BigDecimal.valueOf(((Number) args[0]).longValue());
+                }
                 setColor((Color) args[1]);
                 setVelocity((Vector2D) args[2]);
             } else {
@@ -72,7 +82,8 @@ public class PhysicsObject extends Visual {
 
     public Vector2D forceOfGravity(PhysicsObject po1) {
 //        assert po1.containsModifier(gameengine.prebuilt.physics.PhysicsObject.class);
-        double scalarForce = G * getMass() * po1.getMass() / Math.pow(getLocation().distance(po1.getLocation()) / 100, 2);
+        BigDecimal scalarForce =  getMass().multiply(po1.getMass().multiply(BigDecimal.valueOf(G / Math.pow(getLocation().distance(po1.getLocation()) * 10, 2))));
+        System.out.println(Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce));
         return Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce);
     }
 
@@ -114,7 +125,7 @@ public class PhysicsObject extends Visual {
         getLocation().setLocation(translation.add(getLocation()).toPoint());
     }
 
-    public double getMass() {
+    public BigDecimal getMass() {
         return mass;
     }
 

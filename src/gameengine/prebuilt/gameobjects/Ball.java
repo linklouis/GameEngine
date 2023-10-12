@@ -8,10 +8,13 @@ import gameengine.prebuilt.physics.PhysicsObject;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.paint.Color;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public class Ball extends GameObject {
     private final double R;
 
-    public Ball(double x, double y, double r, Color color, long mass) {
+    public Ball(double x, double y, double r, Color color, Number mass) {
         super(new PhysicsObject(), new Collidable(), new InPlane());
         R = r;
         get(PhysicsObject.class).instantiate(this, mass, color); // TODO figure out cleaner way to do this
@@ -20,7 +23,7 @@ public class Ball extends GameObject {
         populateRows();
     }
 
-    public Ball(double x, double y, double r, Color color, long mass, Vector2D velocity) {
+    public Ball(double x, double y, double r, Color color, Number mass, Vector2D velocity) {
         super(new PhysicsObject(), new Collidable(), new InPlane());
         R = r;
         get(PhysicsObject.class).instantiate(this, mass, color, velocity); // TODO figure out cleaner way to do this

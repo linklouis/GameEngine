@@ -55,6 +55,14 @@ public class InPlane extends Modifier {
         return getLocation().getY();
     }
 
+    public void setX(double x) {
+        setLocation(x, getLocation().getY());
+    }
+
+    public void setY(double y) {
+        setLocation(getLocation().getX(), y);
+    }
+
     public double distance(Point2D point) {
         return getLocation().distance(point);
     }
