@@ -3,11 +3,15 @@ package gameengine.prebuilt.physics;
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.InPlane;
+import gameengine.vectormath.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Collidable extends Modifier {
     /**
@@ -39,6 +43,22 @@ public class Collidable extends Modifier {
         } else {
             throw new IllegalArgumentException(); // TODO
         }
+    }
+
+    @Override
+    public Map<String, Class<?>>[] getValidArguments() {
+        return new Map[]{
+                new HashMap<>() {
+                    {
+                        put("", );
+                    }
+                },
+                new HashMap<>() {
+                    {
+                        put("", );
+                    }
+                }
+        };
     }
 
     @Override

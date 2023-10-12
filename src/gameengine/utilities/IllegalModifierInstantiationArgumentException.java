@@ -26,17 +26,16 @@ public class IllegalModifierInstantiationArgumentException
      *              {@link Modifier}'s instantiate method at the given index.
      * @param modifierClass The class type of {@link Modifier} that the illegal
      *                      instantiate call occurred on.
-     * @param validOptions A Map of Strings (the name of the variable the
-     *                     argument represents for the given type context) and
+     * @param validOptions An array of Maps of Strings (the name of the variable
+     *                     the argument represents for the given type context) and
      *                     object types (the class type that the given context
-     *                     expects) that can be legally passed to the
-     *                     {@link Modifier}'s instantiate method in the given
-     *                     index.
+     *                     expects) that represent contexts that can be legally
+     *                     passed to the{@link Modifier}'s instantiate method.
      */
     public IllegalModifierInstantiationArgumentException(
             final int argumentNumber, final Object given,
             final Class<? extends Modifier> modifierClass,
-            final Map<String, Class<?>> validOptions) {
+            final Map<String, Class<?>>[] validOptions) {
         super(createMessage(
                 argumentNumber, given, modifierClass, validOptions)
         );
@@ -79,12 +78,11 @@ public class IllegalModifierInstantiationArgumentException
      *              {@link Modifier}'s instantiate method at the given index.
      * @param modifierClass The class type of {@link Modifier} that
      *                      the illegal instantiate call occurred on
-     * @param validOptions A Map of Strings (the name of the variable the
-     *                     argument represents for the given type context) and
+     * @param validOptions An array of Maps of Strings (the name of the variable
+     *                     the argument represents for the given type context) and
      *                     object types (the class type that the given context
-     *                     expects) that can be legally passed to the
-     *                     {@link Modifier}'s instantiate method in the given
-     *                     index.
+     *                     expects) that represent contexts that can be legally
+     *                     passed to the{@link Modifier}'s instantiate method.
      * @return A detail message about the illegal argument for the
      *         {@link IllegalModifierInstantiationArgumentException}
      *         based on the given information.
@@ -92,27 +90,26 @@ public class IllegalModifierInstantiationArgumentException
     private static String createMessage(
             final int argumentNumber, final Object given,
             final Class<? extends Modifier> modifierClass,
-            final Map<String, Class<?>> validOptions) {
+            final Map<String, Class<?>>[] validOptions) {
         StringBuilder message = new StringBuilder("Illegal type ").append(given)
                 .append(" for argument ").append(argumentNumber).append(" of ")
                 .append(modifierClass).append(". Valid argument values are: ");
 
-        int index = 0;
-        //int i = 0; i < validOptions.size()- 1; i++) {
-        for (Map.Entry<String, Class<?>> entry : validOptions.entrySet()) {
-            if (entry.getKey() == null) {
-                message.append("no value given");
-            } else {
-                message.append(entry);
-            }
-
-            if (index < validOptions.size() - 1) {
-                message.append(", ");
-            } else {
-                message.append(".");
-            }
-        }
-//        message.append(validOptions[validOptions.length - 1]).append(".");
+//        int index = 0;
+//        for (Map.Entry<String, Class<?>> entry : validOptions.entrySet()) {
+//            if (entry.getValue() == null) {
+//                message.append("no value given");
+//            } else {
+//                message.append(entry);
+//            }
+//
+//            if (index < validOptions.size() - 1) {
+//                message.append(", ");
+//            } else {
+//                message.append(".");
+//            }
+//        }
+        message.append(Arrays.toString(validOptions));
 
         return message.toString();
     }

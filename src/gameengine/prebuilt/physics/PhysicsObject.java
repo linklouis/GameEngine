@@ -92,21 +92,42 @@ public class PhysicsObject extends Visual {
         }
 
         if (illegalArgumentIndex != null) {
-            Map<String, Class<?>> validArgumentTypes = switch (illegalArgumentIndex) {
-                case (0) -> new HashMap<>() { {put("mass", Number.class);} };
-                case (1) -> new HashMap<>() { {put("color", Color.class);} };
-                case (2) -> new HashMap<>() { {
-                    put("", null);
-                    put("velocity", Vector2D.class);
-                } };
-                default -> throw new IllegalStateException(
-                        "Unexpected value for illegalArgumentIndex: " + illegalArgumentIndex);
-            };
+
             throw new gameengine.utilities.
                     IllegalModifierInstantiationArgumentException(
                             illegalArgumentIndex, args[illegalArgumentIndex],
-                            PhysicsObject.class, validArgumentTypes);
+                            PhysicsObject.class, getValidArguments());
         }
+    }
+
+    @Override
+    public Map<String, Class<?>>[] getValidArguments() {
+        return new Map[] {
+                new HashMap<>() {
+                    {
+                        put("mass", Number.class);
+                        put("color", Color.class);
+                        put("", null);
+                    }
+                },
+                new HashMap<>() {
+                    {
+                        put("mass", Number.class);
+                        put("color", Color.class);
+                        put("velocity", Vector2D.class);
+                    }
+                }
+        };
+//        switch (index) {
+//            case (0) -> new HashMap<>() { {put("mass", Number.class);} };
+//            case (1) -> new HashMap<>() { {put("color", Color.class);} };
+//            case (2) -> new HashMap<>() { {
+//                put("", null);
+//                put("velocity", Vector2D.class);
+//            } };
+//            default -> throw new IllegalArgumentException(
+//                    "Unexpected value " + index + " for index. Valid range: 0 - 2");
+//        };
     }
 
     @Override
@@ -130,7 +151,7 @@ public class PhysicsObject extends Visual {
 
     public Vector2D forceOfGravity(PhysicsObject po1) {
 //        assert po1.containsModifier(gameengine.prebuilt.physics.PhysicsObject.class);
-        BigDecimal scalarForce =  getMass().multiply(po1.getMass().multiply(BigDecimal.valueOf(G / Math.pow(getLocation().distance(po1.getLocation()) * 10, 2))));
+        double scalarForce = G * getMass() * po1.getMass() / Math.pow(getLocation().distance(po1.getLocation()) * 10, 2);
         System.out.println(Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce));
         return Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce);
     }
@@ -173,7 +194,7 @@ public class PhysicsObject extends Visual {
         getLocation().setLocation(translation.add(getLocation()).toPoint());
     }
 
-    public BigDecimal getMass() {
+    public double getMass() {
         return mass;
     }
 

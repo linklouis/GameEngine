@@ -1,6 +1,7 @@
 package gameengine.objects;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class Modifier extends GameObject {
     private GameObject parent;
@@ -26,4 +27,6 @@ public abstract class Modifier extends GameObject {
     }
 
     public abstract List<Class<? extends Modifier>> getDependencies();
+
+    public abstract Map<String, Class<?>>[] getValidArguments();
 }
