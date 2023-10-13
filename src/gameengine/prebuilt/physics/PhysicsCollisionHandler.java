@@ -64,6 +64,8 @@ public class PhysicsCollisionHandler extends CollisionHandler {
 //            inSameDirection(collision, otherCollidersA);
             if (pObj1.getVelocity().dotProduct(pObj2.getVelocity()) < 0){//pObj1.getVelocity().magnitude() / 6) {
                 updateVelocity(pObj1, pObj2);
+//                pObj1.updatePosition(2000);
+//                pObj2.updatePosition(2000);
 //                inDifferentDirections(collision, otherCollidersA);
             }
 //            else {

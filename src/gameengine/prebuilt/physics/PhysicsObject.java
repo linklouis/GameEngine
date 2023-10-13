@@ -3,7 +3,7 @@ package gameengine.prebuilt.physics;
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.InPlane;
-import gameengine.prebuilt.Visual;
+import gameengine.graphics.Visual;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,7 +11,6 @@ import javafx.scene.paint.Color;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PhysicsObject extends Visual {
@@ -162,9 +161,7 @@ public class PhysicsObject extends Visual {
     }
 
     public Vector2D forceOfGravity(PhysicsObject po1) {
-//        assert po1.containsModifier(gameengine.prebuilt.physics.PhysicsObject.class);
         double scalarForce = G * getMass() * po1.getMass() / Math.pow(getLocation().distance(po1.getLocation()) * 10, 2);
-//        System.out.println(Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce));
         return Vector2D.displacement(po1.getLocation(), this.getLocation()).unitVector().scalarMultiply(scalarForce);
     }
 
@@ -254,7 +251,7 @@ public class PhysicsObject extends Visual {
         this.color = color;
     }
 
-//    protected class PhysicsDraw extends gameengine.prebuilt.Visual {
+//    protected class PhysicsDraw extends gameengine.graphics.Visual {
 //
 //        public PhysicsDraw(gameengine.objects.GameObject parent) {
 //            super(parent);

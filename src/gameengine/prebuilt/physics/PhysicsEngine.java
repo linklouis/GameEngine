@@ -51,20 +51,21 @@ public class PhysicsEngine extends ArrayList<PhysicsObject> {
         forEach(object -> object.updateForces(this.toArray(new PhysicsObject[0]), getFramerate()));
         for (int i = 0; i < getIterations(); i++) {
             forEach(object -> {
-//            for (int i = 0; i < getIterations(); i++) {
                 object.updatePosition(toArray(new PhysicsObject[0]), getFramerate() * getIterations());
-//                if (false && object.getCollider().getHandler() instanceof PhysicsCollisionHandler physicsCollisionHandler) {
-//                    stream().filter(obj -> obj != object && object.getCollider().isColliding(obj))
-//                            .forEach(pObj -> physicsCollisionHandler.handleOneMover(object.getCollider(), pObj.getCollider(), getColliders(), true));
-//                } else {
-                    gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders, false, object.getCollider());
-//                }
-//            }
+                gameengine.prebuilt.physics.PhysicsCollision
+                        .getAndHandleCollisions(
+                                colliders,
+                                false,
+                                object.getCollider(),
+                                true,
+                                getFramerate() * getIterations()
+                        );
             });
-//            gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders, false);
+//            forEach(
+//            );
         }
 
-        gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders, false);
+        gameengine.prebuilt.physics.PhysicsCollision.getAndHandleCollisions(colliders, false);
         Collision.clearCollisions();
 
         if (updateGraphics) {

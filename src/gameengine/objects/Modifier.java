@@ -17,6 +17,17 @@ public abstract class Modifier extends GameObject {
         super(modifiers);
     }
 
+    @Override
+    public <T extends Modifier> T get(Class<T> modifierClass) {
+        for (Modifier modifier : getModifiers()) {
+            if (modifierClass.isAssignableFrom(modifier.getClass())) {
+                return (T) modifier;
+            }
+        }
+        getParent().ensureDependencies();
+        return null;
+    }
+
     public void instantiate(GameObject parent, Object... args) throws NoSuchFieldException, IllegalAccessException {
         if (!instantiated) {
             this.parent = parent;

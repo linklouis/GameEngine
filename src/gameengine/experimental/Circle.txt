@@ -5,7 +5,7 @@ public class Circle extends gameengine.objects.GameObject {
     private final double R;
 
     public Circle(double x, double y, double r, Color color, long mass) {
-        super(new gameengine.prebuilt.Visual);
+        super(new gameengine.graphics.Visual);
         super(x, y, new Row[(int)( r / ROW_HEIGHT)], color, mass);
         R = r;
         populateRows();

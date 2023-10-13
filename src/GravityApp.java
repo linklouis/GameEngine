@@ -1,6 +1,5 @@
-import gameengine.objects.GameObject;
 import gameengine.prebuilt.InPlane;
-import gameengine.prebuilt.Visual;
+import gameengine.graphics.Visual;
 import gameengine.prebuilt.gameobjects.Ball;
 import gameengine.prebuilt.physics.Collidable;
 import gameengine.prebuilt.physics.PhysicsEngine;
@@ -15,8 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GravityApp extends Application {
@@ -54,11 +51,25 @@ public class GravityApp extends Application {
 
         //100000000000L
         long mass =  (long) (7L * Math.pow(10, 16));
-        physicsEngine.add(new Ball(100, 100, 80, Color.RED, mass));//, new Vector2D(10, 0)));
-        physicsEngine.add(new Ball(200, 200, 80, Color.BLUE, mass));
-        physicsEngine.add(new Ball(300, 100, 80, Color.GREEN, mass));//, new Vector2D(15, -5)));
-        physicsEngine.add(new Ball(600, 200, 80, Color.OLDLACE, mass));//, new Vector2D(1, -50)));
-        physicsEngine.add(new Ball(400, 400, 80, Color.ORCHID, mass));//, new Vector2D(-7, 6)));
+        int r = 200;
+        physicsEngine.add(new Ball(100, 100, r, Color.RED, mass, new Vector2D(10, 0)));
+        physicsEngine.add(new Ball(200, 200, r, Color.BLUE, mass));
+        physicsEngine.add(new Ball(300, 100, r, Color.GREEN, mass, new Vector2D(15, -5)));
+        physicsEngine.add(new Ball(600, 200, r, Color.OLDLACE, mass, new Vector2D(1, -50)));
+        physicsEngine.add(new Ball(400, 400, r, Color.ORCHID, mass, new Vector2D(-7, 6)));
+        physicsEngine.add(new Ball(500, 300, r, Color.ORANGE, mass, new Vector2D(-3, 39)));
+        for (int i=0;i<20;i++) {
+            physicsEngine.add(new Ball(
+                    Math.random() * SIZE,
+                    Math.random() * SIZE,
+                    r,
+                    Color.rgb((int) (Math.random() * 255),
+                            (int) (Math.random() * 255),
+                            (int) (Math.random() * 255)),
+                    mass,
+                    new Vector2D(20 * (Math.random() - 0.5),
+                            20 * (Math.random() - 0.5))));
+        }
     }
 
     @Override
@@ -153,14 +164,6 @@ public class GravityApp extends Application {
                                 );
                     }
                 });
-
-
-//                gameengine.prebuilt.physics.Collision.findCollisions(collidables);
-//                if (Collision.getCollisions().length > 0) {
-//                    System.out.println(Arrays.toString(Collision.getCollisions()));
-//                }
-//                gameengine.prebuilt.physics.Collision.handleCollisions();
-//                gameengine.prebuilt.physics.Collision.getAndHandleCollisions(colliders);
             }
         };
     }

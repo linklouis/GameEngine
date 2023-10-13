@@ -1,6 +1,7 @@
-package gameengine.prebuilt;
+package gameengine.graphics;
 
 import gameengine.objects.Modifier;
+import gameengine.prebuilt.InPlane;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
