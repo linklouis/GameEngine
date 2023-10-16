@@ -29,9 +29,11 @@ public abstract class GameObject {
                 return (T) modifier;
             }
         }
-        ensureDependencies();
+        ensureDependencies(); // TODO
         return null;
     }
+
+    // TODO add check that all objects have been correctly instantiated
 
     public List<Class<? extends Modifier>> getDependencies() {
         List<Class<? extends Modifier>> dependantClasses = new ArrayList<>();

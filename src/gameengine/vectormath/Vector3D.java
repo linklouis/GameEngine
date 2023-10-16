@@ -44,6 +44,9 @@ public class Vector3D extends Vector<Vector3D> {
         return new Vector3D(components);
     }
 
+    public Vector3D newEmpty() {
+        return empty();
+    }
     @Override
     protected  int size() {
         return SIZE;

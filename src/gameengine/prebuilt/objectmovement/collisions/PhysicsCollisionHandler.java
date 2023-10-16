@@ -1,13 +1,12 @@
-package gameengine.prebuilt.physics;
+package gameengine.prebuilt.objectmovement.collisions;
 
-import gameengine.objects.Modifier;
+import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class PhysicsCollisionHandler extends CollisionHandler {
+public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> {
     // TODO Change so that instead of moving between frames, applies a force away from center of intersecting objects??
     //  Would always be able to use velocity to determine amount to move, and would be able to use rest of physics engine rather than weird rules and math.
     //  Would also be less expensive bc no iterating!!!
@@ -45,8 +44,32 @@ public class PhysicsCollisionHandler extends CollisionHandler {
         this.iterations = iterations;
     }
 
+    public PhysicsCollisionHandler(Collection<PhysicsCollision> collisions) {
+        super(collisions);
+        this.dampening = DEFAULT_DAMPENING;
+        this.iterations = DEFAULT_ITERATIONS;
+    }
+
+    public PhysicsCollisionHandler(double dampening, Collection<PhysicsCollision> collisions) {
+        super(collisions);
+        this.dampening = dampening;
+        this.iterations = DEFAULT_ITERATIONS;
+    }
+
+    public PhysicsCollisionHandler(double dampening, int iterations, Collection<PhysicsCollision> collisions) {
+        super(collisions);
+        this.dampening = dampening;
+        this.iterations = iterations;
+    }
+
+    public PhysicsCollisionHandler(int iterations, Collection<PhysicsCollision> collisions) {
+        super(collisions);
+        this.dampening = DEFAULT_DAMPENING;
+        this.iterations = iterations;
+    }
+
     @Override
-    public void handle(Collision collision, Collidable[] otherCollidersA) {
+    protected void handle(PhysicsCollision collision, Collidable[] otherCollidersA) {
 //        List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
 //        otherList.remove(collision.getObj1());
 //        otherList.remove(collision.getObj2());
@@ -55,7 +78,7 @@ public class PhysicsCollisionHandler extends CollisionHandler {
         PhysicsObject pObj1 = collision.getObj1().getParent().get(PhysicsObject.class);
         PhysicsObject pObj2 = collision.getObj2().getParent().get(PhysicsObject.class);
 
-        if (collision.occurring()) {
+//        if (collision.occurring()) {
 //            while (collision.occurring()) {
 //                pObj1.updatePosition(80);
 //                pObj2.updatePosition(80);
@@ -76,7 +99,7 @@ public class PhysicsCollisionHandler extends CollisionHandler {
 //            else {
 //                inSameDirection(collision, otherCollidersA);
 //            }
-        }
+//        }
     }
 
     public ModifierInstantiateParameter<?>[][] getValidArguments() throws NoSuchFieldException {
@@ -225,7 +248,10 @@ public class PhysicsCollisionHandler extends CollisionHandler {
     }
 
 
-    public void handleOneMover(Collidable obj1, Collidable obj2, Collidable[] otherCollidersA, boolean updateVelocity) {
+    public void handleOneMover(Collidable obj1,
+                               Collidable obj2,
+                               Collidable[] otherCollidersA,
+                               boolean updateVelocity) {
         List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
         otherList.remove(obj1);
         otherList.remove(obj2);
@@ -280,11 +306,45 @@ public class PhysicsCollisionHandler extends CollisionHandler {
         }
     }
 
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>();
+
+    public boolean newCollision(final Collidable physObj1, final Collidable physObj2) {
+        if (physObj1 == physObj2 || !physObj1.isColliding(physObj2)) {
+            return false;
+        }
+        if (!(physObj1.getHandler() instanceof PhysicsCollisionHandler
+                && physObj2.getHandler() instanceof PhysicsCollisionHandler)) {
+            return false;
+        }
+
+        PhysicsCollision collision = new PhysicsCollision(physObj1, physObj2);
+        for (PhysicsCollision coll : getCollisions()) {
+            if (collision.compareTo(coll) == 0) {
+                return false;
+            }
+        }
+        getCollisions().add(collision);
+        return true;
     }
 
+    public  void getAndHandleAllCollisions(Collidable[] colliders,
+                                              boolean recheck,
+                                              Collidable collider,
+                                              boolean active,
+                                              double velocityScaleFactor) {
+        if (findCollisions(collider, colliders) && active) {
+            PhysicsObject pObj = collider.getParent().get(PhysicsObject.class);
+            pObj.move(pObj.getVelocity().scalarDivide(-velocityScaleFactor * 1.2));
+        }
+        findCollisions(collider, colliders);
+        if (recheck) {
+            while (!getCollisions().isEmpty()) {
+                handleAllCollisions(colliders);
+                findCollisions(collider, colliders);
+            }
+        } else {
+            handleAllCollisions(colliders);
+        }
+    }
 
     public double getDampening() {
         return dampening;

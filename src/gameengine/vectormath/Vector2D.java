@@ -54,6 +54,11 @@ public class Vector2D extends Vector<Vector2D> {
     }
 
     @Override
+    public Vector2D newEmpty() {
+        return empty();
+    }
+
+    @Override
     protected int size() {
         return SIZE;
     }

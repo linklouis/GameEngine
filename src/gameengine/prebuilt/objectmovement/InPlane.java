@@ -1,11 +1,10 @@
-package gameengine.prebuilt;
+package gameengine.prebuilt.objectmovement;
 
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.utilities.ModifierInstantiateParameter;
 
 import java.awt.geom.Point2D;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 

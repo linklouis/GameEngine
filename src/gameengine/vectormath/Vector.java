@@ -3,8 +3,10 @@ package gameengine.vectormath;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
-public abstract class Vector<T extends Vector> {
+public abstract class Vector<T extends Vector<T>> {
     /**
      * The components of the vector. Ensured to be
      * determined length by {@link Vector} implementations.
@@ -99,6 +101,26 @@ public abstract class Vector<T extends Vector> {
         return newVector(newComponents);
     }
 
+    public static <VectorType extends Vector<VectorType>> VectorType sum(VectorType empty, VectorType... vectors) {
+        VectorType sum = empty.newEmpty();
+
+        for (VectorType vector : vectors) {
+            sum = sum.add(vector);
+        }
+
+        return sum;
+    }
+
+    public static <VectorType extends Vector<VectorType>> VectorType sum(VectorType empty, List<VectorType> vectors) {
+        VectorType sum = empty.newEmpty();
+
+        for (VectorType vector : vectors) {
+            sum = sum.add(vector);
+        }
+
+        return sum;
+    }
+
 //    public static <T extends Vector> T empty() {
 //        double[] newComponents = new double[T.size()];
 //        for (int i = 0; i < T.size(); i++) {
@@ -134,6 +156,10 @@ public abstract class Vector<T extends Vector> {
         return output;
     }
 
+    public static Vector empty() {
+        return null;
+    }
+
     public abstract T newVector(double... comps);
 //    {
 //        try {
@@ -152,4 +178,6 @@ public abstract class Vector<T extends Vector> {
 //            throw new UnsupportedOperationException(e);
 //        }
 //    }
+
+    public abstract T newEmpty();
 }

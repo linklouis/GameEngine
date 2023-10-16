@@ -1,10 +1,9 @@
 package gameengine.prebuilt.gameobjects;
 
 import gameengine.objects.GameObject;
-import gameengine.objects.Modifier;
-import gameengine.prebuilt.InPlane;
-import gameengine.prebuilt.physics.Collidable;
-import gameengine.prebuilt.physics.PhysicsObject;
+import gameengine.prebuilt.objectmovement.InPlane;
+import gameengine.prebuilt.objectmovement.collisions.Collidable;
+import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 
 public class Wall extends GameObject {
     public Wall() {

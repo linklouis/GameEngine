@@ -1,8 +1,9 @@
-package gameengine.prebuilt.physics;
+package gameengine.prebuilt.objectmovement.collisions;
 
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
-import gameengine.prebuilt.InPlane;
+import gameengine.prebuilt.objectmovement.InPlane;
+import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 import gameengine.utilities.ModifierInstantiateParameter;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -24,7 +25,7 @@ public class Collidable extends Modifier {
         super();
     }
 
-    private CollisionHandler handler; // TODO make a CollisionHandler interface and just pass in the handler type + have collection of default handlers?
+    private CollisionHandler<?> handler = null; // TODO make a CollisionHandler interface and just pass in the handler type + have collection of default handlers?
 
 
     public Collidable(Modifier... modifiers) {
@@ -49,8 +50,11 @@ public class Collidable extends Modifier {
     @Override
     public ModifierInstantiateParameter<?>[][] getValidArguments() {
         return new ModifierInstantiateParameter[][] {
-                { new ModifierInstantiateParameter<>("rows", Row[].class, this::setRows),
-                        new ModifierInstantiateParameter<>(
+                {
+                    new ModifierInstantiateParameter<>(
+                            "rows", Row[].class,
+                            this::setRows),
+                    new ModifierInstantiateParameter<>(
                                 "collisionHandler", CollisionHandler.class,
                                 (CollisionHandler handler) -> this.handler = handler) }
         };
@@ -296,6 +300,12 @@ public class Collidable extends Modifier {
 
         public void paint(GraphicsContext gc) {
             gc.fillRect(getMinX(), minY(), width(), getHeight());
+        }
+    }
+
+    public void setHandler(CollisionHandler<?> handler) {
+        if (getHandler() != null) {
+            this.handler = handler;
         }
     }
 }

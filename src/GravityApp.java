@@ -1,33 +1,31 @@
-import gameengine.prebuilt.InPlane;
+import gameengine.graphics.GraphicsDriver;
 import gameengine.graphics.Visual;
+import gameengine.objects.GameDriver;
 import gameengine.prebuilt.gameobjects.Ball;
-import gameengine.prebuilt.physics.Collidable;
-import gameengine.prebuilt.physics.PhysicsEngine;
-import gameengine.prebuilt.physics.PhysicsObject;
+import gameengine.prebuilt.objectmovement.InPlane;
+import gameengine.prebuilt.objectmovement.collisions.Collidable;
+import gameengine.prebuilt.objectmovement.physics.PhysicsEngine;
+import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 import gameengine.vectormath.Vector2D;
-import javafx.animation.AnimationTimer;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 import java.util.List;
 
-public class GravityApp extends Application {
+public class GravityApp extends GameDriver {
 
     private Visual pointer;
+    private final static int SIZE = 600;
 
-    public static void main(String[] args) {
-        launch();
+    public GravityApp() {
+        super("Gravity Sim", SIZE, SIZE, 4);
     }
 
-    private static int SIZE = 600;
-    private static PhysicsEngine physicsEngine = new PhysicsEngine(4, 60);
+    public static void main(String[] args) {
+        launch(GravityApp.class);
+    }
 
-    private void populateObjects() {
+    @Override
+    public void initialize() {
 //        objects.add(new gameengine.objects.GameObject(200, 200, new gameengine.objects.GameObject.Row[100], Color.BLANCHEDALMOND) {
 //            {
 //                for (int i = 0; i < getRows().length; i++) {
@@ -51,15 +49,19 @@ public class GravityApp extends Application {
 
         //100000000000L
         long mass =  (long) (7L * Math.pow(10, 16));
-        int r = 200;
-        physicsEngine.add(new Ball(100, 100, r, Color.RED, mass, new Vector2D(10, 0)));
-        physicsEngine.add(new Ball(200, 200, r, Color.BLUE, mass));
-        physicsEngine.add(new Ball(300, 100, r, Color.GREEN, mass, new Vector2D(15, -5)));
-        physicsEngine.add(new Ball(600, 200, r, Color.OLDLACE, mass, new Vector2D(1, -50)));
-        physicsEngine.add(new Ball(400, 400, r, Color.ORCHID, mass, new Vector2D(-7, 6)));
-        physicsEngine.add(new Ball(500, 300, r, Color.ORANGE, mass, new Vector2D(-3, 39)));
-        for (int i=0;i<20;i++) {
-            physicsEngine.add(new Ball(
+        int r = 80;
+        newObject(new Ball(100, 100, r, Color.RED, mass, new Vector2D(10, 0),
+                getPhysicsEngine().getCollisionHandler()));
+        newObject(new Ball(200, 200, r, Color.BLUE, mass,
+                getPhysicsEngine().getCollisionHandler()));
+        newObject(new Ball(300, 100, r, Color.GREEN, mass, new Vector2D(15, -5),
+                getPhysicsEngine().getCollisionHandler()));
+        newObject(new Ball(600, 200, r, Color.OLDLACE, mass, new Vector2D(1, -50),
+                getPhysicsEngine().getCollisionHandler()));
+//        physicsEngine.add(new Ball(400, 400, r, Color.ORCHID, mass, new Vector2D(-7, 6)));
+//        physicsEngine.add(new Ball(500, 300, r, Color.ORANGE, mass, new Vector2D(-3, 39)));
+        for (int i = 0; i < 0; i++) {
+            newObject(new Ball(
                     Math.random() * SIZE,
                     Math.random() * SIZE,
                     r,
@@ -68,103 +70,95 @@ public class GravityApp extends Application {
                             (int) (Math.random() * 255)),
                     mass,
                     new Vector2D(20 * (Math.random() - 0.5),
-                            20 * (Math.random() - 0.5))));
+                            20 * (Math.random() - 0.5)),
+                    getPhysicsEngine().getCollisionHandler()));
         }
     }
 
     @Override
-    public void start(Stage stage) {
-        populateObjects();
-
-        VBox root = new VBox();
-        Scene scene = new Scene(root, Color.BLACK);
-        Canvas canvas = new Canvas(SIZE, SIZE);
-
-        root.setStyle("-fx-background-color: black; -fx-padding: 10px;");
-//        root.setOnMouseMoved(new EventHandler<MouseEvent>() {
-//            @Override public void handle(MouseEvent event) {
-//                pointer.setLocation(event.getX(), event.getY());
-//            }
-//        });
-
-//        root.setOnMouseExited(new EventHandler<MouseEvent>() {
-//            @Override public void handle(MouseEvent event) {
-//
-//            }
-//        });
-
-        getAnimationTimer(canvas.getGraphicsContext2D()).start();
-        physicsEngine.setGraphicsContext(canvas.getGraphicsContext2D());
-
-        stage.setScene(scene);
-        stage.setTitle("Gravity Sim Test");
-        root.getChildren().add(canvas);
-        stage.show();
-    }
-
-    private AnimationTimer getAnimationTimer(GraphicsContext gc) {
-        return new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                gc.clearRect(0, 0, SIZE, SIZE);
-                // TODO add "Game" class or smth to take care of all this shit
-
-                physicsEngine.updateObjects(true);
-                List.of(physicsEngine.getGameObjects()).forEach(object -> {
-                    if (object.get(InPlane.class).getX() < Math.abs(object.get(Collidable.class).minX())) {
-                        object.get(InPlane.class).setX(Math.abs(object.get(Collidable.class).minX()));
-                        object.get(PhysicsObject.class)
-                                .setVelocity(
-                                        object.get(PhysicsObject.class).getVelocity()
-                                                .subtract(
-                                                        new Vector2D(
-                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
-                                                                0
-                                                        )
+    public void updateGame() {
+        List.of(getPhysicsEngine().getGameObjects()).forEach(object -> {
+            if (object.get(InPlane.class).getX() < Math.abs(object.get(Collidable.class).minX())) {
+                object.get(InPlane.class).setX(Math.abs(object.get(Collidable.class).minX()));
+                object.get(PhysicsObject.class)
+                        .setVelocity(
+                                object.get(PhysicsObject.class).getVelocity()
+                                        .subtract(
+                                                new Vector2D(
+                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
+                                                        0
                                                 )
-                                );
-                    }
-                    if (object.get(InPlane.class).getY() < Math.abs(object.get(Collidable.class).minY())) {
-                        object.get(InPlane.class).setY(Math.abs(object.get(Collidable.class).minY()));
-                        object.get(PhysicsObject.class)
-                                .setVelocity(
-                                        object.get(PhysicsObject.class).getVelocity()
-                                                .subtract(
-                                                        new Vector2D(
-                                                                0,
-                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getY()
-                                                        )
-                                                )
-                                );
-                    }
-                    if (object.get(InPlane.class).getX() > SIZE) {
-                        object.get(InPlane.class).setX(SIZE);
-                        object.get(PhysicsObject.class)
-                                .setVelocity(
-                                        object.get(PhysicsObject.class).getVelocity()
-                                                .subtract(
-                                                        new Vector2D(
-                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
-                                                                0
-                                                        )
-                                                )
-                                );
-                    }
-                    if (object.get(InPlane.class).getY() > SIZE) {
-                        object.get(InPlane.class).setY(SIZE);
-                        object.get(PhysicsObject.class)
-                                .setVelocity(
-                                        object.get(PhysicsObject.class).getVelocity()
-                                                .subtract(
-                                                        new Vector2D(
-                                                                0,
-                                                                1.9 * object.get(PhysicsObject.class).getVelocity().getY()
-                                                        )
-                                                )
-                                );
-                    }
-                });
+                                        )
+                        );
             }
-        };
+            if (object.get(InPlane.class).getY() < Math.abs(object.get(Collidable.class).minY())) {
+                object.get(InPlane.class).setY(Math.abs(object.get(Collidable.class).minY()));
+                object.get(PhysicsObject.class)
+                        .setVelocity(
+                                object.get(PhysicsObject.class).getVelocity()
+                                        .subtract(
+                                                new Vector2D(
+                                                        0,
+                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getY()
+                                                )
+                                        )
+                        );
+            }
+            if (object.get(InPlane.class).getX() > SIZE) {
+                object.get(InPlane.class).setX(SIZE);
+                object.get(PhysicsObject.class)
+                        .setVelocity(
+                                object.get(PhysicsObject.class).getVelocity()
+                                        .subtract(
+                                                new Vector2D(
+                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
+                                                        0
+                                                )
+                                        )
+                        );
+            }
+            if (object.get(InPlane.class).getY() > SIZE) {
+                object.get(InPlane.class).setY(SIZE);
+                object.get(PhysicsObject.class)
+                        .setVelocity(
+                                object.get(PhysicsObject.class).getVelocity()
+                                        .subtract(
+                                                new Vector2D(
+                                                        0,
+                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getY()
+                                                )
+                                        )
+                        );
+            }
+        });
     }
+
+//    @Override
+//    public void start(Stage stage) {
+//        populateObjects();
+//
+//        VBox root = new VBox();
+//        Scene scene = new Scene(root, Color.BLACK);
+//        Canvas canvas = new Canvas(SIZE, SIZE);
+//
+//        root.setStyle("-fx-background-color: black; -fx-padding: 10px;");
+////        root.setOnMouseMoved(new EventHandler<MouseEvent>() {
+////            @Override public void handle(MouseEvent event) {
+////                pointer.setLocation(event.getX(), event.getY());
+////            }
+////        });
+//
+////        root.setOnMouseExited(new EventHandler<MouseEvent>() {
+////            @Override public void handle(MouseEvent event) {
+////
+////            }
+////        });
+//
+//        getAnimationTimer(canvas.getGraphicsContext2D()).start();
+//
+//        stage.setScene(scene);
+//        stage.setTitle("Gravity Sim Test");
+//        root.getChildren().add(canvas);
+//        stage.show();
+//    }
 }

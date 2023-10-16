@@ -16,11 +16,11 @@ public class Circle extends gameengine.objects.GameObject {
     }
 
     @Override
-    public void updateForces(gameengine.prebuilt.physics.PhysicsObject[] objects, int frameRate) {
+    public void updateForces(gameengine.prebuilt.objectmovement.physics.PhysicsObject[] objects, int frameRate) {
         super.updateForces(objects, frameRate);
-        for (gameengine.prebuilt.physics.PhysicsObject object : objects) {
+        for (gameengine.prebuilt.objectmovement.physics.PhysicsObject object : objects) {
             if (object != this && isColliding(object)) {
-//                gameengine.prebuilt.physics.Collision.newCollision(this, object);
+//                gameengine.prebuilt.objectmovement.physics.collisions.Collision.newCollision(this, object);
             }
         }
     }

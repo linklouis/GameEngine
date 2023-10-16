@@ -1,15 +1,20 @@
 package gameengine.graphics;
 
+import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
-import gameengine.prebuilt.InPlane;
+import gameengine.prebuilt.objectmovement.InPlane;
+import gameengine.utilities.ModifierInstantiateParameter;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Visual extends Modifier {
-    // TODO MAKE VISUAL AND COLLIDABLE NOT EXTEND INPLAIN. USE THE INPLAIN FROM THE PARENT. ALSO FIX VISUAL'S CONSTRUCTOR
-    // TODO make a interface?
+public class Visual extends Modifier {
+    private GraphicsObject appearance; // TODO name better
+
+    /*
+     * Construction:
+     */
 
     public Visual() {
         super();
@@ -17,6 +22,14 @@ public abstract class Visual extends Modifier {
 
     public Visual(Modifier... modifiers) {
         super(modifiers);
+    }
+
+    public void instantiate(GameObject parent, Object... args) {
+        try {
+            super.instantiate(parent, args);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -28,5 +41,30 @@ public abstract class Visual extends Modifier {
         };
     }
 
-    public abstract void paint(GraphicsContext gc);
+    @Override
+    public ModifierInstantiateParameter<?>[][] getValidArguments() {
+        return new ModifierInstantiateParameter[][] {
+                {
+                    new ModifierInstantiateParameter<>(
+                        "appearance", GraphicsObject.class,
+                            this::setAppearance)
+                }
+        };
+    }
+
+    public void paint(GraphicsContext gc) {
+        getAppearance().paint(gc);
+    }
+
+    /*
+     * Utilities:
+     */
+
+    public GraphicsObject getAppearance() {
+        return appearance;
+    }
+
+    public void setAppearance(GraphicsObject appearance) {
+        this.appearance = appearance;
+    }
 }
