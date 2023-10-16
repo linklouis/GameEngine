@@ -3,25 +3,36 @@ package gameengine.utilities;
 import java.util.function.Consumer;
 
 public class ModifierInstantiateParameter<T> {
-//    private final Field field;
+    /**
+     * The name of the value the parameter represents.
+     */
     private final String name;
+
+    /**
+     * The object type the parameter accepts.
+     */
     private final Class<T> type;
-//    private final Object self;
+
+    /**
+     * The function to preform when an argument is accepted.
+     */
     private final Consumer<T> handler;
+
+    /**
+     * Keeps track of whether or not the parameter
+     * has already accepted an argument.
+     */
     private boolean used = false;
 
-    public ModifierInstantiateParameter(String name, Class<T> type, Consumer<T> handler) {//(Field field, String name, Object self, ArgumentHandler handler) {
-//        this.field = field;
+    public ModifierInstantiateParameter(
+            String name, Class<T> type, Consumer<T> handler) {
         this.name = name;
-//        this.self = self;
         this.type = type;
         this.handler = handler;
     }
 
-    public ModifierInstantiateParameter(String name, Class<T> type, Object self) {//(Field field, String name, Object self, ArgumentHandler handler) {
-//        this.field = field;
+    public ModifierInstantiateParameter(String name, Class<T> type, Object self) {
         this.name = name;
-//        this.self = self;
         this.type = type;
         this.handler = (T value) -> {
             try {
@@ -37,7 +48,7 @@ public class ModifierInstantiateParameter<T> {
             throw new RuntimeException(); // TODO
         }
 
-        handler.accept((T) argument);//, self);
+        handler.accept((T) argument);
 
         used = false;
     }

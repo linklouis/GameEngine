@@ -1,6 +1,6 @@
 package gameengine.objects;
 
-import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.utilities.ArgumentContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,35 +34,19 @@ public abstract class Modifier extends GameObject {
             instantiated = true;
             parent.ensureDependencies();
 
-            for (ModifierInstantiateParameter<?>[] params : getValidArguments()) {
-                if (argumentsValidForContext(args, params)) {
-                    for (int index = 0; index < args.length; index++) {
-//                        fields[index].setAccessible(true);
-                        params[index].acceptValue(args[index]);//.set(this, args[index]);
-                    }
+            for (ArgumentContext context : getArgumentContexts()) {
+                if (context.instantiateWith(args)) {
                     return;
                 }
             }
-            throw new IllegalArgumentException("Given: " + Arrays.toString(Arrays.stream(args).map(arg -> arg.getClass() + ": " + arg).toArray()) + " Valid options: " + Arrays.deepToString(getValidArguments()));//IllegalModifierInstantiationArgumentException();
+            throw new IllegalArgumentException("Given: " + Arrays.toString(Arrays.stream(args).map(arg -> arg.getClass() + ": " + arg).toArray()) + " Valid options: " + Arrays.deepToString(getArgumentContexts()));//IllegalModifierInstantiationArgumentException();
         }
     }
     public GameObject getParent() {
         return parent;
     }
 
-    private static boolean argumentsValidForContext(Object[] args, ModifierInstantiateParameter<?>[] params) {
-        if (params.length != args.length) {
-            return false;
-        }
-        for (int index = 0; index < args.length; index++) {
-            if (!params[index].validArg(args[index])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public abstract List<Class<? extends Modifier>> getDependencies();
 
-    public abstract ModifierInstantiateParameter<?>[][] getValidArguments() throws NoSuchFieldException;
+    public abstract ArgumentContext[] getArgumentContexts();
 }

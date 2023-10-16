@@ -5,11 +5,14 @@ import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.objectmovement.InPlane;
 import gameengine.prebuilt.objectmovement.collisions.Collidable;
+import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +24,9 @@ public class PhysicsObject extends GraphicsObject {
 
     private final List<Vector2D> forces = new ArrayList<>();
 
-    private boolean active;
+    private boolean active = true;
+    private boolean hasGravity = false;
+    private boolean renderVelocityVector = false;
 
     private long mass;
     private Vector2D velocity = Vector2D.empty();
@@ -51,47 +56,73 @@ public class PhysicsObject extends GraphicsObject {
     }
 
     @Override
-    public ModifierInstantiateParameter<?>[][] getValidArguments() {
-        return new ModifierInstantiateParameter[][] {
-                {
-                    new ModifierInstantiateParameter<>(
-                        "mass", Number.class,
-                        (Number num) -> this.mass = num.longValue()),
-                    new ModifierInstantiateParameter<>(
-                            "color", Color.class,
-                            (Color col) -> this.color = col)
-                },
-
-                {
-                    new ModifierInstantiateParameter<>(
-                            "mass", Number.class,
-                            (Number num) -> this.mass = num.longValue()),
-                    new ModifierInstantiateParameter<>(
-                            "color", Color.class,
-                            (Color col) -> this.color = col),
-                    new ModifierInstantiateParameter<>(
-                            "velocity", Vector2D.class,
-                            this::setVelocity) },
-
-                {
+    public ArgumentContext[] getArgumentContexts() { // TODO: setup better way to do this, to name the variables you're passing in
+        return new ArgumentContext[] {
+                new ArgumentContext(
                         new ModifierInstantiateParameter<>(
                                 "mass", Number.class,
                                 (Number num) -> this.mass = num.longValue()),
                         new ModifierInstantiateParameter<>(
-                                "color", Color.class,
-                                (Color col) -> this.color = col)
-                },
+                                "color", Color.class, this::setColor)
+                ),
 
-                {
+                new ArgumentContext(
                         new ModifierInstantiateParameter<>(
                                 "mass", Number.class,
                                 (Number num) -> this.mass = num.longValue()),
                         new ModifierInstantiateParameter<>(
-                                "color", Color.class,
-                                (Color col) -> this.color = col),
+                                "color", Color.class, this::setColor),
                         new ModifierInstantiateParameter<>(
-                                "velocity", Vector2D.class,
-                                this::setVelocity) }
+                                "velocity", Vector2D.class, this::setVelocity)
+                ),
+
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "mass", Number.class,
+                                (Number num) -> this.mass = num.longValue()),
+                        new ModifierInstantiateParameter<>(
+                                "color", Color.class, this::setColor),
+                        new ModifierInstantiateParameter<>(
+                                "active", Boolean.class, this::setActive)
+                ),
+
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "mass", Number.class,
+                                (Number num) -> this.mass = num.longValue()),
+                        new ModifierInstantiateParameter<>(
+                                "color", Color.class, this::setColor),
+                        new ModifierInstantiateParameter<>(
+                                "velocity", Vector2D.class, this::setVelocity),
+                        new ModifierInstantiateParameter<>(
+                                "active", Boolean.class, this::setActive)
+                ),
+
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "mass", Number.class,
+                                (Number num) -> this.mass = num.longValue()),
+                        new ModifierInstantiateParameter<>(
+                                "color", Color.class, this::setColor),
+                        new ModifierInstantiateParameter<>(
+                                "active", Boolean.class, this::setActive),
+                        new ModifierInstantiateParameter<>(
+                                "hasGravity", Boolean.class, this::setHasGravity)
+                ),
+
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "mass", Number.class,
+                                (Number num) -> this.mass = num.longValue()),
+                        new ModifierInstantiateParameter<>(
+                                "color", Color.class, this::setColor),
+                        new ModifierInstantiateParameter<>(
+                                "velocity", Vector2D.class, this::setVelocity),
+                        new ModifierInstantiateParameter<>(
+                                "active", Boolean.class, this::setActive),
+                        new ModifierInstantiateParameter<>(
+                                "hasGravity", Boolean.class, this::setHasGravity)
+                )
         };
     }
 
@@ -117,15 +148,30 @@ public class PhysicsObject extends GraphicsObject {
             Collidable.Row adjustedRow = row.at(getLocation());
             adjustedRow.paint(gc);
         }
+        if (renderVelocityVector) {
+//            gc.setFill(getColor().darker());
+            gc.setLineWidth(1);
+            gc.setStroke(getColor().darker());
+            gc.strokeLine(getX(), getY(), getX() + getVelocity().getX(),
+                    getY() + getVelocity().getY());
+//            gc.moveTo(getX(), getY());
+//            gc.lineTo(getX() + getVelocity().getX() * 10,
+//                    getY() + getVelocity().getY() * 10);
+//            System.out.println((getX() + getVelocity().getX() * 10) +", " +
+//                    (getY() + getVelocity().getY() * 10));
+        }
     }
 
     public Vector2D forceOfGravity(final PhysicsObject po1) {
-        double scalarForce = G * getMass() * po1.getMass()
-                / Math.pow(getLocation().distance(po1.getLocation()) * 10, 2);
-        return Vector2D
-                .displacement(po1.getLocation(), this.getLocation())
-                .unitVector()
-                .scalarMultiply(scalarForce);
+        if (po1.hasGravity()) {
+            double scalarForce = G * getMass() * po1.getMass()
+                    / Math.pow(getLocation().distance(po1.getLocation()) * 10, 2);
+            return Vector2D
+                    .displacement(po1.getLocation(), this.getLocation())
+                    .unitVector()
+                    .scalarMultiply(scalarForce);
+        }
+        return Vector2D.empty();
     }
 
     public void applyForce(final Vector2D force) {
@@ -202,7 +248,9 @@ public class PhysicsObject extends GraphicsObject {
 //    }
 
     public void move(Vector2D translation) {
-        getLocation().setLocation(translation.add(getLocation()).toPoint());
+        if (isActive()) {
+            getLocation().setLocation(translation.add(getLocation()).toPoint());
+        }
     }
 
 
@@ -248,5 +296,29 @@ public class PhysicsObject extends GraphicsObject {
 
     public List<Vector2D> getForces() {
         return Collections.unmodifiableList(forces);
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean hasGravity() {
+        return hasGravity;
+    }
+
+    public void setHasGravity(boolean hasGravity) {
+        this.hasGravity = hasGravity;
+    }
+
+    public boolean isRenderVelocityVector() {
+        return renderVelocityVector;
+    }
+
+    public void setRenderVelocityVector(boolean renderVelocityVector) {
+        this.renderVelocityVector = renderVelocityVector;
     }
 }

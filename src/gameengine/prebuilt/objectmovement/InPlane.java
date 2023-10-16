@@ -2,6 +2,7 @@ package gameengine.prebuilt.objectmovement;
 
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
+import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 
 import java.awt.geom.Point2D;
@@ -41,11 +42,20 @@ public class InPlane extends Modifier {
     }
 
     @Override
-    public ModifierInstantiateParameter<?>[][] getValidArguments() {
-        return new ModifierInstantiateParameter<?>[][] {
-                { new ModifierInstantiateParameter<>("location", Point2D.class, this) },
-                { new ModifierInstantiateParameter<>("x", Double.class, (Double x) -> this.setLocation(x, getY())),
-                        new ModifierInstantiateParameter<>("y", Double.class, (Double y) -> this.setLocation(getX(), y)) }
+    public ArgumentContext[] getArgumentContexts() {
+        return new ArgumentContext[] {
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "location", Point2D.class, this)
+                ),
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "x", Double.class,
+                                (Double x) -> this.setLocation(x, getY())),
+                        new ModifierInstantiateParameter<>(
+                                "y", Double.class,
+                                (Double y) -> this.setLocation(getX(), y))
+                )
         };
     }
 

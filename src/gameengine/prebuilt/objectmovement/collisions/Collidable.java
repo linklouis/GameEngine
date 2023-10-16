@@ -4,6 +4,7 @@ import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.objectmovement.InPlane;
 import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
+import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -48,15 +49,16 @@ public class Collidable extends Modifier {
     }
 
     @Override
-    public ModifierInstantiateParameter<?>[][] getValidArguments() {
-        return new ModifierInstantiateParameter[][] {
-                {
+    public ArgumentContext[] getArgumentContexts() {
+        return new ArgumentContext[] {
+                new ArgumentContext(
                     new ModifierInstantiateParameter<>(
                             "rows", Row[].class,
                             this::setRows),
                     new ModifierInstantiateParameter<>(
                                 "collisionHandler", CollisionHandler.class,
-                                (CollisionHandler handler) -> this.handler = handler) }
+                                (CollisionHandler handler) -> this.handler = handler)
+                )
         };
     }
 

@@ -331,9 +331,26 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
                                               Collidable collider,
                                               boolean active,
                                               double velocityScaleFactor) {
-        if (findCollisions(collider, colliders) && active) {
+        Collision[] currentCollisions =
+                getCollisions(collider, colliders)
+                        .toArray(new Collision[0]);
+        if (currentCollisions.length > 0 && active) {
             PhysicsObject pObj = collider.getParent().get(PhysicsObject.class);
-            pObj.move(pObj.getVelocity().scalarDivide(-velocityScaleFactor * 1.2));
+            for (Collision collision : currentCollisions) {
+                if (pObj.getVelocity()
+                        .dotProduct(
+                                Vector2D.displacement(
+                                        collision.getObj2().getLocation(),
+                                        collider.getLocation()
+                                )) > 0) {
+                    pObj.move(pObj.getVelocity().scalarDivide(-velocityScaleFactor));
+                    updateVelocity(
+                            collision.getObj1().getParent().get(PhysicsObject.class),
+                            collision.getObj2().getParent().get(PhysicsObject.class));
+                }
+
+            }
+            return;
         }
         findCollisions(collider, colliders);
         if (recheck) {

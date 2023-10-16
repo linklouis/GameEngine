@@ -21,7 +21,7 @@ public class PhysicsEngine extends ArrayList<PhysicsObject> {
     public PhysicsEngine(int iterations, Supplier<Double> frameRateSupplier) {
         this.iterations = iterations;
         this.frameRateSupplier = frameRateSupplier;
-        collisionHandler = new PhysicsCollisionHandler();
+        collisionHandler = new PhysicsCollisionHandler(0.9);
     }
 
     public PhysicsEngine(int iterations, Supplier<Double> frameRateSupplier,
@@ -76,7 +76,7 @@ public class PhysicsEngine extends ArrayList<PhysicsObject> {
     private void updatePositionsAndHandleCollisions() {
         for (int i = 0; i < getIterations(); i++) {
             forEach(object -> {
-                object.updatePosition(getFrameRate() * getIterations()); // TODO once i get video of cool thing, replace with frameRate
+                object.updatePosition(getFrameRate() * getIterations());
                 collisionHandler.getAndHandleAllCollisions(
                         getColliders(),
                         false,

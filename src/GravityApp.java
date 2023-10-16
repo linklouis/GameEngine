@@ -1,10 +1,9 @@
-import gameengine.graphics.GraphicsDriver;
 import gameengine.graphics.Visual;
 import gameengine.objects.GameDriver;
 import gameengine.prebuilt.gameobjects.Ball;
+import gameengine.prebuilt.gameobjects.Wall;
 import gameengine.prebuilt.objectmovement.InPlane;
 import gameengine.prebuilt.objectmovement.collisions.Collidable;
-import gameengine.prebuilt.objectmovement.physics.PhysicsEngine;
 import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.paint.Color;
@@ -50,14 +49,23 @@ public class GravityApp extends GameDriver {
         //100000000000L
         long mass =  (long) (7L * Math.pow(10, 16));
         int r = 80;
-        newObject(new Ball(100, 100, r, Color.RED, mass, new Vector2D(10, 0),
+        newObject(new Ball(100, 100, r, Color.RED, mass, true, new Vector2D(10, 0),
                 getPhysicsEngine().getCollisionHandler()));
-        newObject(new Ball(200, 200, r, Color.BLUE, mass,
+        newObject(new Ball(200, 200, r, Color.BLUE, mass, true,
                 getPhysicsEngine().getCollisionHandler()));
-        newObject(new Ball(300, 100, r, Color.GREEN, mass, new Vector2D(15, -5),
+        newObject(new Ball(300, 100, r, Color.GREEN, mass, true, new Vector2D(15, -5),
                 getPhysicsEngine().getCollisionHandler()));
-        newObject(new Ball(600, 200, r, Color.OLDLACE, mass, new Vector2D(1, -50),
+        newObject(new Ball(550, 200, r, Color.OLDLACE, mass, true, new Vector2D(1, -50),
                 getPhysicsEngine().getCollisionHandler()));
+
+//        newObject(new Wall(0, 0, 10, SIZE, Color.WHITE, 100,
+//                getPhysicsEngine().getCollisionHandler()));
+//        newObject(new Wall(SIZE - 10, 0, 10, SIZE, Color.WHITE, 100,
+//                getPhysicsEngine().getCollisionHandler()));
+//        newObject(new Wall(0, 0, SIZE, 10, Color.WHITE, 100,
+//                getPhysicsEngine().getCollisionHandler()));
+//        newObject(new Wall(0, SIZE - 10, SIZE, 10, Color.WHITE, 100,
+//                getPhysicsEngine().getCollisionHandler()));
 //        physicsEngine.add(new Ball(400, 400, r, Color.ORCHID, mass, new Vector2D(-7, 6)));
 //        physicsEngine.add(new Ball(500, 300, r, Color.ORANGE, mass, new Vector2D(-3, 39)));
         for (int i = 0; i < 0; i++) {
@@ -68,11 +76,13 @@ public class GravityApp extends GameDriver {
                     Color.rgb((int) (Math.random() * 255),
                             (int) (Math.random() * 255),
                             (int) (Math.random() * 255)),
-                    mass,
+                    mass, true,
                     new Vector2D(20 * (Math.random() - 0.5),
                             20 * (Math.random() - 0.5)),
                     getPhysicsEngine().getCollisionHandler()));
         }
+
+        forEach(object -> object.get(PhysicsObject.class).setRenderVelocityVector(true));
     }
 
     @Override

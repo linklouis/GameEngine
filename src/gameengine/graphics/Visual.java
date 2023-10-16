@@ -3,6 +3,7 @@ package gameengine.graphics;
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.objectmovement.InPlane;
+import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -42,13 +43,13 @@ public class Visual extends Modifier {
     }
 
     @Override
-    public ModifierInstantiateParameter<?>[][] getValidArguments() {
-        return new ModifierInstantiateParameter[][] {
-                {
+    public ArgumentContext[] getArgumentContexts() {
+        return new ArgumentContext[] {
+                new ArgumentContext(
                     new ModifierInstantiateParameter<>(
                         "appearance", GraphicsObject.class,
                             this::setAppearance)
-                }
+                )
         };
     }
 

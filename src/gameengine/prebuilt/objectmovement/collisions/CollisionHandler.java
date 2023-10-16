@@ -91,16 +91,29 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
 
     public boolean findCollisions(Collidable collider, Collidable[] objects) {
         boolean found = false;
-        Iterator<Collidable> iter = Arrays.stream(objects).iterator();
-        while (iter.hasNext()) {
-            Collidable current = iter.next();
+//        Iterator<Collidable> iter = Arrays.stream(objects).iterator();
+//        while (iter.hasNext()) {
+//            Collidable current = iter.next();
             for (Collidable checking : objects) {
-                if (current != collider && current.isColliding(checking)) {
-                    found = newCollision(current, checking);
+                if (checking != collider && collider.isColliding(checking)) {
+                    found = newCollision(collider, checking);
                 }
+//                if (current != collider && current.isColliding(checking)) {
+//                    found = newCollision(current, checking);
+//                }
+            }
+//        }
+        return found;
+    }
+
+    public List<CollisionType> getCollisions(Collidable collider, Collidable[] objects) {
+        List<CollisionType> newCollisions = new ArrayList<>();
+        for (Collidable checking : objects) {
+            if (checking != collider && collider.isColliding(checking)) {
+                newCollisions.add(CollisionType.newCollision(collider, checking));
             }
         }
-        return found;
+        return newCollisions;
     }
 
     public boolean alreadyExists(final Collidable physObj1, final Collidable physObj2) {

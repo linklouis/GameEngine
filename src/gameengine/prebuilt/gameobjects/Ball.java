@@ -17,20 +17,20 @@ public class Ball extends GameObject {
     private final double R;
 
 
-    public Ball(double x, double y, double r, Color color, Number mass, CollisionHandler handler) {
+    public Ball(double x, double y, double r, Color color, Number mass, boolean hasGravity, CollisionHandler handler) {
         super(new PhysicsObject(), new Collidable(), new InPlane(), new Visual());
         R = r;
-        get(PhysicsObject.class).instantiate(this, mass, color); // TODO figure out cleaner way to do this
+        get(PhysicsObject.class).instantiate(this, mass, color, true, hasGravity); // TODO figure out cleaner way to do this
         get(Collidable.class).instantiate(this, new Collidable.Row[(int)( r / Collidable.ROW_HEIGHT)], handler);
         get(InPlane.class).instantiate(this, x, y);
         get(Visual.class).instantiate(this, get(PhysicsObject.class));
         populateRows();
     }
 
-    public Ball(double x, double y, double r, Color color, Number mass, Vector2D velocity, CollisionHandler handler) {
+    public Ball(double x, double y, double r, Color color, Number mass, boolean hasGravity, Vector2D velocity, CollisionHandler handler) {
         super(new PhysicsObject(), new Collidable(), new InPlane(), new Visual());
         R = r;
-        get(PhysicsObject.class).instantiate(this, mass, color, velocity); // TODO figure out cleaner way to do this
+        get(PhysicsObject.class).instantiate(this, mass, color, velocity, true, hasGravity); // TODO figure out cleaner way to do this
         get(Collidable.class).instantiate(this, new Collidable.Row[(int)( r / Collidable.ROW_HEIGHT)], handler);
         get(InPlane.class).instantiate(this, x, y);
         get(Visual.class).instantiate(this, get(PhysicsObject.class));
