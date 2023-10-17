@@ -69,14 +69,14 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
     }
 
     @Override
-    protected void handle(PhysicsCollision collision, Collidable[] otherCollidersA) {
-//        List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
+    protected void handle(PhysicsCollision collision, LayerCollider[] otherCollidersA) {
+//        List<LayerCollider> otherList = new ArrayList<>(List.of(otherCollidersA));
 //        otherList.remove(collision.getObj1());
 //        otherList.remove(collision.getObj2());
-//        Collidable[] otherColliders = otherList.toArray(new Collidable[0]);
+//        LayerCollider[] otherColliders = otherList.toArray(new LayerCollider[0]);
 
-        PhysicsObject pObj1 = collision.getObj1().getParent().get(PhysicsObject.class);
-        PhysicsObject pObj2 = collision.getObj2().getParent().get(PhysicsObject.class);
+        PhysicsObject pObj1 = collision.getObj1().getFromParent(PhysicsObject.class);
+        PhysicsObject pObj2 = collision.getObj2().getFromParent(PhysicsObject.class);
 
 //        if (collision.occurring()) {
 //            while (collision.occurring()) {
@@ -106,14 +106,14 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
         return new ModifierInstantiateParameter<?>[0][0];
     }
 
-    private void inDifferentDirections(Collision collision, Collidable[] otherCollidersA) {
-        List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
+    private void inDifferentDirections(Collision collision, LayerCollider[] otherCollidersA) {
+        List<LayerCollider> otherList = new ArrayList<>(List.of(otherCollidersA));
         otherList.remove(collision.getObj1());
         otherList.remove(collision.getObj2());
-        Collidable[] otherColliders = otherList.toArray(new Collidable[0]);
+        LayerCollider[] otherColliders = otherList.toArray(new LayerCollider[0]);
 
-        PhysicsObject pObj1 = collision.getObj1().getParent().get(PhysicsObject.class);
-        PhysicsObject pObj2 = collision.getObj2().getParent().get(PhysicsObject.class);
+        PhysicsObject pObj1 = collision.getObj1().getFromParent(PhysicsObject.class);
+        PhysicsObject pObj2 = collision.getObj2().getFromParent(PhysicsObject.class);
 
 
         for (int iterationFactor = 2; iterationFactor < iterations * 2; iterationFactor += 2) {
@@ -123,24 +123,24 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
             }
             pObj1.move(pObj1.getVelocity().unitVector().scalarDivide(iterationFactor));
             pObj2.move(pObj2.getVelocity().unitVector().scalarDivide(iterationFactor));
-            for (Collidable collidable : otherColliders) {
-                PhysicsObject pObj = collidable.getParent().get(PhysicsObject.class);
-                if (collision.getObj1().isColliding(collidable)) {
-                    handleOneMover(collidable, collision.getObj1(), otherCollidersA, false);
+            for (LayerCollider layerCollider : otherColliders) {
+                PhysicsObject pObj = layerCollider.getFromParent(PhysicsObject.class);
+                if (collision.getObj1().isColliding(layerCollider)) {
+                    handleOneMover(layerCollider, collision.getObj1(), otherCollidersA, false);
 //                        if (pObj.getVelocity().dotProduct(Vector2D.displacement(pObj.getLocation(), pObj1.getLocation())) < 0) {
 //                            pObj.updatePosition(60);
 //                        } else {
-//                            while (collision.getObj1().isColliding(collidable)) {
+//                            while (collision.getObj1().isColliding(layerCollider)) {
 //                                pObj.move(pObj.getVelocity().scalarDivide(-60));
 //                            }
 //                        }
                 }
-                if (collision.getObj2().isColliding(collidable)) {
-                    handleOneMover(collidable, collision.getObj2(), otherCollidersA, false);
+                if (collision.getObj2().isColliding(layerCollider)) {
+                    handleOneMover(layerCollider, collision.getObj2(), otherCollidersA, false);
 //                        if (pObj.getVelocity().dotProduct(Vector2D.displacement(pObj.getLocation(), pObj2.getLocation())) < 0) {
 //                            pObj.updatePosition(60);
 //                        } else {
-//                            while (collision.getObj2().isColliding(collidable)) {
+//                            while (collision.getObj2().isColliding(layerCollider)) {
 //                                pObj.move(pObj.getVelocity().scalarDivide(-60));
 //                            }
 //                        }
@@ -152,14 +152,14 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
         updateVelocity(pObj1, pObj2);
     }
 
-    private void inSameDirection(Collision collision, Collidable[] otherCollidersA) {
-        List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
+    private void inSameDirection(Collision collision, LayerCollider[] otherCollidersA) {
+        List<LayerCollider> otherList = new ArrayList<>(List.of(otherCollidersA));
         otherList.remove(collision.getObj1());
         otherList.remove(collision.getObj2());
-        Collidable[] otherColliders = otherList.toArray(new Collidable[0]);
+        LayerCollider[] otherColliders = otherList.toArray(new LayerCollider[0]);
 
-        PhysicsObject pObj1 = collision.getObj1().getParent().get(PhysicsObject.class);
-        PhysicsObject pObj2 = collision.getObj2().getParent().get(PhysicsObject.class);
+        PhysicsObject pObj1 = collision.getObj1().getFromParent(PhysicsObject.class);
+        PhysicsObject pObj2 = collision.getObj2().getFromParent(PhysicsObject.class);
 
         for (int iterationFactor = 2; iterationFactor < iterations * 2; iterationFactor += 2) {
             while (collision.occurring()) {
@@ -184,8 +184,8 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
                 .unitVector()
                 .scalarDivide(-iterations * 2));
 
-//        for (Collidable collidable : otherColliders) {
-//            PhysicsObject pObj = collidable.getParent().get(PhysicsObject.class);
+//        for (LayerCollider collidable : otherColliders) {
+//            PhysicsObject pObj = collidable.getFromParent(PhysicsObject.class);
 //            if (collision.getObj1().isColliding(collidable)) {
 //                if (pObj.getVelocity().dotProduct(Vector2D.displacement(pObj.getLocation(), collision.getObj1().getLocation())) < 0) {
 //                    pObj.updatePosition(60);
@@ -248,17 +248,17 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
     }
 
 
-    public void handleOneMover(Collidable obj1,
-                               Collidable obj2,
-                               Collidable[] otherCollidersA,
+    public void handleOneMover(LayerCollider obj1,
+                               LayerCollider obj2,
+                               LayerCollider[] otherCollidersA,
                                boolean updateVelocity) {
-        List<Collidable> otherList = new ArrayList<>(List.of(otherCollidersA));
+        List<LayerCollider> otherList = new ArrayList<>(List.of(otherCollidersA));
         otherList.remove(obj1);
         otherList.remove(obj2);
-        Collidable[] otherColliders = otherList.toArray(new Collidable[0]);
+        LayerCollider[] otherColliders = otherList.toArray(new LayerCollider[0]);
 
-        PhysicsObject mover = obj1.getParent().get(PhysicsObject.class);
-        PhysicsObject other = obj2.getParent().get(PhysicsObject.class);
+        PhysicsObject mover = obj1.getFromParent(PhysicsObject.class);
+        PhysicsObject other = obj2.getFromParent(PhysicsObject.class);
 
         if (obj1.isColliding(obj2)) {
 //            for (int iterationFactor = 60; iterationFactor < iterations * 60; iterationFactor += 60) {
@@ -266,8 +266,8 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
 //                    mover.move(mover.getVelocity().unitVector().scalarDivide(-iterationFactor));
 //                }
 //                mover.move(mover.getVelocity().unitVector().scalarDivide(iterationFactor));
-//                for (Collidable collidable : otherColliders) {
-//                    PhysicsObject pObj = collidable.getParent().get(PhysicsObject.class);
+//                for (LayerCollider collidable : otherColliders) {
+//                    PhysicsObject pObj = collidable.getFromParent(PhysicsObject.class);
 //                    if (mover.getCollider().isColliding(collidable)) {
 //                        if (pObj.getVelocity().dotProduct(Vector2D.displacement(pObj.getLocation(), mover.getLocation())) < 0) {
 //                            pObj.updatePosition(60);
@@ -293,10 +293,10 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
             mover.move(Vector2D.displacement(mover.getLocation(), mover.getLocation())
                     .unitVector()
                     .scalarDivide(iterations * 2));
-            for (Collidable collidable : otherColliders) {
-                PhysicsObject pObj = collidable.getParent().get(PhysicsObject.class);
-                if (mover.getCollider().isColliding(collidable)) {
-                    handleOneMover(mover.getCollider(), collidable, otherCollidersA, false);
+            for (LayerCollider layerCollider : otherColliders) {
+                PhysicsObject pObj = layerCollider.getFromParent(PhysicsObject.class);
+                if (mover.getCollider().isColliding(layerCollider)) {
+                    handleOneMover(mover.getCollider(), layerCollider, otherCollidersA, false);
                 }
             }
 
@@ -307,7 +307,7 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
     }
 
 
-    public boolean newCollision(final Collidable physObj1, final Collidable physObj2) {
+    public boolean newCollision(final LayerCollider physObj1, final LayerCollider physObj2) {
         if (physObj1 == physObj2 || !physObj1.isColliding(physObj2)) {
             return false;
         }
@@ -326,16 +326,16 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
         return true;
     }
 
-    public  void getAndHandleAllCollisions(Collidable[] colliders,
-                                              boolean recheck,
-                                              Collidable collider,
-                                              boolean active,
-                                              double velocityScaleFactor) {
+    public  void getAndHandleAllCollisions(LayerCollider[] colliders,
+                                           boolean recheck,
+                                           LayerCollider collider,
+                                           boolean active,
+                                           double velocityScaleFactor) {
         Collision[] currentCollisions =
                 getCollisions(collider, colliders)
                         .toArray(new Collision[0]);
         if (currentCollisions.length > 0 && active) {
-            PhysicsObject pObj = collider.getParent().get(PhysicsObject.class);
+            PhysicsObject pObj = collider.getFromParent(PhysicsObject.class);
             for (Collision collision : currentCollisions) {
                 if (pObj.getVelocity()
                         .dotProduct(
@@ -345,8 +345,8 @@ public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> 
                                 )) > 0) {
                     pObj.move(pObj.getVelocity().scalarDivide(-velocityScaleFactor));
                     updateVelocity(
-                            collision.getObj1().getParent().get(PhysicsObject.class),
-                            collision.getObj2().getParent().get(PhysicsObject.class));
+                            collision.getObj1().getFromParent(PhysicsObject.class),
+                            collision.getObj2().getFromParent(PhysicsObject.class));
                 }
 
             }

@@ -4,15 +4,14 @@ import gameengine.graphics.GraphicsObject;
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
 import gameengine.prebuilt.objectmovement.InPlane;
-import gameengine.prebuilt.objectmovement.collisions.Collidable;
+import gameengine.prebuilt.objectmovement.collisions.Collider;
+import gameengine.prebuilt.objectmovement.collisions.LayerCollider;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,7 +130,7 @@ public class PhysicsObject extends GraphicsObject {
         return new ArrayList<>() {
             {
                 add(InPlane.class);
-                add(Collidable.class);
+                add(LayerCollider.class);
             }
         };
     }
@@ -143,11 +142,12 @@ public class PhysicsObject extends GraphicsObject {
 
     @Override
     public void paint(final GraphicsContext gc) {
-        gc.setFill(getColor());
-        for (Collidable.Row row : getParent().get(Collidable.class).getRows()) {
-            Collidable.Row adjustedRow = row.at(getLocation());
-            adjustedRow.paint(gc);
-        }
+//        gc.setFill(getColor());
+        getFromParent(Collider.class).paint(gc, getColor());
+//        for (LayerCollider.Row row : getFromParent(LayerCollider.class).getRows()) {
+//            LayerCollider.Row adjustedRow = row.at(getLocation());
+//            adjustedRow.paint(gc);
+//        }
         if (renderVelocityVector) {
 //            gc.setFill(getColor().darker());
             gc.setLineWidth(1);
@@ -221,7 +221,7 @@ public class PhysicsObject extends GraphicsObject {
 
 //    public void updatePosition(PhysicsObject[] objects, int frameRate) {
 //        move(getVelocity().scalarDivide(frameRate));
-//        Collidable collider = null;
+//        LayerCollider collider = null;
 //        for (PhysicsObject pObj : objects) {
 //            if (pObj != this && getCollider().isColliding(pObj)) {
 //                move(getVelocity().scalarDivide(-frameRate * 2));
@@ -233,11 +233,11 @@ public class PhysicsObject extends GraphicsObject {
 //            if (getCollider().getHandler() instanceof PhysicsCollisionHandler
 //                    && collider.getHandler() instanceof PhysicsCollisionHandler) {
 //                ((PhysicsCollisionHandler) collider.getHandler())
-//                        .updateVelocity(this, collider.getParent().get(PhysicsObject.class));
+//                        .updateVelocity(this, collider.getFromParent(PhysicsObject.class));
 ////                        .handleOneMover(this.getCollider(), collider,
 ////                                Arrays.stream(objects)
 ////                                        .map(PhysicsObject::getCollider)
-////                                        .toList().toArray(new Collidable[0]),
+////                                        .toList().toArray(new LayerCollider[0]),
 ////                                true);
 //            }
 ////            while (!getCollider().isColliding(collider)) {
@@ -258,20 +258,20 @@ public class PhysicsObject extends GraphicsObject {
      * Utilities:
      */
 
-    public Collidable getCollider() {
-        return getParent().get(Collidable.class);
+    public LayerCollider getCollider() {
+        return getFromParent(LayerCollider.class);
     }
 
     public Point2D.Double getLocation() { // TODO take in a location in instantiate?
-        return getParent().get(InPlane.class).getLocation();
+        return getFromParent(InPlane.class).getLocation();
     }
 
     private double getX() {
-        return getParent().get(InPlane.class).getX();
+        return getFromParent(InPlane.class).getX();
     }
 
     private double getY() {
-        return getParent().get(InPlane.class).getY();
+        return getFromParent(InPlane.class).getY();
     }
 
     public double getMass() {

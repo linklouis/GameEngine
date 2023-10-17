@@ -2,7 +2,7 @@ package gameengine.prebuilt.objectmovement.physics;
 
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
-import gameengine.prebuilt.objectmovement.collisions.Collidable;
+import gameengine.prebuilt.objectmovement.collisions.LayerCollider;
 import gameengine.prebuilt.objectmovement.collisions.PhysicsCollisionHandler;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class PhysicsEngine extends ArrayList<PhysicsObject> {
     }
 
 //    public void updateObjects(boolean updateGraphics) {
-//        Collidable[] colliders = getColliders();
+//        LayerCollider[] colliders = getColliders();
 //
 //        forEach(object -> object.updateGravityForces(this.toArray(new PhysicsObject[0])));
 //        forEach(object -> object.evaluateForces(getFrameRate()));
@@ -100,7 +100,7 @@ public class PhysicsEngine extends ArrayList<PhysicsObject> {
 
     public boolean add(GameObject e) {
         // TODO add exception here it GO does not have PO?
-        e.get(Collidable.class).setHandler(collisionHandler);
+        e.get(LayerCollider.class).setHandler(collisionHandler);
         return super.add(e.get(PhysicsObject.class));
     }
 
@@ -111,11 +111,11 @@ public class PhysicsEngine extends ArrayList<PhysicsObject> {
                 .toArray(new GameObject[0]);
     }
 
-    public Collidable[] getColliders() {
+    public LayerCollider[] getColliders() {
         return stream()
                 .map(PhysicsObject::getCollider)
                 .toList()
-                .toArray(new Collidable[0]);
+                .toArray(new LayerCollider[0]);
     }
 
     public int getIterations() {

@@ -12,9 +12,9 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         this.COLLISIONS.addAll(collisions);
     }
 
-    protected abstract void handle(CollisionType collision, Collidable[] otherColliders);
+    protected abstract void handle(CollisionType collision, LayerCollider[] otherColliders);
 
-    public boolean newCollision(final Collidable physObj1, final Collidable physObj2) {
+    public boolean newCollision(final LayerCollider physObj1, final LayerCollider physObj2) {
         if (physObj1 == physObj2 || !physObj1.isColliding(physObj2)) {
             return false;
         }
@@ -29,7 +29,7 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         return true;
     }
 
-    public void handleCollision(CollisionType collision, Collidable[] otherColliders) {
+    public void handleCollision(CollisionType collision, LayerCollider[] otherColliders) {
         if (!collision.isHandled()
                 && collision.getObj1().getHandler() == this
                 && collision.getObj2().getHandler() == this) { // TODO figure out way to not need Collisions to hold a handler
@@ -38,13 +38,13 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         }
     }
 
-    public void handleAllCollisions(Collidable[] colliders) {
+    public void handleAllCollisions(LayerCollider[] colliders) {
         COLLISIONS.forEach(collision -> handleCollision(collision, colliders));
 //        COLLISIONS.removeIf(collision -> !collision.occurring());
         COLLISIONS.clear();
     }
 
-    public void getAndHandleAllCollisions(Collidable[] colliders) {
+    public void getAndHandleAllCollisions(LayerCollider[] colliders) {
         findCollisions(colliders);
         while (!getCollisions().isEmpty()) {
             handleAllCollisions(colliders);
@@ -53,7 +53,7 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
     }
 
     // TODO move to collision handler
-    public void getAndHandleAllCollisions(Collidable[] colliders, boolean recheck) {
+    public void getAndHandleAllCollisions(LayerCollider[] colliders, boolean recheck) {
         findCollisions(colliders);
         if (recheck) {
             while (!getCollisions().isEmpty()) {
@@ -65,7 +65,7 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         }
     }
 
-    public void getAndHandleAllCollisions(Collidable[] colliders, boolean recheck, Collidable collider) {
+    public void getAndHandleAllCollisions(LayerCollider[] colliders, boolean recheck, LayerCollider collider) {
         findCollisions(collider, colliders);
         if (recheck) {
             while (!getCollisions().isEmpty()) {
@@ -77,11 +77,11 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         }
     }
 
-    public void findCollisions(Collidable[] objects) {
-        Iterator<Collidable> iter = Arrays.stream(objects).iterator();
+    public void findCollisions(LayerCollider[] objects) {
+        Iterator<LayerCollider> iter = Arrays.stream(objects).iterator();
         while (iter.hasNext()) {
-            Collidable current = iter.next();
-            for (Collidable checking : objects) {
+            LayerCollider current = iter.next();
+            for (LayerCollider checking : objects) {
                 if (current.isColliding(checking)) {
                     newCollision(current, checking);
                 }
@@ -89,12 +89,12 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         }
     }
 
-    public boolean findCollisions(Collidable collider, Collidable[] objects) {
+    public boolean findCollisions(LayerCollider collider, LayerCollider[] objects) {
         boolean found = false;
-//        Iterator<Collidable> iter = Arrays.stream(objects).iterator();
+//        Iterator<LayerCollider> iter = Arrays.stream(objects).iterator();
 //        while (iter.hasNext()) {
-//            Collidable current = iter.next();
-            for (Collidable checking : objects) {
+//            LayerCollider current = iter.next();
+            for (LayerCollider checking : objects) {
                 if (checking != collider && collider.isColliding(checking)) {
                     found = newCollision(collider, checking);
                 }
@@ -106,9 +106,9 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         return found;
     }
 
-    public List<CollisionType> getCollisions(Collidable collider, Collidable[] objects) {
+    public List<CollisionType> getCollisions(LayerCollider collider, LayerCollider[] objects) {
         List<CollisionType> newCollisions = new ArrayList<>();
-        for (Collidable checking : objects) {
+        for (LayerCollider checking : objects) {
             if (checking != collider && collider.isColliding(checking)) {
                 newCollisions.add(CollisionType.newCollision(collider, checking));
             }
@@ -116,7 +116,7 @@ public abstract class CollisionHandler<CollisionType extends Collision> {
         return newCollisions;
     }
 
-    public boolean alreadyExists(final Collidable physObj1, final Collidable physObj2) {
+    public boolean alreadyExists(final LayerCollider physObj1, final LayerCollider physObj2) {
         Collision toCheck = new Collision(physObj1, physObj2);
         for (Collision collision : COLLISIONS) {
             if (toCheck.compareTo(collision) == 0) {

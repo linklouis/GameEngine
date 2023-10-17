@@ -1,11 +1,11 @@
 package gameengine.prebuilt.objectmovement.collisions;
 
 public class Collision implements Comparable<Collision> {
-    private final Collidable obj1;
-    private final Collidable obj2;
+    private final LayerCollider obj1;
+    private final LayerCollider obj2;
     private boolean handled = false;
 
-    protected Collision(final Collidable physObj1, final Collidable physObj2) {
+    protected Collision(final LayerCollider physObj1, final LayerCollider physObj2) {
         if (physObj1 == physObj2) {
             throw new IllegalArgumentException("gameengine.prebuilt.objectmovement.physics.collisions.Collision objects must be unique.");
         }
@@ -16,7 +16,7 @@ public class Collision implements Comparable<Collision> {
         this.obj2 = physObj2;
     }
 
-    public static <T extends Collision> T newCollision(final Collidable physObj1, final Collidable physObj2) {
+    public static <T extends Collision> T newCollision(final LayerCollider physObj1, final LayerCollider physObj2) {
         return (T) new Collision(physObj1, physObj2);
     }
 
@@ -24,18 +24,18 @@ public class Collision implements Comparable<Collision> {
         return obj1.isColliding(obj2) && obj2.isColliding(obj1);
     }
 
-//    public void handle(Collidable[] colliders) { // TODO make a handler instance variable?
+//    public void handle(LayerCollider[] colliders) { // TODO make a handler instance variable?
 //        if (!handled && getObj1().getHandler().getClass().equals(getObj2().getHandler().getClass())) {
 //            getObj1().getHandler().handle(this, colliders);
 //            handled = true;
 //        }
 //    }
 
-    public Collidable getObj1() {
+    public LayerCollider getObj1() {
         return obj1;
     }
 
-    public Collidable getObj2() {
+    public LayerCollider getObj2() {
         return obj2;
     }
 

@@ -46,6 +46,10 @@ public abstract class Modifier extends GameObject {
         return parent;
     }
 
+    public <T extends Modifier> T getFromParent(Class<T> modifierClass) {
+        return getParent().get(modifierClass);
+    }
+
     public abstract List<Class<? extends Modifier>> getDependencies();
 
     public abstract ArgumentContext[] getArgumentContexts();

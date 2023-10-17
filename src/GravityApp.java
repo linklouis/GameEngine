@@ -1,9 +1,8 @@
 import gameengine.graphics.Visual;
 import gameengine.objects.GameDriver;
 import gameengine.prebuilt.gameobjects.Ball;
-import gameengine.prebuilt.gameobjects.Wall;
 import gameengine.prebuilt.objectmovement.InPlane;
-import gameengine.prebuilt.objectmovement.collisions.Collidable;
+import gameengine.prebuilt.objectmovement.collisions.LayerCollider;
 import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.paint.Color;
@@ -88,8 +87,8 @@ public class GravityApp extends GameDriver {
     @Override
     public void updateGame() {
         List.of(getPhysicsEngine().getGameObjects()).forEach(object -> {
-            if (object.get(InPlane.class).getX() < Math.abs(object.get(Collidable.class).minX())) {
-                object.get(InPlane.class).setX(Math.abs(object.get(Collidable.class).minX()));
+            if (object.get(InPlane.class).getX() < Math.abs(object.get(LayerCollider.class).minX())) {
+                object.get(InPlane.class).setX(Math.abs(object.get(LayerCollider.class).minX()));
                 object.get(PhysicsObject.class)
                         .setVelocity(
                                 object.get(PhysicsObject.class).getVelocity()
@@ -101,8 +100,8 @@ public class GravityApp extends GameDriver {
                                         )
                         );
             }
-            if (object.get(InPlane.class).getY() < Math.abs(object.get(Collidable.class).minY())) {
-                object.get(InPlane.class).setY(Math.abs(object.get(Collidable.class).minY()));
+            if (object.get(InPlane.class).getY() < Math.abs(object.get(LayerCollider.class).minY())) {
+                object.get(InPlane.class).setY(Math.abs(object.get(LayerCollider.class).minY()));
                 object.get(PhysicsObject.class)
                         .setVelocity(
                                 object.get(PhysicsObject.class).getVelocity()
