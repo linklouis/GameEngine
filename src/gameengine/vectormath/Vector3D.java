@@ -1,5 +1,7 @@
 package gameengine.vectormath;
 
+import java.awt.geom.Point2D;
+
 public class Vector3D extends Vector<Vector3D> {
     private static final int SIZE = 3;
 
@@ -37,6 +39,19 @@ public class Vector3D extends Vector<Vector3D> {
     public static Vector3D empty() {
         double[] newComponents = new double[SIZE];
         return new Vector3D(newComponents);
+    }
+
+    public static Vector3D random(double min, double max) {
+        double scale = max - min;
+        double x = Math.random() * scale + min;
+        double y = Math.random() * scale + min;
+        double z = Math.random() * scale + min;
+        return new Vector3D(x, y, z);
+    }
+
+
+    public double distance(Vector3D vector) {
+        return Math.abs(subtract(vector).magnitude());
     }
 
     @Override

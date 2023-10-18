@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class Vector<T extends Vector<T>> {
     /**
@@ -68,6 +69,14 @@ public abstract class Vector<T extends Vector<T>> {
         return newVector(resultComponents);
     }
 
+    public T forEach(Function<Double, Double> function) {
+        double[] resultComponents = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            resultComponents[i] = function.apply(this.getComponents()[i]);
+        }
+        return newVector(resultComponents);
+    }
+
     public T scalarDivide(final BigDecimal scalar) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
@@ -121,6 +130,31 @@ public abstract class Vector<T extends Vector<T>> {
         return sum;
     }
 
+    public double directionDifference(T vector) {
+        return this.dotProduct(vector) / magnitude();
+    }
+
+    public T closestMatch(T... vectors) {
+        if (vectors.length == 0) {
+            return null;
+        }
+        if (vectors.length == 1) {
+            return vectors[0];
+        }
+
+        T closest = vectors[0];
+        double bestDifference = directionDifference(vectors[0]);
+
+        for (T vector : vectors) {
+            if (directionDifference(vector) < bestDifference) {
+                closest = vector;
+                bestDifference = directionDifference(closest);
+            }
+        }
+
+        return closest;
+    }
+
 //    public static <T extends Vector> T empty() {
 //        double[] newComponents = new double[T.size()];
 //        for (int i = 0; i < T.size(); i++) {
@@ -138,11 +172,11 @@ public abstract class Vector<T extends Vector<T>> {
 //        }
 //    }
 
-    protected double[] getComponents() {
+    public double[] getComponents() {
         return components;
     }
 
-    protected double getComponent(final int index) {
+    public double getComponent(final int index) {
         return getComponents()[index];
     }
 

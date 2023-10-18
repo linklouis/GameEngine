@@ -1,5 +1,7 @@
 package gameengine.utilities;
 
+import java.util.Arrays;
+
 public class ArgumentContext {
 
     private static final EmptyInstantiateAction EMPTY_ACTION = new EmptyInstantiateAction() {
@@ -70,5 +72,9 @@ public class ArgumentContext {
 
     public EmptyInstantiateAction getOtherSetup() {
         return otherSetup;
+    }
+
+    public String toString() {
+        return Arrays.toString(getParameters());
     }
 }

@@ -35,9 +35,14 @@ public class Vector2D extends Vector<Vector2D> {
         return new Point2D.Double(getX(), getY());
     }
 
+    public Point2D pointAtDistanceFrom(Point2D point) {
+        return new Point2D.Double(point.getX() + getX(), point.getY() + getY());
+    }
+
     public static Vector2D asVector(Point2D point) {
         return new Vector2D(point.getX(), point.getY());
     }
+
 
     public static Vector2D displacement(Point2D p1, Point2D p2) {
         return new Vector2D(p1.getX() - p2.getX(), p1.getY() - p2.getY());

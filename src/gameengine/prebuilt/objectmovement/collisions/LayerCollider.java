@@ -71,7 +71,7 @@ public final class LayerCollider extends Collider<LayerCollider> {
     public Point2D.Double getCenter() {
         double centerX = 0;
         for (Row row : getRows()) {
-            centerX += row.getMaxX() + row.getMinX();
+            centerX += row.maxX() + row.minX();
         }
         centerX /= getRows().length;
         return new Point2D.Double(getX() + centerX, getY() + (maxY() + minY()) / 2.0);
@@ -99,6 +99,16 @@ public final class LayerCollider extends Collider<LayerCollider> {
         return false;
     }
 
+    @Override
+    public boolean contains(Point2D point) {
+        for (Row row : getRows()) {
+            if (row.at(getLocation()).contains(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Row getColliding(GameObject gObj) { // TODO
         assert gObj.containsModifier(LayerCollider.class);
         LayerCollider coll = gObj.get(LayerCollider.class);
@@ -114,38 +124,38 @@ public final class LayerCollider extends Collider<LayerCollider> {
 
     @Override
     public double minX() {
-        double min = get(0).getMinX();
+        double min = get(0).minX();
         for (int i = 0; java.lang.Double.isNaN(min) && i < getRows().length; i++) {
-            min = get(i).getMinX();
+            min = get(i).minX();
         }
         for (Row row : rows) {
-            if (row.getMinX() < min) {
-                min = row.getMinX();
+            if (row.minX() < min) {
+                min = row.minX();
             }
         }
         return getX() + min;
     }
 
     public double minX(int index) {
-        return getX() + get(index).getMinX();
+        return getX() + get(index).minX();
     }
 
     @Override
     public double maxX() {
-        double max = get(0).getMinX();
+        double max = get(0).minX();
         for (int i = 0; java.lang.Double.isNaN(max) && i < getRows().length; i++) {
-            max = get(i).getMaxX();
+            max = get(i).maxX();
         }
         for (Row row : rows) {
-            if (row.getMaxX() > max) {
-                max = row.getMaxX();
+            if (row.maxX() > max) {
+                max = row.maxX();
             }
         }
         return getX() + max;
     }
 
     public double maxX(int index) {
-        return getY() + get(index).getMaxX();
+        return getY() + get(index).maxX();
     }
 
     @Override
@@ -163,7 +173,8 @@ public final class LayerCollider extends Collider<LayerCollider> {
         return LayerCollider.class;
     }
 
-    public double height() {
+    @Override
+    public double getHeight() {
         return getRows().length * ROW_HEIGHT;
     }
 
@@ -207,7 +218,7 @@ public final class LayerCollider extends Collider<LayerCollider> {
         if (y > maxY() || y < minY()) {
             throw new IllegalArgumentException("y value of "
                     + y + " out of bounds for gameengine.objects.GameObject of height "
-                    + height() + " at (" + getX() + ", " + getY() + ")"
+                    + getHeight() + " at (" + getX() + ", " + getY() + ")"
             );
         }
 
@@ -219,7 +230,7 @@ public final class LayerCollider extends Collider<LayerCollider> {
         setRow(index, new Row(y, ROW_HEIGHT, minX, maxX));
     }
 
-    public static class Row {
+    public static class Row extends Collider<Row> {
         private final double y, height;
         private final double minX, maxX;
 
@@ -234,56 +245,72 @@ public final class LayerCollider extends Collider<LayerCollider> {
             return y;
         }
 
-        public double getHeight() {
-            return height;
-        }
-
-        public double getMinX() {
+        @Override
+        public double minX() {
             return minX;
         }
 
-        public double getMaxX() {
+        @Override
+        public double maxX() {
             return maxX;
         }
 
+        @Override
         public double minY() {
             return getY() - getHeight() / 2.0;
         }
 
+        @Override
         public double maxY() {
             return getY() + getHeight() / 2.0;
         }
 
-        public double width() {
-            return getMaxX() - getMinX();
+        @Override
+        public Point2D.Double getCenter() {
+            return new Point2D.Double((maxX() + minX()) / 2, getY());
+        }
+
+        @Override
+        public Class<Row> getColliderClass() {
+            return Row.class;
+        }
+
+        @Override
+        public double getHeight() {
+            return height;
+        }
+
+        @Override
+        public double getWidth() {
+            return maxX() - minX();
         }
 
         public Point2D.Double topLeft() {
-            return new Point2D.Double(getMinX(), minY());
+            return new Point2D.Double(minX(), minY());
         }
 
         public Point2D.Double topRight() {
-            return new Point2D.Double(getMaxX(), minY());
+            return new Point2D.Double(maxX(), minY());
         }
 
         public Point2D.Double bottomLeft() {
-            return new Point2D.Double(getMinX(), maxY());
+            return new Point2D.Double(minX(), maxY());
         }
 
         public Point2D.Double bottomRight() {
-            return new Point2D.Double(getMaxX(), maxY());
+            return new Point2D.Double(maxX(), maxY());
         }
 
         public Row atHeight(double height) {
-            return new Row(getY() + height, getHeight(), getMinX(), getMaxX());
+            return new Row(getY() + height, getHeight(), minX(), maxX());
         }
 
         public Row atX(double x) {
-            return new Row(getY(), getHeight(), getMinX() + x, getMaxX() + x);
+            return new Row(getY(), getHeight(), minX() + x, maxX() + x);
         }
 
         public Row at(Point2D.Double location) {
-            return new Row(getY() + location.getY(), getHeight(), getMinX() + location.getX(), getMaxX() + location.getX());
+            return new Row(getY() + location.getY(), getHeight(), minX() + location.getX(), maxX() + location.getX());
         }
 
         /**
@@ -293,13 +320,22 @@ public final class LayerCollider extends Collider<LayerCollider> {
          * @param row The {@link Row} to check for collision with
          * @return true if the two rows have a 1D collision.
          */
+        @Override
         public boolean isColliding(Row row) {
-            return (getMinX() < row.getMaxX() && getMaxX() > row.getMinX())
-                    || (row.getMinX() < getMaxX() && row.getMaxX() > getMinX());
+            return (minX() < row.maxX() && maxX() > row.minX())
+                    || (row.minX() < maxX() && row.maxX() > minX());
         }
 
-        public void paint(GraphicsContext gc) {
-            gc.fillRect(getMinX(), minY(), width(), getHeight());
+        @Override
+        public boolean contains(Point2D point) {
+            return (point.getX() >= minX() && point.getX() <= maxX()
+                    && point.getY() >= minY() && point.getY() <= maxY());
+        }
+
+        public void paint(GraphicsContext gc, Color color) {
+            gc.setStroke(color);
+            gc.setFill(color);
+            gc.fillRect(minX(), minY(), getWidth(), getHeight());
         }
     }
 }

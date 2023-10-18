@@ -1,20 +1,18 @@
 package gameengine.prebuilt.objectmovement.collisions;
 
-import gameengine.graphics.GraphicsObject;
 import gameengine.objects.GameObject;
 import gameengine.objects.Modifier;
-import gameengine.prebuilt.objectmovement.InPlane;
 import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.vectormath.Vector3D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Collider<ColliderType extends Collider<ColliderType>>  extends GraphicsObject {
+public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>>  extends Modifier {
     private CollisionHandler<?> handler = null; // TODO make a CollisionHandler interface and just pass in the handler type + have collection of default handlers?
 
     private Color color;
@@ -24,11 +22,11 @@ public abstract class Collider<ColliderType extends Collider<ColliderType>>  ext
      * Construction:
      */
 
-    public Collider() {
+    public Collider3D() {
         super();
     }
 
-    public Collider(Modifier... modifiers) {
+    public Collider3D(Modifier... modifiers) {
         super(modifiers);
     }
 
@@ -55,7 +53,6 @@ public abstract class Collider<ColliderType extends Collider<ColliderType>>  ext
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
         List<Class<? extends Modifier>> modifiers = new ArrayList<>();
-        modifiers.add(InPlane.class);
         if (handler instanceof PhysicsCollisionHandler) {
             modifiers.add(PhysicsObject.class);
         }
@@ -78,20 +75,18 @@ public abstract class Collider<ColliderType extends Collider<ColliderType>>  ext
         return isColliding(coll);
     }
 
-    public boolean inRange(Collider<?> collider) {
+    public boolean inRange(Collider3D<?> collider) {
         return
                 (
                         (maxY() > collider.minY() && minY() < collider.maxY()) ||
-                        (collider.maxY() > minY() && collider.minY() < maxY())
+                                (collider.maxY() > minY() && collider.minY() < maxY())
                 ) && (
                         (maxX() > collider.minX() && minX() < collider.maxX()) ||
-                        (collider.maxX() > minX() && collider.minX() < maxX())
+                                (collider.maxX() > minX() && collider.minX() < maxX())
+                ) && (
+                        (maxZ() > collider.minZ() && minZ() < collider.maxZ()) ||
+                                (collider.maxZ() > minZ() && collider.minZ() < maxZ())
                 );
-    }
-
-    @Override
-    public void paint(GraphicsContext gc) {
-        paint(gc, getColor());
     }
 
 
@@ -101,17 +96,21 @@ public abstract class Collider<ColliderType extends Collider<ColliderType>>  ext
 
     public abstract boolean isColliding(ColliderType coll);
 
-    public abstract boolean contains(Point2D point);
+    public abstract boolean contains(Vector3D point);
 
     public abstract double minX();
 
     public abstract double minY();
 
+    public abstract double minZ();
+
     public abstract double maxX();
 
     public abstract double maxY();
 
-    public abstract Point2D.Double getCenter();
+    public abstract double maxZ();
+
+    public abstract Vector3D getCenter();
 
     public abstract Class<ColliderType> getColliderClass();
 
@@ -130,12 +129,20 @@ public abstract class Collider<ColliderType extends Collider<ColliderType>>  ext
         return getCenter().getY();
     }
 
+    public double centerZ() {
+        return getCenter().getZ();
+    }
+
     public double getWidth() {
         return maxX() - minX();
     }
 
     public double getHeight() {
         return maxY() - minY();
+    }
+
+    public double getLength() {
+        return maxZ() - minZ();
     }
 
     public CollisionHandler<?> getHandler() {
