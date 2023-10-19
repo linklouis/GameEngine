@@ -1,10 +1,11 @@
-import gameengine.graphics.GraphicsObject;
-import gameengine.graphics.Visual;
-import gameengine.objects.GameDriver;
-import gameengine.objects.GameObject;
-import gameengine.objects.Modifier;
-import gameengine.prebuilt.InPlane3D;
-import gameengine.prebuilt.objectmovement.collisions.Collider3D;
+import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.twod.graphics.GraphicsObject2D;
+import gameengine.twod.graphics.Visual2D;
+import gameengine.drivers.GameDriver2D;
+import gameengine.skeletons.GameObject;
+import gameengine.skeletons.Modifier;
+import gameengine.threed.prebuilt.objectmovement.InPlane3D;
+import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.vectormath.Vector3D;
 import javafx.application.Platform;
@@ -13,22 +14,21 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Camera extends GameObject {
     private Vector3D direction;
-    private final GameDriver gameDriver;
+    private final GameDriver2D gameDriver2D;
 
-    public Camera(double x, double y, double z, Vector3D direction, GameDriver gameDriver) {
-        super(new InPlane3D(), new Visual());
+    public Camera(double x, double y, double z, Vector3D direction, GameDriver2D gameDriver2D) {
+        super(new InPlane3D(), new Visual2D());
         get(InPlane3D.class).instantiate(this, x, y, z);
-        get(Visual.class).instantiate(this, new CameraGraphics());
+        get(Visual2D.class).instantiate(this, new Camera2DGraphics());
 
         this.direction = direction.unitVector();
-        this.gameDriver = gameDriver;
+        this.gameDriver2D = gameDriver2D;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Camera extends GameObject {
         return get(InPlane3D.class).getLocation();
     }
 
-    public class CameraGraphics extends GraphicsObject {
+    public class Camera2DGraphics extends GraphicsObject2D {
         private double scale = 1;
         private int raysPerPixel = 3;
         private boolean alreadyPainted = false;
@@ -60,15 +60,15 @@ public class Camera extends GameObject {
 
         private void printXViewAngle() {
             Vector3D localPixelLocation1 = new Vector3D(
-                    0 - gameDriver.getGraphicsDriver().WIDTH / 2.0,
-                    1 - gameDriver.getGraphicsDriver().HEIGHT / 2.0,
+                    0 - gameDriver2D.getGraphicsDriver().WIDTH / 2.0,
+                    1 - gameDriver2D.getGraphicsDriver().HEIGHT / 2.0,
                     100).scalarDivide(100);
             Vector3D truePixelLocation1 = getLocation().add(getDirection().scalarMultiply(localPixelLocation1.getZ()))
                     .add(getDirection().crossProduct(new Vector3D(0, 0, 1)).scalarMultiply(localPixelLocation1.getX()))
                     .add(getDirection().crossProduct(new Vector3D(0, 1, 0)).scalarMultiply(localPixelLocation1.getY()));
             Vector3D localPixelLocation2 = new Vector3D(
-                    gameDriver.getGraphicsDriver().WIDTH - gameDriver.getGraphicsDriver().WIDTH / 2.0,
-                    1 - gameDriver.getGraphicsDriver().HEIGHT / 2.0,
+                    gameDriver2D.getGraphicsDriver().WIDTH - gameDriver2D.getGraphicsDriver().WIDTH / 2.0,
+                    1 - gameDriver2D.getGraphicsDriver().HEIGHT / 2.0,
                     100).scalarDivide(100);
             Vector3D truePixelLocation2 = getLocation().add(getDirection().scalarMultiply(localPixelLocation2.getZ()))
                     .add(getDirection().crossProduct(new Vector3D(0, 0, 1)).scalarMultiply(localPixelLocation2.getX()))
@@ -99,8 +99,8 @@ public class Camera extends GameObject {
         }
 
         private void paintUnthreaded(GraphicsContext gc, Collider3D<?>[] objects) {
-            for (double x = 0; x < gameDriver.getGraphicsDriver().WIDTH / scale; x += 1 / scale) {
-                for (double y = 0; y < gameDriver.getGraphicsDriver().HEIGHT / scale; y += 1 / scale) {
+            for (double x = 0; x < gameDriver2D.getGraphicsDriver().WIDTH / scale; x += 1 / scale) {
+                for (double y = 0; y < gameDriver2D.getGraphicsDriver().HEIGHT / scale; y += 1 / scale) {
                     paintPixelAtUnthreaded(x, y, gc, objects);
                 }
             }
@@ -109,8 +109,8 @@ public class Camera extends GameObject {
         private void paintPixelAtUnthreaded(double x, double y, GraphicsContext gc, Collider3D<?>[] objects) {
             Vector3D average = Vector3D.empty();
             Vector3D localPixelLocation = new Vector3D(
-                    x - gameDriver.getGraphicsDriver().WIDTH / (2.0 * scale),
-                    y - gameDriver.getGraphicsDriver().HEIGHT / (2.0 * scale),
+                    x - gameDriver2D.getGraphicsDriver().WIDTH / (2.0 * scale),
+                    y - gameDriver2D.getGraphicsDriver().HEIGHT / (2.0 * scale),
                     100).scalarDivide(100);
 //            localPixelLocation = new Vector3D(
 //                    localPixelLocation.getX(),
@@ -141,8 +141,8 @@ public class Camera extends GameObject {
             ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // You can adjust the thread count as needed
 
             // Split the canvas into smaller tasks for multithreading
-            for (double x = 0; x < gameDriver.getGraphicsDriver().WIDTH / scale; x += 1 / scale) {
-                for (double y = 0; y < gameDriver.getGraphicsDriver().HEIGHT / scale; y += 1 / scale) {
+            for (double x = 0; x < gameDriver2D.getGraphicsDriver().WIDTH / scale; x += 1 / scale) {
+                for (double y = 0; y < gameDriver2D.getGraphicsDriver().HEIGHT / scale; y += 1 / scale) {
                     final double finalX = x;
                     final double finalY = y;
                     threadPool.submit(() -> {
@@ -163,8 +163,8 @@ public class Camera extends GameObject {
             Vector3D average = Vector3D.empty();
             double scaleFactor = 500;
             Vector3D localPixelLocation = new Vector3D(
-                    x - gameDriver.getGraphicsDriver().WIDTH / (2.0 * scale),
-                    y - gameDriver.getGraphicsDriver().HEIGHT / (2.0 * scale),
+                    x - gameDriver2D.getGraphicsDriver().WIDTH / (2.0 * scale),
+                    y - gameDriver2D.getGraphicsDriver().HEIGHT / (2.0 * scale),
                     scaleFactor).unitVector();
 
             // Transform the local pixel location to global coordinates
@@ -234,7 +234,7 @@ public class Camera extends GameObject {
         }
 
         private Collider3D<?>[] getValidColliders() {
-            return gameDriver.getObjects().stream()
+            return gameDriver2D.getObjects().stream()
 //                    .filter(object -> object != this)
                     .filter(object -> object.containsModifier(Collider3D.class))
                     .map(object -> object.get(Collider3D.class))

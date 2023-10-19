@@ -1,7 +1,7 @@
 package gameengine.experimental;
 
-import gameengine.objects.GameObject;
-import gameengine.prebuilt.objectmovement.InPlane;
+import gameengine.skeletons.GameObject;
+import gameengine.twod.prebuilt.objectmovement.InPlane;
 
 import java.awt.geom.Point2D;
 

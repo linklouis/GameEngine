@@ -1,8 +1,12 @@
 package gameengine.vectormath;
 
 import java.awt.geom.Point2D;
+//import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Vector3D extends Vector<Vector3D> {
+//    private static Random rand = new Random();
+    
     private static final int SIZE = 3;
 
     public Vector3D(final double x, final double y, final double z) {
@@ -43,9 +47,12 @@ public class Vector3D extends Vector<Vector3D> {
 
     public static Vector3D random(double min, double max) {
         double scale = max - min;
-        double x = Math.random() * scale + min;
-        double y = Math.random() * scale + min;
-        double z = Math.random() * scale + min;
+//        double x = rand.nextDouble() * scale + min;
+//        double y = rand.nextDouble() * scale + min;
+//        double z = rand.nextDouble() * scale + min;
+        double x = ThreadLocalRandom.current().nextDouble() * scale + min;
+        double y = ThreadLocalRandom.current().nextDouble() * scale + min;
+        double z = ThreadLocalRandom.current().nextDouble() * scale + min;
         return new Vector3D(x, y, z);
     }
 

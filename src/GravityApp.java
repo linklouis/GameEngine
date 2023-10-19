@@ -1,21 +1,23 @@
-import gameengine.graphics.Visual;
-import gameengine.objects.GameDriver;
-import gameengine.prebuilt.gameobjects.Ball;
-import gameengine.prebuilt.objectmovement.InPlane;
-import gameengine.prebuilt.objectmovement.collisions.LayerCollider;
-import gameengine.prebuilt.objectmovement.physics.PhysicsObject;
+import gameengine.twod.graphics.GraphicsDriver2D;
+import gameengine.twod.graphics.Visual2D;
+import gameengine.drivers.GameDriver2D;
+import gameengine.twod.prebuilt.gameobjects.Ball;
+import gameengine.twod.prebuilt.objectmovement.InPlane;
+import gameengine.twod.prebuilt.objectmovement.collisions.LayerCollider2D;
+import gameengine.twod.prebuilt.objectmovement.physics.PhysicsEngine2D;
+import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.paint.Color;
 
 import java.util.List;
 
-public class GravityApp extends GameDriver {
+public class GravityApp extends GameDriver2D {
 
-    private Visual pointer;
+    private Visual2D pointer;
     private final static int SIZE = 600;
 
     public GravityApp() {
-        super("Gravity Sim", SIZE, SIZE, 4);
+        super("Gravity Sim", new GraphicsDriver2D(SIZE, SIZE), new PhysicsEngine2D(4));
     }
 
     public static void main(String[] args) {
@@ -24,7 +26,7 @@ public class GravityApp extends GameDriver {
 
     @Override
     public void initialize() {
-//        objects.add(new gameengine.objects.GameObject(200, 200, new gameengine.objects.GameObject.Row[100], Color.BLANCHEDALMOND) {
+//        objects.add(new gameengine.skeletons.GameObject(200, 200, new gameengine.skeletons.GameObject.Row[100], Color.BLANCHEDALMOND) {
 //            {
 //                for (int i = 0; i < getRows().length; i++) {
 //                    newRow(i, (Math.sin(40 * i) - 2) * 50, (Math.sin(40 * i) + 1) * 50);
@@ -32,7 +34,7 @@ public class GravityApp extends GameDriver {
 //            }
 //        });
 
-//        pointer = new gameengine.objects.GameObject(0, 0, new gameengine.objects.GameObject.Row[10], Color.ALICEBLUE) {
+//        pointer = new gameengine.skeletons.GameObject(0, 0, new gameengine.skeletons.GameObject.Row[10], Color.ALICEBLUE) {
 //            {
 //                for (int i = 0; i < getRows().length; i++) {
 //                    double y2rd = Math.pow(i - getRows().length / 2.0, 2);
@@ -81,46 +83,46 @@ public class GravityApp extends GameDriver {
                     getPhysicsEngine().getCollisionHandler()));
         }
 
-        forEach(object -> object.get(PhysicsObject.class).setRenderVelocityVector(true));
+        forEach(object -> object.get(PhysicsObject2D.class).setRenderVelocityVector(true));
     }
 
     @Override
     public void updateGame() {
         List.of(getPhysicsEngine().getGameObjects()).forEach(object -> {
-            if (object.get(InPlane.class).getX() < Math.abs(object.get(LayerCollider.class).minX())) {
-                object.get(InPlane.class).setX(Math.abs(object.get(LayerCollider.class).minX()));
-                object.get(PhysicsObject.class)
+            if (object.get(InPlane.class).getX() < Math.abs(object.get(LayerCollider2D.class).minX())) {
+                object.get(InPlane.class).setX(Math.abs(object.get(LayerCollider2D.class).minX()));
+                object.get(PhysicsObject2D.class)
                         .setVelocity(
-                                object.get(PhysicsObject.class).getVelocity()
+                                object.get(PhysicsObject2D.class).getVelocity()
                                         .subtract(
                                                 new Vector2D(
-                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
+                                                        1.9 * object.get(PhysicsObject2D.class).getVelocity().getX(),
                                                         0
                                                 )
                                         )
                         );
             }
-            if (object.get(InPlane.class).getY() < Math.abs(object.get(LayerCollider.class).minY())) {
-                object.get(InPlane.class).setY(Math.abs(object.get(LayerCollider.class).minY()));
-                object.get(PhysicsObject.class)
+            if (object.get(InPlane.class).getY() < Math.abs(object.get(LayerCollider2D.class).minY())) {
+                object.get(InPlane.class).setY(Math.abs(object.get(LayerCollider2D.class).minY()));
+                object.get(PhysicsObject2D.class)
                         .setVelocity(
-                                object.get(PhysicsObject.class).getVelocity()
+                                object.get(PhysicsObject2D.class).getVelocity()
                                         .subtract(
                                                 new Vector2D(
                                                         0,
-                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getY()
+                                                        1.9 * object.get(PhysicsObject2D.class).getVelocity().getY()
                                                 )
                                         )
                         );
             }
             if (object.get(InPlane.class).getX() > SIZE) {
                 object.get(InPlane.class).setX(SIZE);
-                object.get(PhysicsObject.class)
+                object.get(PhysicsObject2D.class)
                         .setVelocity(
-                                object.get(PhysicsObject.class).getVelocity()
+                                object.get(PhysicsObject2D.class).getVelocity()
                                         .subtract(
                                                 new Vector2D(
-                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getX(),
+                                                        1.9 * object.get(PhysicsObject2D.class).getVelocity().getX(),
                                                         0
                                                 )
                                         )
@@ -128,13 +130,13 @@ public class GravityApp extends GameDriver {
             }
             if (object.get(InPlane.class).getY() > SIZE) {
                 object.get(InPlane.class).setY(SIZE);
-                object.get(PhysicsObject.class)
+                object.get(PhysicsObject2D.class)
                         .setVelocity(
-                                object.get(PhysicsObject.class).getVelocity()
+                                object.get(PhysicsObject2D.class).getVelocity()
                                         .subtract(
                                                 new Vector2D(
                                                         0,
-                                                        1.9 * object.get(PhysicsObject.class).getVelocity().getY()
+                                                        1.9 * object.get(PhysicsObject2D.class).getVelocity().getY()
                                                 )
                                         )
                         );
