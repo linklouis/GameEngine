@@ -1,6 +1,8 @@
 package gameengine.threed.prebuilt.objectmovement.collisions;
 
 import gameengine.skeletons.Modifier;
+import gameengine.threed.graphics.Texture;
+import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
@@ -10,7 +12,6 @@ import javafx.scene.paint.Color;
 
 public class SphereCollider extends Collider3D<SphereCollider> {
     private double radius;
-    private boolean lightSource = false;
 
     public SphereCollider() {
         super();
@@ -18,6 +19,11 @@ public class SphereCollider extends Collider3D<SphereCollider> {
 
     public SphereCollider(Modifier... modifiers) {
         super(modifiers);
+    }
+
+    @Override
+    public Vector3D surfaceNormal(Vector3D point) {
+        return point.subtract(getCenter()).unitVector();
     }
 
     @Override
@@ -31,22 +37,8 @@ public class SphereCollider extends Collider3D<SphereCollider> {
                                 "radius", Double.class,
                                 this::setRadius),
                         new ModifierInstantiateParameter<>(
-                                "color", Color.class,
-                                this::setColor)
-                ),
-                new ArgumentContext(
-//                        new ModifierInstantiateParameter<>(
-//                                "collisionHandler", CollisionHandler.class,
-//                                this::setHandler),
-                        new ModifierInstantiateParameter<>(
-                                "radius", Double.class,
-                                this::setRadius),
-                        new ModifierInstantiateParameter<>(
-                                "isLightSource", Boolean.class,
-                                this::setLightSource),
-                        new ModifierInstantiateParameter<>(
-                                "color", Color.class,
-                                this::setColor)
+                                "texture", Texture.class,
+                                this::setTexture)
                 )
         };
     }
@@ -114,13 +106,5 @@ public class SphereCollider extends Collider3D<SphereCollider> {
 
     public void setRadius(double radius) {
         this.radius = radius;
-    }
-
-    public boolean isLightSource() {
-        return lightSource;
-    }
-
-    public void setLightSource(boolean lightSource) {
-        this.lightSource = lightSource;
     }
 }

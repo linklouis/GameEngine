@@ -68,13 +68,13 @@ public class LightRay extends Vector3D {
 
     public Collider3D<?> firstCollision() {
         Collider3D<?>[] potentialColliders = potentialColliders();
-        Vector3D actualMoveSize = scalarMultiply(3);
-        if (actualMoveSize.magnitude() > 1) {
-            actualMoveSize = unitVector();
-        }
-        Vector3D checkMoveSize = scalarMultiply(0.1);
-//        Vector3D actualMoveSize = scalarMultiply(1);
-//        Vector3D checkMoveSize = scalarMultiply(1);
+//        Vector3D actualMoveSize = scalarMultiply(3);
+//        if (actualMoveSize.magnitude() > 1) {
+//            actualMoveSize = unitVector();
+//        }
+//        Vector3D checkMoveSize = scalarMultiply(0.1);
+        Vector3D actualMoveSize = scalarMultiply(1);
+        Vector3D checkMoveSize = scalarMultiply(1);
 
         while (position.subtract(start).magnitude() < maxDistance) {
             for (Collider3D<?> collider : potentialColliders) {
@@ -85,6 +85,9 @@ public class LightRay extends Vector3D {
                         position = position.add(checkMoveSize);
                         numMoves++;
                     }
+//                    if (numMoves >= 100) {
+//                        System.out.println("a");
+//                    }
                     position = position.subtract(checkMoveSize);
 //                    System.out.println("Ray collided" + collider + ", " + vectorFromColor(collider.getColor()));
                     return collider;
@@ -106,80 +109,25 @@ public class LightRay extends Vector3D {
         int bounces = 1;
         LightRay currentRay = new LightRay(start, this, this);
         while (bounces < numBounces + 1) {
-//            if (RayTracedCamera.numRendered > 80000) {
-//                System.out.println("A");
-//            }
             Collider3D<?> collision = currentRay.firstCollision();
             if (collision != null) {
                 color = color.add(vectorFromColor(
                         collision.getFromParent(Visual3D.class)
                                 .getAppearance().getColor())
                         .scalarDivide((double) bounces /2 + 0.5));
-//                        .scalarDivide(currentRay.distanceTraveled()));
-//                System.out.println(color);
-                if (collision instanceof SphereCollider) {
-                    if (((SphereCollider) collision).isLightSource()) {
-//                        if (/*bounces == 2 &&*/ !hitlight) {
-//                            System.out.println("Hit Light!");
-//                            hitlight = true;
-//                        }
+                if (collision.getTexture().isLightSource()) {
                         return colorFromVector(color);
-                    }
                 }
-//                Vector3D newDirection = currentRay.add(
-//                        currentRay.scalarMultiply(currentRayInDirection * -2)); // HELP Assume collision is a sphere, I want to rays to bounce off realistically.
-//                currentRay = new gameengine.threed.graphics.raytraceing.LightRay(currentRay.position.subtract(currentRay), newDirection, this);
-
-//                double currentRayInDirection = currentRay.dotProduct(collision.getCenter().subtract(currentRay.position));
-//
-//                // Calculate the incident vector
-//                Vector3D incident = collision.getCenter().subtract(currentRay.position);
-//
-//                // Calculate the surface normal at the collision point
-//                Vector3D surfaceNormal = incident.unitVector();
-//
-//                // Calculate the reflection vector
-//                Vector3D reflection = incident.subtract(surfaceNormal.scalarMultiply(2 * currentRayInDirection));
-                // Calculate the normal vector for the sphere collider
-                Vector3D surfaceNormal = currentRay.position.subtract(collision.getCenter()).unitVector();
-//
-//                Vector3D reflection;
-//                if(true){//Math.random() > 0.3) {
-                Vector3D reflection = Vector3D.random(0, 1);
-                if (reflection.dotProduct(surfaceNormal) < 0) {
-                    reflection = reflection.scalarMultiply(-1);
-                }
-                    //TODO shiny bounces
-//                } else {
-//                    double currentRayInDirection = currentRay.dotProduct(surfaceNormal);
-//                    Vector3D incident = currentRay.unitVector().scalarMultiply(-1);
-//
-//                    reflection = incident.subtract(surfaceNormal.scalarMultiply(2 * currentRayInDirection));
-//                    reflection = reflection.add(Vector3D.random(0, 0.8));
-//                    if (reflection.dotProduct(surfaceNormal) < 0) {
-//                        reflection = reflection.scalarMultiply(-1);
-//                    }
-//                }
 
                 // Create a new gameengine.threed.graphics.raytraceing.LightRay with the reflection direction
-                currentRay = new LightRay(currentRay.position, reflection, this);
-
-//                if (currentRay.dotProduct(currentRay.subtract(collision.getCenter())) < 0) {
-//                    currentRay = new gameengine.threed.graphics.raytraceing.LightRay(currentRay, reflection.scalarMultiply(-1), this);
-//                }
-//                if (bounces == 2) {
-//                    System.out.println(collision);//currentRay.dotProduct(currentRay.subtract(collision.getCenter())));
-//                }
+                currentRay = new LightRay(currentRay.position, collision.reflection(currentRay), currentRay);
             } else {
-//                if (bounces > 1) {
-//                    return Color.LAVENDER;
-//                }
                 return Color.BLACK;
             }
 
             bounces++;
         }
-        return Color.BLACK;//colorFromVector(color);
+        return Color.BLACK;
     }
 
     public static Vector3D vectorFromColor(Color color) {
@@ -228,4 +176,9 @@ public class LightRay extends Vector3D {
     public void setColor(Vector3D color) {
         this.color = color;
     }
+
+    public Vector3D getPosition() {
+        return position;
+    }
+
 }

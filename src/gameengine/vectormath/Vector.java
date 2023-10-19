@@ -64,7 +64,7 @@ public abstract class Vector<T extends Vector<T>> {
     public T scalarDivide(final double scalar) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
-            resultComponents[i] = this.getComponents()[i] / scalar;
+            resultComponents[i] = this.getComponent(i) / scalar;
         }
         return newVector(resultComponents);
     }
@@ -72,9 +72,49 @@ public abstract class Vector<T extends Vector<T>> {
     public T forEach(Function<Double, Double> function) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
-            resultComponents[i] = function.apply(this.getComponents()[i]);
+            resultComponents[i] = function.apply(this.getComponent(i));
         }
         return newVector(resultComponents);
+    }
+
+    public T max() {
+        int maxIndex = 0;
+        for (int i = 0; i < size(); i++) {
+            if (getComponent(i) > getComponent(maxIndex)) {
+                maxIndex = i;
+            }
+        }
+        double[] resultComponents = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            if (i == maxIndex) {
+                resultComponents[i] = getComponent(i);
+            } else {
+                resultComponents[i] = 0;
+            }
+        }
+        return newVector(resultComponents);
+    }
+
+    public T min() {
+        int minIndex = 0;
+        for (int i = 0; i < size(); i++) {
+            if (getComponent(i) < getComponent(minIndex)) {
+                minIndex = i;
+            }
+        }
+        double[] resultComponents = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            if (i == minIndex) {
+                resultComponents[i] = getComponent(i);
+            } else {
+                resultComponents[i] = 0;
+            }
+        }
+        return newVector(resultComponents);
+    }
+
+    public T abs() {
+        return forEach(Math::abs);
     }
 
     public T scalarDivide(final BigDecimal scalar) {

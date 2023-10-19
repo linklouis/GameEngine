@@ -1,6 +1,8 @@
 import gameengine.drivers.GameDriver3D;
+import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
+import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.threed.prebuilt.gameobjects.Sphere;
@@ -13,13 +15,14 @@ public class RayTracing extends GameDriver3D {
     private long avTime = 0;
     private int numToTest = 5;
     private RayTracedCamera mainCam;
+    private double reflectivity = 0;//.7;
 
 
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 0.3,
-                        10, 100, 10, true)),
+                        400, 400, 0.3,
+                        8, 100, 100, true)),
                 new PhysicsEngine3D());
     }
 
@@ -30,10 +33,13 @@ public class RayTracing extends GameDriver3D {
     @Override
     public void initialize() {
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        newObject(new Sphere(3, -1, -2, 2, Color.AQUA, false));
-        newObject(new Sphere(-1, 2, -3, 3, Color.GREEN, false));
 
-        newObject(new Sphere(0, 0, 100, 100, Color.BROWN, false));
+//        newObject(new Rectangle(3, -1, -2, new Vector3D(1,2, 3), new BaseTexture(Color.AZURE, false, reflectivity)));
+
+        newObject(new Sphere(3, -1, -2, 2, new BaseTexture(Color.AQUA, false, reflectivity)));
+        newObject(new Sphere(-1, 2, -3, 3, new BaseTexture(Color.GREEN, false, reflectivity)));
+        newObject(new Sphere(0, 0, 100, 100, new BaseTexture(Color.BROWN, false, reflectivity)));
+
 //        newObject(new Sphere(0, 205, 0, 100, Color.GRAY, true));
 //        newObject(new Sphere(0, -125, 0, 100, Color.DARKGRAY, true));
 
@@ -132,7 +138,7 @@ public class RayTracing extends GameDriver3D {
                     + mainCam.getMaxBounces() + "\t"
                     + avTime
             );
-            System.exit(0);
+//            System.exit(0);
         }
     }
 }
