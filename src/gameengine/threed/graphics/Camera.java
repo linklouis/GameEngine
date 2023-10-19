@@ -27,6 +27,7 @@ public abstract class Camera extends GameObject {
      */
     private double fieldOfViewDegrees;
     private boolean updateNeeded = true;
+    private List<PostProcess> postProcesses = new ArrayList<>();
 
     /*
      * Construction:
@@ -58,7 +59,7 @@ public abstract class Camera extends GameObject {
 
     public boolean update(Visual3D[] renderableObjects) {
         if (updateNeeded) {
-            renderImage(renderableObjects);
+            renderWithProcessing(renderableObjects);
             updateNeeded = false;
             return true;
         }
@@ -68,6 +69,11 @@ public abstract class Camera extends GameObject {
     public void displayOn(Pane root) {
         root.getChildren().clear();
         root.getChildren().setAll(new ImageView(image));
+    }
+
+    public void renderWithProcessing(Visual3D[] renderableObjects) {
+        renderImage(renderableObjects);
+        image = applyPostProcessing(image);
     }
 
     public abstract void renderImage(Visual3D[] renderableObjects);
@@ -88,6 +94,14 @@ public abstract class Camera extends GameObject {
 //        }
 
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), format, file);
+    }
+
+    public WritableImage applyPostProcessing(WritableImage image) {
+        WritableImage currentImage = image;
+        for (PostProcess process : postProcesses) {
+            currentImage = process.process(image);
+        }
+        return currentImage;
     }
 
     /*
@@ -144,5 +158,13 @@ public abstract class Camera extends GameObject {
 
     public double getHeight() {
         return getImage().getHeight();
+    }
+
+    public List<PostProcess> getPostProcesses() {
+        return postProcesses;
+    }
+
+    public void newPostProcess(PostProcess process) {
+        getPostProcesses().add(process);
     }
 }

@@ -126,11 +126,11 @@ public class Camera extends GameObject {
 
             for (int i = 0; i < raysPerPixel; i++) {
                 LightRay ray = new LightRay(truePixelLocation, truePixelLocation, 0.1, 30, 1, objects);
-                average = average.add(LightRay.vectorFromColor(ray.getColorFromBounces()));
+                average = average.add(new Vector3D(ray.getColorFromBounces()));
             }
 
             average = average.scalarDivide(raysPerPixel);
-            Color pixelColor = LightRay.colorFromVector(average);
+            Color pixelColor = average.toColor();
             gc.setFill(pixelColor);
             gc.setStroke(pixelColor);
             gc.fillRect(x * scale, y * scale, 1, 1);
@@ -185,11 +185,11 @@ public class Camera extends GameObject {
 
             for (int i = 0; i < raysPerPixel; i++) {
                 LightRay ray = new LightRay(getLocation(), pixelDirectionFromCam, 0.1, 100, 5, objects);
-                average = average.add(LightRay.vectorFromColor(ray.getColorFromBounces()));
+                average = average.add(new Vector3D(ray.getColorFromBounces()));
             }
 
             average = average.scalarDivide(raysPerPixel);
-            Color pixelColor = LightRay.colorFromVector(average);
+            Color pixelColor = average.toColor();
             Platform.runLater(() -> {
                 gc.setFill(pixelColor);
 //                gc.setStroke(pixelColor);

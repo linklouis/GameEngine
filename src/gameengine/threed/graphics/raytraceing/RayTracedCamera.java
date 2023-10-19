@@ -7,7 +7,6 @@ import gameengine.vectormath.Vector3D;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -168,11 +167,11 @@ public class RayTracedCamera extends Camera {
         for (int i = 0; i < raysPerPixel; i++) {
             LightRay ray = new LightRay(
                     getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
-            average = average.add(LightRay.vectorFromColor(ray.getColorFromBounces()));
+            average = average.add(new Vector3D(ray.getColorFromBounces()));
         }
         average = average.scalarDivide(raysPerPixel);
 
-        Color pixelColor = LightRay.colorFromVector(average);
+        Color pixelColor = average.toColor();
         image.getPixelWriter().setColor(x, y, pixelColor);
 //        if (numRendered < getWidth() * getHeight()) {
 //            if (numRendered % 1 == 0) {

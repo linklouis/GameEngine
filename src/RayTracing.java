@@ -2,6 +2,7 @@ import gameengine.drivers.GameDriver3D;
 import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
+import gameengine.threed.prebuilt.Smooth;
 import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
@@ -15,13 +16,13 @@ public class RayTracing extends GameDriver3D {
     private long avTime = 0;
     private int numToTest = 5;
     private RayTracedCamera mainCam;
-    private double reflectivity = 0;//.7;
+    private double reflectivity = 0.7;
 
 
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        400, 400, 0.3,
+                        800, 800, 0.01,
                         8, 100, 100, true)),
                 new PhysicsEngine3D());
     }
@@ -33,8 +34,9 @@ public class RayTracing extends GameDriver3D {
     @Override
     public void initialize() {
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
+//        mainCam.newPostProcess(new Smooth(0.3));
 
-//        newObject(new Rectangle(3, -1, -2, new Vector3D(1,2, 3), new BaseTexture(Color.AZURE, false, reflectivity)));
+        newObject(new Rectangle(0, -1, -2, new Vector3D(1,1, 1), new BaseTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2, new BaseTexture(Color.AQUA, false, reflectivity)));
         newObject(new Sphere(-1, 2, -3, 3, new BaseTexture(Color.GREEN, false, reflectivity)));

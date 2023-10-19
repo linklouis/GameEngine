@@ -31,7 +31,7 @@ public abstract class Vector<T extends Vector<T>> {
     public T add(final T other) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
-            resultComponents[i] = this.getComponents()[i] + other.getComponents()[i];
+            resultComponents[i] = this.getComponent(i) + other.getComponent(i);
         }
         return newVector(resultComponents);
     }
@@ -39,34 +39,72 @@ public abstract class Vector<T extends Vector<T>> {
     public T subtract(final T other) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
-            resultComponents[i] = this.getComponents()[i] - other.getComponents()[i];
+            resultComponents[i] = this.getComponent(i) - other.getComponent(i);
         }
         return newVector(resultComponents);
     }
 
     public T scalarMultiply(final double scalar) {
-        double[] resultComponents = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            resultComponents[i] = this.getComponents()[i] * scalar;
-        }
-        return newVector(resultComponents);
+//        double[] resultComponents = new double[size()];
+//        for (int i = 0; i < size(); i++) {
+//            resultComponents[i] = this.getComponent(i) * scalar;
+//        }
+//        return newVector(resultComponents);
+        return forEach(component -> component * scalar);
     }
 
     public T scalarMultiply(final BigDecimal scalar) {
-        double[] resultComponents = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            resultComponents[i] = scalar.multiply(BigDecimal.valueOf(this.getComponents()[i])).doubleValue();
-        }
-        return newVector(resultComponents);
+//        double[] resultComponents = new double[size()];
+//        for (int i = 0; i < size(); i++) {
+//            resultComponents[i] = scalar.multiply(BigDecimal.valueOf(this.getComponent(i))).doubleValue();
+//        }
+//        return newVector(resultComponents);
+        return forEach(component -> scalar.multiply(BigDecimal.valueOf(component)).doubleValue());
     }
 
 
     public T scalarDivide(final double scalar) {
-        double[] resultComponents = new double[size()];
+//        double[] resultComponents = new double[size()];
+//        for (int i = 0; i < size(); i++) {
+//            resultComponents[i] = this.getComponent(i) / scalar;
+//        }
+//        return newVector(resultComponents);
+        return forEach(component -> component / scalar);
+    }
+
+    public T scalarDivide(final BigDecimal scalar) {
+//        double[] resultComponents = new double[size()];
+//        for (int i = 0; i < size(); i++) {
+//            resultComponents[i] = BigDecimal.valueOf(this.getComponent(i)).divide(scalar, RoundingMode.HALF_DOWN).doubleValue();
+//        }
+//        return newVector(resultComponents);
+        return forEach(component -> scalar.divide(BigDecimal.valueOf(component), RoundingMode.HALF_DOWN).doubleValue());
+    }
+
+    public double dotProduct(final T other) {
+        double result = 0;
         for (int i = 0; i < size(); i++) {
-            resultComponents[i] = this.getComponent(i) / scalar;
+            result += this.getComponent(i) * other.getComponent(i);
         }
-        return newVector(resultComponents);
+        return result;
+    }
+
+    public double magnitude() {
+        double sum = 0;
+        for (double component : getComponents()) {
+            sum += component * component;
+        }
+        return Math.sqrt(sum);
+    }
+
+    public T unitVector() {
+//        double[] newComponents = new double[size()];
+        double magnitude = magnitude();
+//        for (int i = 0; i < size(); i++) {
+//            newComponents[i] = getComponent(i) / magnitude;
+//        }
+//        return newVector(newComponents);
+        return forEach(component -> component / magnitude);
     }
 
     public T forEach(Function<Double, Double> function) {
@@ -115,39 +153,6 @@ public abstract class Vector<T extends Vector<T>> {
 
     public T abs() {
         return forEach(Math::abs);
-    }
-
-    public T scalarDivide(final BigDecimal scalar) {
-        double[] resultComponents = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            resultComponents[i] = BigDecimal.valueOf(this.getComponents()[i]).divide(scalar, RoundingMode.HALF_DOWN).doubleValue();
-        }
-        return newVector(resultComponents);
-    }
-
-    public double dotProduct(final T other) {
-        double result = 0;
-        for (int i = 0; i < size(); i++) {
-            result += this.getComponents()[i] * other.getComponents()[i];
-        }
-        return result;
-    }
-
-    public double magnitude() {
-        double sum = 0;
-        for (double component : getComponents()) {
-            sum += component * component;
-        }
-        return Math.sqrt(sum);
-    }
-
-    public T unitVector() {
-        double[] newComponents = new double[size()];
-        double magnitude = magnitude();
-        for (int i = 0; i < size(); i++) {
-            newComponents[i] = getComponent(i) / magnitude;
-        }
-        return newVector(newComponents);
     }
 
     public static <VectorType extends Vector<VectorType>> VectorType sum(VectorType empty, VectorType... vectors) {

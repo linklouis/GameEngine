@@ -2,11 +2,8 @@ package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
-import gameengine.threed.prebuilt.objectmovement.collisions.SphereCollider;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
-
-import java.util.Random;
 
 public class LightRay extends Vector3D {
     private final Vector3D start;
@@ -111,12 +108,12 @@ public class LightRay extends Vector3D {
         while (bounces < numBounces + 1) {
             Collider3D<?> collision = currentRay.firstCollision();
             if (collision != null) {
-                color = color.add(vectorFromColor(
+                color = color.add(new Vector3D(
                         collision.getFromParent(Visual3D.class)
                                 .getAppearance().getColor())
                         .scalarDivide((double) bounces /2 + 0.5));
                 if (collision.getTexture().isLightSource()) {
-                        return colorFromVector(color);
+                        return color.toColor();
                 }
 
                 // Create a new gameengine.threed.graphics.raytraceing.LightRay with the reflection direction
@@ -130,19 +127,7 @@ public class LightRay extends Vector3D {
         return Color.BLACK;
     }
 
-    public static Vector3D vectorFromColor(Color color) {
-        return new Vector3D(color.getRed(), color.getGreen(), color.getBlue());
-    }
-
-    public static Color colorFromVector(Vector3D colorVector) {
-        return new Color(
-                clamp(colorVector.getX(), 0, 1),
-                clamp(colorVector.getY(), 0, 1),
-                clamp(colorVector.getZ(), 0, 1),
-                1);
-    }
-
-    private static double clamp(double num, double min, double max) {
+    public static double clamp(double num, double min, double max) {
         return Math.min(max, Math.max(min, num));
     }
 
@@ -170,7 +155,7 @@ public class LightRay extends Vector3D {
      */
 
     public Color getColor() {
-        return colorFromVector(color);
+        return color.toColor();
     }
 
     public void setColor(Vector3D color) {
