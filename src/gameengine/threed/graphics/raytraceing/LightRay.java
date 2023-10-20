@@ -296,23 +296,73 @@ public class LightRay extends Vector3D {
     public Collider3D<?> firstCollision() {
         SinglyLinkedList<Collider3D<?>> inRangeOf = new SinglyLinkedList<>();
 
-        while (position.subtract(start).magnitude() < maxDistance) {
-            SinglyLinkedList<Collider3D<?>>.Element element = objectsInFieldList.getPointer();
-            while (element.hasNext()) {
-                Collider3D<?> collider = element.getNext().getValue();
-                if (collider.inRange(position)) {
-                    inRangeOf.add(collider);
-                    element.removeNext();
-                } else {
-                    element = element.getNext();
+//        Collider3D<?> closest = objectsInFieldList.getPointer().getNext().getValue();
+        double closestDist = Double.MAX_VALUE;
+//                objectsInFieldList.getHead().getValue()
+//                .distanceToEnterRange(start, this);
+        SinglyLinkedList<Collider3D<?>>.Element element = objectsInFieldList.getPointer();
+        while (element.hasNext()) {
+            element = element.getNext();
+            Collider3D<?> collider = element.getValue();
+//            System.out.println(collider);
+            double newDistance = collider.distanceToEnterRange(start, this);
+            if (newDistance >= 0) {
+                inRangeOf.add(collider);
+                if (newDistance < closestDist) {
+//                    closest = collider;
+                    closestDist = newDistance;
                 }
             }
+        }
 
-            Collider3D<?> collision = updateCollisions(inRangeOf);
+        if (closestDist < 0){
+            return null;
+        }
+        position = position.add(unitVector().scalarMultiply(closestDist));
+        return getCollision(inRangeOf);
 
-            if (collision != null) {
-                return collision;
+
+
+//        while (position.subtract(start).magnitude() < maxDistance) {
+//            SinglyLinkedList<Collider3D<?>>.Element element = objectsInFieldList.getPointer();
+//            while (element.hasNext()) {
+//                Collider3D<?> collider = element.getNext().getValue();
+//                if (collider.inRange(position)) {
+//                    inRangeOf.add(collider);
+//                    element.removeNext();
+//                } else {
+//                    element = element.getNext();
+//                }
+//            }
+//
+//            Collider3D<?> collision = updateCollisions(inRangeOf);
+//
+//            if (collision != null) {
+//                return collision;
+//            }
+//        }
+//
+//        return null;
+    }
+
+    private Collider3D<?> getCollision(SinglyLinkedList<Collider3D<?>> colliders) {
+        double distanceMoved = 0;
+        double moveDistance = checkMove.magnitude();
+        while (distanceMoved < maxDistance) {
+            SinglyLinkedList<Collider3D<?>>.Element element = colliders.getPointer();
+            while (element.hasNext()) {
+                Collider3D<?> collider = element.getNext().getValue();
+                if (collider.contains(position)) {
+                    while (collider.contains(position)) {
+                        position = position.subtract(checkMove);
+                    }
+                    return collider;
+                }
+                element = element.getNext();
             }
+
+            position = position.add(checkMove);
+            distanceMoved += moveDistance;
         }
 
         return null;
