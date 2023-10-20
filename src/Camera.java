@@ -107,7 +107,7 @@ public class Camera extends GameObject {
         }
 
         private void paintPixelAtUnthreaded(double x, double y, GraphicsContext gc, Collider3D<?>[] objects) {
-            Vector3D average = Vector3D.empty();
+            Vector3D average = new Vector3D(0);
             Vector3D localPixelLocation = new Vector3D(
                     x - gameDriver2D.getGraphicsDriver().WIDTH / (2.0 * scale),
                     y - gameDriver2D.getGraphicsDriver().HEIGHT / (2.0 * scale),
@@ -160,7 +160,7 @@ public class Camera extends GameObject {
         }
 
         private void paintPixelAtThreaded(double x, double y, GraphicsContext gc, Collider3D<?>[] objects) {
-            Vector3D average = Vector3D.empty();
+            Vector3D average = new Vector3D(0);
             double scaleFactor = 500;
             Vector3D localPixelLocation = new Vector3D(
                     x - gameDriver2D.getGraphicsDriver().WIDTH / (2.0 * scale),

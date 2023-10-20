@@ -16,14 +16,14 @@ public class RayTracing extends GameDriver3D {
     private long avTime = 0;
     private int numToTest = 5;
     private RayTracedCamera mainCam;
-    private double reflectivity = 0.7;
+    private double reflectivity = 0.3;
 
 
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        800, 800, 0.01,
-                        8, 100, 100, true)),
+                        300, 300, 0.2,
+                        30, 100, 100, true)),
                 new PhysicsEngine3D());
     }
 
@@ -67,11 +67,11 @@ public class RayTracing extends GameDriver3D {
         } else if (renders < numToTest + 1) {
             System.out.println(
                     "\nBenchmark Complete."
-                            + "\nsize: " + getGraphicsDriver().getWidth()
+                            + "\nSize: " + mainCam.getWidth()
                             + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
                             + "\nTotal rays: " + (
-                            getGraphicsDriver().getWidth()
-                                    * getGraphicsDriver().getHeight()
+                            mainCam.getWidth()
+                                    * mainCam.getHeight()
                                     * mainCam.getRaysPerPixel())
                             + "\nMarch distance: " + mainCam.getMarchDistance()
                             + "\nMax distance: " + mainCam.getMaxDistance()
@@ -79,10 +79,10 @@ public class RayTracing extends GameDriver3D {
                             + "\nAverage render time: " + avTime
             );
             System.out.println(
-                    getGraphicsDriver().getWidth() + "\t"
+                    mainCam.getWidth() + "\t"
                             + mainCam.getRaysPerPixel() + "\t"
-                            + (getGraphicsDriver().getWidth()
-                            * getGraphicsDriver().getHeight()
+                            + (mainCam.getWidth()
+                            * mainCam.getHeight()
                             * mainCam.getRaysPerPixel()) + "\t"
                             + mainCam.getMarchDistance() + "\t"
                             + mainCam.getMaxDistance() + "\t"
@@ -118,11 +118,11 @@ public class RayTracing extends GameDriver3D {
         } else if (renders < numToTest + 1) {
             System.out.println(
                     "\nBenchmark Complete."
-                    + "\nsize: " + getGraphicsDriver().getWidth()
+                    + "\nSize: " + mainCam.getWidth()
                     + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
                     + "\nTotal rays: " + (
-                        getGraphicsDriver().getWidth()
-                        * getGraphicsDriver().getHeight()
+                            mainCam.getWidth()
+                        * mainCam.getHeight()
                         * mainCam.getRaysPerPixel())
                     + "\nMarch distance: " + mainCam.getMarchDistance()
                     + "\nMax distance: " + mainCam.getMaxDistance()
@@ -130,17 +130,17 @@ public class RayTracing extends GameDriver3D {
                     + "\nAverage render time: " + avTime
             );
             System.out.println(
-                    getGraphicsDriver().getWidth() + "\t"
+                    mainCam.getWidth() + "\t"
                     + mainCam.getRaysPerPixel() + "\t"
-                    + (getGraphicsDriver().getWidth()
-                            * getGraphicsDriver().getHeight()
+                    + (mainCam.getWidth()
+                            * mainCam.getHeight()
                             * mainCam.getRaysPerPixel()) + "\t"
                     + mainCam.getMarchDistance() + "\t"
                     + mainCam.getMaxDistance() + "\t"
                     + mainCam.getMaxBounces() + "\t"
                     + avTime
             );
-//            System.exit(0);
+            System.exit(0);
         }
     }
 }

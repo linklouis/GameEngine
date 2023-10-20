@@ -3,6 +3,7 @@ package gameengine.threed.prebuilt.objectmovement.collisions;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
+import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.twod.prebuilt.objectmovement.collisions.CollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.collisions.PhysicsCollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
@@ -18,6 +19,7 @@ import java.util.List;
 public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>>  extends GraphicsObject3D {
     //TODO extends Collider2D & make Collider2D class
     private CollisionHandler<?> handler = null; // TODO make a CollisionHandler interface and just pass in the handler type + have collection of default handlers?
+    private double range;
 
 
     /*
@@ -50,7 +52,10 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
                                 this::setHandler),
                         new ModifierInstantiateParameter<>(
                                 "color", Color.class,
-                                this::setColor)
+                                this::setColor),
+                        new ModifierInstantiateParameter<>(
+                                "range", Double.class,
+                                this::setRange)
                 )
         };
     }
@@ -158,5 +163,25 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
         if (getHandler() != null) {
             this.handler = handler;
         }
+    }
+
+    public double getRange() {
+        return range;
+    }
+
+    public void setRange(double range) {
+        this.range = range;
+    }
+
+    public boolean inRange(Vector3D position) {
+        return getCenter()
+                .subtract(position)
+                .magnitude() <= getRange();
+    }
+
+    public boolean inRange(Vector3D position, double offset) {
+        return getCenter()
+                .subtract(position)
+                .magnitude() <= getRange() + offset;
     }
 }

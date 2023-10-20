@@ -3,12 +3,28 @@ package gameengine.vectormath;
 import java.awt.geom.Point2D;
 
 public class Vector2D extends Vector<Vector2D> {
+    // TODO implement new Vector format
     private static final int SIZE = 2;
     public Vector2D(final double x, final double y) {
         super(x, y);
     }
     public Vector2D(final double[] components) {
         super(components);
+    }
+
+    @Override
+    public double[] getComponents() {
+        return new double[0];
+    }
+
+    @Override
+    public double getComponent(int index) {
+        return 0;
+    }
+
+    @Override
+    protected void setComponent(int component, double newValue) {
+
     }
 
     public Vector2D add(final Point2D other) {

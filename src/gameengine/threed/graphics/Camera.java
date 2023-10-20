@@ -59,6 +59,7 @@ public abstract class Camera extends GameObject {
 
     public boolean update(Visual3D[] renderableObjects) {
         if (updateNeeded) {
+//            renderImage(renderableObjects);
             renderWithProcessing(renderableObjects);
             updateNeeded = false;
             return true;
@@ -72,11 +73,10 @@ public abstract class Camera extends GameObject {
     }
 
     public void renderWithProcessing(Visual3D[] renderableObjects) {
-        renderImage(renderableObjects);
-        image = applyPostProcessing(image);
+        image = applyPostProcessing(renderImage(renderableObjects));
     }
 
-    public abstract void renderImage(Visual3D[] renderableObjects);
+    public abstract WritableImage renderImage(Visual3D[] renderableObjects);
 
     public void requestUpdate() {
         updateNeeded = true;

@@ -10,18 +10,22 @@ public class LightRay extends Vector3D {
     private Vector3D position;
     private final double maxDistance;
     private final int numBounces;
-    private Vector3D color = Vector3D.empty();
+    private Vector3D color = new Vector3D(0);
 
-    private static boolean hitlight = false;
+//    private final Collider3D[] objectsInField;
+    private final SinglyLinkedList<Collider3D<?>> objectsInFieldList;
+    private final SinglyLinkedList<Collider3D<?>> objectsInFieldParent;
 
-    private final Collider3D[] objectsInField;
+    private Vector3D actualMove;
+//    private double actualMoveSize;
+    private Vector3D checkMove;
 
     /*
      * Construction:
      */
 
     public LightRay(Vector3D start, double x, double y, double z, double marchDistance,
-                    double maxDistance, int numBounces, Collider3D[] objectsInField) {
+                    double maxDistance, int numBounces, Collider3D<?>[] objectsInField) {
         super(new Vector3D(x, y, z)
                 .unitVector()
                 .scalarMultiply(marchDistance)
@@ -30,11 +34,14 @@ public class LightRay extends Vector3D {
         position = start;
         this.maxDistance = maxDistance;
         this.numBounces = numBounces;
-        this.objectsInField = objectsInField;
+//        this.objectsInField = objectsInField;
+        this.objectsInFieldList = new SinglyLinkedList<>(objectsInField);
+        this.objectsInFieldParent = new SinglyLinkedList<>(objectsInField);
+        init();
     }
 
     public LightRay(Vector3D start, Vector3D vector, double marchDistance,
-                    double maxDistance, int numBounces, Collider3D[] objectsInField) {
+                    double maxDistance, int numBounces, Collider3D<?>[] objectsInField) {
         super(vector
                 .unitVector()
                 .scalarMultiply(marchDistance)
@@ -43,19 +50,37 @@ public class LightRay extends Vector3D {
         position = start;
         this.maxDistance = maxDistance;
         this.numBounces = numBounces;
-        this.objectsInField = objectsInField;
+//        this.objectsInField = objectsInField;
+        this.objectsInFieldList = new SinglyLinkedList<>(objectsInField);
+        this.objectsInFieldParent = new SinglyLinkedList<>(objectsInField);
+        init();
     }
 
-    public LightRay(Vector3D start, Vector3D direction, LightRay ray) {
+    public LightRay(Vector3D direction, LightRay ray, SinglyLinkedList<Collider3D<?>> objectsInFieldList) {
         super(direction
                 .unitVector()
                 .scalarMultiply(ray.magnitude())
                 .getComponents());
-        this.start = start;
+        this.start = ray.position;
         position = start;
         this.maxDistance = ray.maxDistance;
         this.numBounces = ray.numBounces;
-        this.objectsInField = ray.objectsInField;
+//        this.objectsInField = new Collider3D[0];//ray.objectsInField;
+        this.objectsInFieldList = objectsInFieldList;
+        objectsInFieldParent = null;
+        init();
+    }
+
+    private void init() {
+        actualMove = scalarMultiply(3);
+//        actualMoveSize = actualMove.magnitude();
+        if (/*actualMoveSize*/actualMove.magnitude() > 0.5) {
+            actualMove = unitVector().scalarDivide(2);
+        }
+        checkMove = scalarMultiply(0.1);
+//        actualMove = scalarMultiply(1);
+//        checkMove = scalarMultiply(1);
+//        actualMoveSize = actualMove.magnitude();
     }
 
 
@@ -63,90 +88,263 @@ public class LightRay extends Vector3D {
      * Functionality:
      */
 
-    public Collider3D<?> firstCollision() {
-        Collider3D<?>[] potentialColliders = potentialColliders();
-//        Vector3D actualMoveSize = scalarMultiply(3);
-//        if (actualMoveSize.magnitude() > 1) {
-//            actualMoveSize = unitVector();
-//        }
-//        Vector3D checkMoveSize = scalarMultiply(0.1);
-        Vector3D actualMoveSize = scalarMultiply(1);
-        Vector3D checkMoveSize = scalarMultiply(1);
-
-        while (position.subtract(start).magnitude() < maxDistance) {
-            for (Collider3D<?> collider : potentialColliders) {
-                if (collider.contains(position)) {
-                    position = position.subtract(actualMoveSize);
-                    int numMoves = 0;
-                    while(!collider.contains(position) && numMoves < 100) {
-                        position = position.add(checkMoveSize);
-                        numMoves++;
-                    }
-//                    if (numMoves >= 100) {
-//                        System.out.println("a");
+//    public Collider3D<?> firstCollision(Collider3D<?> previousCollider) {
+//        Collider3D<?>[] potentialColliders = potentialColliders();
+//
+//        while (position.subtract(start).magnitude() < maxDistance) {
+//            for (Collider3D<?> collider : potentialColliders) {
+//                if (collider.inRange(position)) {
+//                    if (distanceTraveled() > collider.getRange()) {
+//                        while (collider.inRange(position)) {
+//                            position = position.subtract(checkMove);
+//                        }
+//                        position = position.add(checkMove);
 //                    }
-                    position = position.subtract(checkMoveSize);
-//                    System.out.println("Ray collided" + collider + ", " + vectorFromColor(collider.getColor()));
-                    return collider;
-                }
-            }
+//                    while(collider.inRange(position)) {
+//                        position = position.add(checkMove);
+//
+//                        if (collider.contains(position)) {
+////                            int numMoves = 0;
+////                            while (!collider.contains(position) && numMoves < 100) {
+////                                position = position.add(checkMove);
+////                                numMoves++;
+////                            }
+////                            if (numMoves >= 100) {
+////                                System.out.println("a");
+////                            }
+//                            position = position.subtract(checkMove);
+//                            return collider;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            position = position.add(actualMove);
+//        }
+//
+//        return null;
+//    }
 
-            position = position.add(actualMoveSize);
-        }
+//    public Collider3D<?> firstCollision(Collider3D<?> previousCollider) {
+//        Collider3D<?>[] potentialColliders = potentialColliders();
+//
+//        while (position.subtract(start).magnitude() < maxDistance) {
+//            for (Collider3D<?> collider : potentialColliders) {
+//                if (collider.inRange(position)) {
+//                    if (collider != previousCollider) {
+//                        escapeRange(collider);
+//                    }
+//                    while (collider.inRange(position)) {
+//                        for (Collider3D<?> colliderA : potentialColliders) {
+//                            if (colliderA.contains(position)) {
+//                                while(collider.contains(position)) {
+//                                    position = position.subtract(checkMove.scalarDivide(2));
+//                                }
+//                                position = position.add(checkMove.scalarDivide(2));
+//                                return colliderA;
+//                            }
+//                        }
+//
+//                        position = position.add(checkMove);
+//                    }
+//                }
+//            }
+//
+//            position = position.add(actualMove);
+//        }
+//
+//        return null;
+//    }
 
-//        System.out.println("did not hit");
-        return null;
-    }
+//    public Collider3D<?> firstCollision1(Collider3D<?> previousCollider) {
+//        List<Collider3D<?>> potentialColliders = new ArrayList(List.of(objectsInField));
+//        SinglyLinkedList<Collider3D<?>> inRangeOf = new SinglyLinkedList<>();
+//
+//        if (previousCollider != null) {
+//            inRangeOf.add(previousCollider);
+//            potentialColliders.remove(previousCollider);
+//        }
+//
+//        while (position.subtract(start).magnitude() < maxDistance) {
+//            potentialColliders.removeIf(collider -> {
+//                if (collider.inRange(position)) {
+//                    inRangeOf.add(collider);
+//                    return true;
+//                }
+//                return false;
+//            });
+//
+////            Iterator<Collider3D<?>> iter = potentialColliders.iterator();
+////            while (iter.hasNext()) {
+////                Collider3D<?> collider = iter.next();
+////                if (collider.inRange(position)) {
+////                    inRangeOf.add(collider);
+////                    iter.remove();
+////                }
+////            }
+//
+//            Collider3D<?> collision = updateCollisions(inRangeOf);
+//
+//            if (collision != null) {
+//                return collision;
+//            }
+//        }
+//
+//        return null;
+//    }
 
-    private double distanceTraveled() {
-        return Math.abs(position.subtract(start).magnitude());
-    }
+    //    private void escapeRange(Collider3D<?> collider) {
+//        while (collider.inRange(position)) {
+//            position = position.subtract(checkMove);
+//        }
+//        position = position.add(checkMove);
+//    }
+//
+//    private double distanceTraveled() {
+//        return Math.abs(position.subtract(start).magnitude());
+//    }
+
+//    public Color getColorFromBounces() {
+//        Collider3D<?> collision = firstCollision();
+//
+//        if (collision == null) {
+//            return Color.BLACK;
+//        }
+//        if (collision.getTexture().isLightSource()) {
+//            return collision.getFromParent(Visual3D.class)
+//                    .getAppearance().getColor();
+//        }
+//        color = color.add(new Vector3D(
+//                collision.getFromParent(Visual3D.class)
+//                        .getAppearance()
+//                        .getColor()));
+//
+//        LightRay currentRay = new LightRay(collision.reflection(this), this, objectsInFieldParent);
+//        double bounces = 2;
+//
+//        while (bounces < numBounces + 1) {
+//            collision = currentRay.firstCollision();
+//
+//            if (collision == null) {
+//                return Color.BLACK;
+//            }
+//
+//            color = color.add(
+//                    new Vector3D(collision.getFromParent(Visual3D.class)
+//                            .getAppearance().getColor())
+//                            .scalarDivide(bounces / 2 + 0.5));
+//
+//            if (collision.getTexture().isLightSource()) {
+//                return color.toColor();
+//            }
+//
+//            // Create a new LightRay with the reflection direction
+//            currentRay = new LightRay(collision.reflection(currentRay), currentRay, objectsInFieldParent);
+//
+//            bounces++;
+//        }
+//
+//        return Color.BLACK;
+//    }
 
     public Color getColorFromBounces() {
-        int bounces = 1;
-        LightRay currentRay = new LightRay(start, this, this);
-        while (bounces < numBounces + 1) {
-            Collider3D<?> collision = currentRay.firstCollision();
-            if (collision != null) {
-                color = color.add(new Vector3D(
-                        collision.getFromParent(Visual3D.class)
-                                .getAppearance().getColor())
-                        .scalarDivide((double) bounces /2 + 0.5));
-                if (collision.getTexture().isLightSource()) {
-                        return color.toColor();
-                }
+        Collider3D<?> collision = firstCollision();
 
-                // Create a new gameengine.threed.graphics.raytraceing.LightRay with the reflection direction
-                currentRay = new LightRay(currentRay.position, collision.reflection(currentRay), currentRay);
-            } else {
+        if (collision == null) {
+            return Color.BLACK;
+        }
+        if (collision.getTexture().isLightSource()) {
+            return collision.getFromParent(Visual3D.class)
+                    .getAppearance().getColor();
+        }
+        color = color.add(new Vector3D(
+                collision.getFromParent(Visual3D.class)
+                        .getAppearance()
+                        .getColor()));
+
+        LightRay currentRay = new LightRay(collision.reflection(this), this, objectsInFieldParent);
+        double bounces = 2;
+
+        while (bounces <= numBounces) {
+            // First collision always the same, so just save it?
+            collision = currentRay.firstCollision();
+
+            if (collision == null) {
                 return Color.BLACK;
             }
 
+            color = color.add(
+                    new Vector3D(collision.getFromParent(Visual3D.class)
+                            .getAppearance().getColor())
+                            .scalarDivide(bounces / 2 + 0.5)
+                            /*.scalarDivide(
+                                    collision.getTexture().getReflectivity())*/);
+
+            if (collision.getTexture().isLightSource()) {
+                return color.toColor();
+            }
+
+            // Create a new LightRay with the reflection direction
+            currentRay = new LightRay(collision.reflection(currentRay), currentRay, objectsInFieldParent);
+
             bounces++;
         }
+
         return Color.BLACK;
+    }
+
+    public Collider3D<?> firstCollision() {
+        SinglyLinkedList<Collider3D<?>> inRangeOf = new SinglyLinkedList<>();
+
+        while (position.subtract(start).magnitude() < maxDistance) {
+            SinglyLinkedList<Collider3D<?>>.Element element = objectsInFieldList.getPointer();
+            while (element.hasNext()) {
+                Collider3D<?> collider = element.getNext().getValue();
+                if (collider.inRange(position)) {
+                    inRangeOf.add(collider);
+                    element.removeNext();
+                } else {
+                    element = element.getNext();
+                }
+            }
+
+            Collider3D<?> collision = updateCollisions(inRangeOf);
+
+            if (collision != null) {
+                return collision;
+            }
+        }
+
+        return null;
+    }
+
+    private Collider3D<?> updateCollisions(SinglyLinkedList<Collider3D<?>> colliders) {
+        if (colliders.isEmpty()) {
+            position = position.add(actualMove);
+        } else {
+            SinglyLinkedList<Collider3D<?>>.Element element = colliders.getPointer();
+            while (element.hasNext()) {
+                Collider3D<?> collider = element.getNext().getValue();
+                if (collider.inRange(position)) {
+                    if (collider.contains(position)) {
+                        while(collider.contains(position)) {
+                            position = position.subtract(checkMove);
+                        }
+                        return collider;
+                    }
+                    element = element.getNext();
+                } else {
+                    element.removeNext();
+                }
+            }
+            position = position.add(checkMove);
+        }
+
+        return null;
     }
 
     public static double clamp(double num, double min, double max) {
         return Math.min(max, Math.max(min, num));
-    }
-
-    private Collider3D<?>[] potentialColliders() {
-//        System.out.println(Arrays.stream(objectsInField)
-//                .filter(gameObject ->
-//                        gameObject.containsModifier(Collider3D.class))
-//                .map(gameObject -> gameObject.get(Collider3D.class)));
-//        return Arrays.stream(objectsInField)
-//                .filter(gameObject ->
-//                        gameObject.containsModifier(Collider3D.class))
-////                .filter(gameObject ->
-////                        this.dotProduct(
-////                                gameObject.get(InPlane3D.class).getLocation()
-////                                        .subtract(start)
-////                        ) > 0)
-//                .map(gameObject -> gameObject.get(Collider3D.class))
-//                .toArray(Collider3D<?>[]::new);
-        return objectsInField;
     }
 
 

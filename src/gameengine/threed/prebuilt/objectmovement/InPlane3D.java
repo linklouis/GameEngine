@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InPlane3D extends Modifier {
-    private Vector3D location = Vector3D.empty();
+    private Vector3D location = new Vector3D(0);
 
     public InPlane3D() {
         super();

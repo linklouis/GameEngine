@@ -132,5 +132,6 @@ public class RectCollider extends Collider3D<RectCollider> {
 
     public void setSpace(Vector3D space) {
         this.space = space;
+        setRange(Math.abs(space.magnitude()));
     }
 }

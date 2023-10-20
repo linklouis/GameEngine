@@ -7,31 +7,76 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Vector3D extends Vector<Vector3D> {
     private static final int SIZE = 3;
+    private double x;
+    private double y;
+    private double z;
 
 
     /*
      * Construction:
      */
 
+    public Vector3D(double value) {
+        this.x = value;
+        this.y = value;
+        this.z = value;
+    }
+
     public Vector3D(final double x, final double y, final double z) {
-        super(x, y, z);
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public Vector3D(final double[] components) {
-        super(components);
+        this.x = components[0];
+        this.y = components[1];
+        this.z = components[2];
     }
 
     public Vector3D(final Color color) {
-        super(color.getRed(), color.getGreen(), color.getBlue());
+        this.x = color.getRed();
+        this.y = color.getGreen();
+        this.z = color.getBlue();
+    }
+
+    public Vector3D(final Vector3D vector) {
+        this.x = vector.getX();
+        this.y = vector.getY();
+        this.z = vector.getZ();
     }
 
 
     /*
      * Functionality:
      */
+
+    public interface VectorOperation {
+        void doOperation(Vector3D vector1, Vector3D vector2);
+    }
+
+    public static VectorOperation add =
+            (Vector3D vector1, Vector3D vector2) -> {
+        vector1.setX(vector1.getX() + vector2.getX());
+        vector1.setY(vector1.getY() + vector2.getY());
+        vector1.setZ(vector1.getZ() + vector2.getZ());
+    };
+
+
+
+    public Vector3D doWhile(Vector3D vector1, Vector3D vector2,
+                            VectorOperation operation,
+                            Supplier<Boolean> check) {
+        Vector3D vectorA = new Vector3D(vector1);
+        while (check.get()) {
+            operation.doOperation(vector1, vector2);
+        }
+        return vectorA;
+    }
 
     @Override
     public Vector3D add(Vector3D other) {
@@ -82,7 +127,10 @@ public class Vector3D extends Vector<Vector3D> {
     public Vector3D scalarDivide(final BigDecimal scalar) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {
-            resultComponents[i] = BigDecimal.valueOf(this.getComponents()[i]).divide(scalar, RoundingMode.HALF_DOWN).doubleValue();
+            resultComponents[i] =
+                    BigDecimal.valueOf(this.getComponent(i))
+                            .divide(scalar, RoundingMode.HALF_DOWN)
+                            .doubleValue();
         }
         return newVector(resultComponents);
     }
@@ -121,35 +169,6 @@ public class Vector3D extends Vector<Vector3D> {
         );
     }
 
-// MAYBE MORE EFFICIENT, BUT LESS READABLE
-//    @Override
-//    public Vector3D max() {
-//        if (getX() > getY()) {
-//            if (getX() > getZ()) {
-//                return new Vector3D(getX(), 0, 0);
-//            }
-//            return new Vector3D(0, 0, getZ());
-//        }
-//        if (getY() > getZ()) {
-//            return new Vector3D(0, getY(), 0);
-//        }
-//        return new Vector3D(0, 0, getZ());
-//    }
-//
-//    @Override
-//    public Vector3D min() {
-//        if (getX() < getY()) {
-//            if (getX() < getZ()) {
-//                return new Vector3D(getX(), 0, 0);
-//            }
-//            return new Vector3D(0, 0, getZ());
-//        }
-//        if (getY() < getZ()) {
-//            return new Vector3D(0, getY(), 0);
-//        }
-//        return new Vector3D(0, 0, getZ());
-//    }
-
     /**
      * @return a Vector3D with only the component with the largest value
      * preserved, and all others set to 0.
@@ -170,7 +189,10 @@ public class Vector3D extends Vector<Vector3D> {
     @Override
     public Vector3D min() {
         double minVal = Math.min(Math.min(getX(), getY()), getZ());
-        return new Vector3D(getX() == minVal ? minVal : 0, getY() == minVal ? minVal : 0, getZ() == minVal ? minVal : 0);
+        return new Vector3D(
+                getX() == minVal ? minVal : 0,
+                getY() == minVal ? minVal : 0,
+                getZ() == minVal ? minVal : 0);
     }
 
     @Override
@@ -202,10 +224,12 @@ public class Vector3D extends Vector<Vector3D> {
     }
 
     public static Vector3D random(double min, double max) {
-        double scale = max - min;
-        double x = ThreadLocalRandom.current().nextDouble() * scale + min;
-        double y = ThreadLocalRandom.current().nextDouble() * scale + min;
-        double z = ThreadLocalRandom.current().nextDouble() * scale + min;
+        double x = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
+        double y = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
+        double z = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
+//        double x = ThreadLocalRandom.current().nextDouble(min, max);
+//        double y = ThreadLocalRandom.current().nextDouble(min, max);
+//        double z = ThreadLocalRandom.current().nextDouble(min, max);
         return new Vector3D(x, y, z);
     }
 
@@ -223,28 +247,59 @@ public class Vector3D extends Vector<Vector3D> {
         return new Vector3D(components);
     }
 
-    public static Vector3D empty() {
-        double[] newComponents = new double[SIZE];
-        return new Vector3D(newComponents);
+    @Override
+    public double[] getComponents() {
+        return new double[] { getX(), getY(), getZ() };
+    }
+
+    @Override
+    public double getComponent(int index) {
+        return getComponents()[index];
+    }
+
+    @Override
+    protected void setComponent(int component, double newValue) {
+        switch (component) {
+            case 0:
+                x = newValue;
+                return;
+            case 1:
+                y = newValue;
+                return;
+            case 2:
+                z = newValue;
+        }
     }
 
     public Vector3D newEmpty() {
-        return empty();
+        return new Vector3D(0);
     }
     @Override
-    protected  int size() {
+    protected int size() {
         return SIZE;
     }
 
     public double getX() {
-        return getComponents()[0];
+        return x;
     }
 
     public double getY() {
-        return getComponents()[1];
+        return y;
     }
 
     public double getZ() {
-        return getComponents()[2];
+        return z;
+    }
+
+    private void setX(double x) {
+        this.x = x;
+    }
+
+    private void setY(double y) {
+        this.y = y;
+    }
+
+    private void setZ(double z) {
+        this.z = z;
     }
 }

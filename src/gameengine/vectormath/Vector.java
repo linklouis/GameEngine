@@ -2,17 +2,18 @@ package gameengine.vectormath;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
 public abstract class Vector<T extends Vector<T>> {
-    /**
-     * The components of the vector. Ensured to be
-     * determined length by {@link Vector} implementations.
-     */
-    private final double[] components;
+    protected Vector() {
+    }
+
+    public Vector(double value) {
+        for (int index = 0; index < size(); index++) {
+            setComponent(index, value);
+        }
+    }
 
     /**
      * @param comps double array of values to set as the components.
@@ -25,8 +26,15 @@ public abstract class Vector<T extends Vector<T>> {
                     + "D vector must have exactly " + size()
                     + " components. Given " + comps.length);
         }
-        components = Arrays.copyOf(comps, comps.length);
+        for (int index = 0; index < size(); index++) {
+            setComponent(index, comps[index]);
+        }
     }
+
+
+    /*
+     * Functionality:
+     */
 
     public T add(final T other) {
         double[] resultComponents = new double[size()];
@@ -45,39 +53,19 @@ public abstract class Vector<T extends Vector<T>> {
     }
 
     public T scalarMultiply(final double scalar) {
-//        double[] resultComponents = new double[size()];
-//        for (int i = 0; i < size(); i++) {
-//            resultComponents[i] = this.getComponent(i) * scalar;
-//        }
-//        return newVector(resultComponents);
         return forEach(component -> component * scalar);
     }
 
     public T scalarMultiply(final BigDecimal scalar) {
-//        double[] resultComponents = new double[size()];
-//        for (int i = 0; i < size(); i++) {
-//            resultComponents[i] = scalar.multiply(BigDecimal.valueOf(this.getComponent(i))).doubleValue();
-//        }
-//        return newVector(resultComponents);
         return forEach(component -> scalar.multiply(BigDecimal.valueOf(component)).doubleValue());
     }
 
 
     public T scalarDivide(final double scalar) {
-//        double[] resultComponents = new double[size()];
-//        for (int i = 0; i < size(); i++) {
-//            resultComponents[i] = this.getComponent(i) / scalar;
-//        }
-//        return newVector(resultComponents);
         return forEach(component -> component / scalar);
     }
 
     public T scalarDivide(final BigDecimal scalar) {
-//        double[] resultComponents = new double[size()];
-//        for (int i = 0; i < size(); i++) {
-//            resultComponents[i] = BigDecimal.valueOf(this.getComponent(i)).divide(scalar, RoundingMode.HALF_DOWN).doubleValue();
-//        }
-//        return newVector(resultComponents);
         return forEach(component -> scalar.divide(BigDecimal.valueOf(component), RoundingMode.HALF_DOWN).doubleValue());
     }
 
@@ -98,12 +86,7 @@ public abstract class Vector<T extends Vector<T>> {
     }
 
     public T unitVector() {
-//        double[] newComponents = new double[size()];
         double magnitude = magnitude();
-//        for (int i = 0; i < size(); i++) {
-//            newComponents[i] = getComponent(i) / magnitude;
-//        }
-//        return newVector(newComponents);
         return forEach(component -> component / magnitude);
     }
 
@@ -200,30 +183,16 @@ public abstract class Vector<T extends Vector<T>> {
         return closest;
     }
 
-//    public static <T extends Vector> T empty() {
-//        double[] newComponents = new double[T.size()];
-//        for (int i = 0; i < T.size(); i++) {
-//            newComponents[i] = 0;
-//        }
-//        return T.newVector(newComponents);
-//    }
 
-//    public static <T extends Vector<T>> T empty(Class<T> vectorClass) {
-//        try {
-//            double[] newComponents = new double[T.size()];
-//            return vectorClass.getConstructor(double[].class).newInstance((Object) newComponents);
-//        } catch (Exception e) {
-//            throw new RuntimeException("Failed to create an instance of Vector class", e);
-//        }
-//    }
+    /*
+     * Utilities:
+     */
 
-    public double[] getComponents() {
-        return components;
-    }
+    public abstract double[] getComponents();
 
-    public double getComponent(final int index) {
-        return getComponents()[index];
-    }
+    public abstract double getComponent(final int index);
+
+    protected abstract void setComponent(final int component, double newValue);
 
     @Override
     public String toString() {
@@ -235,28 +204,8 @@ public abstract class Vector<T extends Vector<T>> {
         return output;
     }
 
-    public static Vector empty() {
-        return null;
-    }
-
     public abstract T newVector(double... comps);
-//    {
-//        try {
-//            throw new ExecutionControl.NotImplementedException(
-//                    "NewVector method is not implemented for the Vector implementation.");
-//        } catch (ExecutionControl.NotImplementedException e) {
-//            throw new UnsupportedOperationException(e);
-//        }
-//    }
     protected abstract int size();
-//    {
-//        try {
-//            throw new ExecutionControl.NotImplementedException(
-//                    "Size method is not implemented for the Vector implementation.");
-//        } catch (ExecutionControl.NotImplementedException e) {
-//            throw new UnsupportedOperationException(e);
-//        }
-//    }
 
     public abstract T newEmpty();
 }

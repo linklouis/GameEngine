@@ -106,5 +106,6 @@ public class SphereCollider extends Collider3D<SphereCollider> {
 
     public void setRadius(double radius) {
         this.radius = radius;
+        setRange(radius);
     }
 }

@@ -7,6 +7,7 @@ import gameengine.vectormath.Vector3D;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -95,7 +96,7 @@ public class RayTracedCamera extends Camera {
      */
 
     @Override
-    public void renderImage(Visual3D[] renderableObjects) {
+    public WritableImage renderImage(Visual3D[] renderableObjects) {
         Collider3D<?>[] objects = getValidColliders(renderableObjects);
 
         long startTime = System.nanoTime();
@@ -113,12 +114,13 @@ public class RayTracedCamera extends Camera {
 
 
         System.out.println("rendered");
-//        try {
-//            saveToFile("RayTraced_0_1_(" + (int) getWidth() + "," + (int) getHeight() + ")_"
-//                    + "rays" + raysPerPixel + "_bounces" + maxBounces + ".png");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            saveToFile("RayTraced_0_1_(" + (int) getWidth() + "," + (int) getHeight() + ")_"
+                    + "rays" + raysPerPixel + "_bounces" + maxBounces + ".png");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return getImage();
     }
 
     private void renderUnthreaded(WritableImage image, Collider3D<?>[] objects) {
@@ -162,14 +164,22 @@ public class RayTracedCamera extends Camera {
     private void renderPixelAt(int x, int y, WritableImage image,
                                Collider3D<?>[] objects) {
         Vector3D rayPath = getRayPath(x, y);
+        int num = 0;
 
-        Vector3D average = Vector3D.empty();
+        Vector3D average = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
             LightRay ray = new LightRay(
                     getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
-            average = average.add(new Vector3D(ray.getColorFromBounces()));
+            Vector3D newColor = new Vector3D(ray.getColorFromBounces());
+            average = average.add(newColor);
+            if (newColor.magnitude() != 0) {
+                average = average.add(newColor);
+                num++;
+            } else {
+                num += 2;
+            }
         }
-        average = average.scalarDivide(raysPerPixel);
+        average = average.scalarDivide(/*raysPerPixel*/num);
 
         Color pixelColor = average.toColor();
         image.getPixelWriter().setColor(x, y, pixelColor);

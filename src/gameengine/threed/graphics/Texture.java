@@ -6,10 +6,12 @@ import javafx.scene.paint.Color;
 public abstract class Texture {
     private Color color;
     private boolean lightSource = false;
+    private final double reflectivity;
 
-    public Texture(Color color, boolean isLightSource) {
+    public Texture(Color color, boolean isLightSource, double reflectivity) {
         this.color = color;
         this.lightSource = isLightSource;
+        this.reflectivity = reflectivity;
     }
 
     public abstract Vector3D reflection(Vector3D rayDirection, Vector3D surfaceNormal);
@@ -28,5 +30,9 @@ public abstract class Texture {
 
     public void setLightSource(boolean lightSource) {
         this.lightSource = lightSource;
+    }
+
+    public double getReflectivity() {
+        return reflectivity;
     }
 }
