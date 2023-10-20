@@ -2,7 +2,6 @@ import gameengine.drivers.GameDriver3D;
 import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
-import gameengine.threed.prebuilt.Smooth;
 import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
@@ -14,15 +13,13 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private int numToTest = 5;
+    private final int NUM_TO_TEST = 5;
     private RayTracedCamera mainCam;
-    private double reflectivity = 0.3;
-
 
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        300, 300, 0.2,
+                        4000, 4000, 0.1,
                         30, 100, 100, true)),
                 new PhysicsEngine3D());
     }
@@ -33,6 +30,9 @@ public class RayTracing extends GameDriver3D {
 
     @Override
     public void initialize() {
+        System.out.println(java.time.LocalDateTime.now());
+        double reflectivity = 0.3;
+
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
 //        mainCam.newPostProcess(new Smooth(0.3));
 
@@ -50,21 +50,24 @@ public class RayTracing extends GameDriver3D {
 //        newObject(new Sphere(-5, -14, -10, 3, Color.WHITE, true));
 //        newObject(new Sphere(-10, -20, -10, 3, Color.WHITE, true));
 
-        mainCam.requestUpdate();
-//        while (true) {
-//            measureRender();
-//        }
+//        mainCam.requestUpdate();
+    }
+
+    private void measureTimeWithoutDisplay() {
+        while (true) {
+            measureRender();
+        }
     }
 
     private void measureRender() {
         mainCam.requestUpdate();
         mainCam.update(getGraphicsDriver().getVisualObjects().toArray(new Visual3D[0]));
-        if (renders < numToTest) {
+        if (renders < NUM_TO_TEST) {
             getGraphicsDriver().getCamera().requestUpdate();
             avTime += mainCam.renderTime;
             avTime /= 2;
             renders++;
-        } else if (renders < numToTest + 1) {
+        } else if (renders < NUM_TO_TEST + 1) {
             System.out.println(
                     "\nBenchmark Complete."
                             + "\nSize: " + mainCam.getWidth()
@@ -110,12 +113,12 @@ public class RayTracing extends GameDriver3D {
 
     @Override
     public void updateGame() {
-        if (renders < numToTest) {
+        if (renders < NUM_TO_TEST) {
             getGraphicsDriver().getCamera().requestUpdate();
             avTime += mainCam.renderTime;
             avTime /= 2;
             renders++;
-        } else if (renders < numToTest + 1) {
+        } else if (renders < NUM_TO_TEST + 1) {
             System.out.println(
                     "\nBenchmark Complete."
                     + "\nSize: " + mainCam.getWidth()

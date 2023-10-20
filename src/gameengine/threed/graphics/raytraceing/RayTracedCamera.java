@@ -193,6 +193,48 @@ public class RayTracedCamera extends Camera {
 //        }
     }
 
+//    private void renderPixelAtHDR(int x, int y, WritableImage image, Collider3D<?>[] objects) {
+//        Vector3D rayPath = getRayPath(x, y);
+//        int num = 0;
+//
+//        Vector3D average = new Vector3D(0);
+//        for (int i = 0; i < raysPerPixel; i++) {
+//            LightRay ray = new LightRay(
+//                    getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
+//            Vector3D newColor = new Vector3D(ray.getColorFromBounces());
+//            average = average.add(newColor);
+//            if (newColor.magnitude() != 0) {
+//                average = average.add(newColor);
+//                num++;
+//            } else {
+//                num += 2;
+//            }
+//        }
+//        average = average.scalarDivide(num);
+//
+//        // Create an OpenEXR image file
+//        try (OutputFile outputFile = new OutputFile("output.hdr")) {
+//            // Create a frame buffer to store the HDR color value
+//            FrameBuffer frameBuffer = new FrameBuffer();
+//            PixelType pixelType = PixelType.FLOAT;
+//            int numChannels = 3;
+//            frameBuffer.insert("R", new Channel(pixelType, numChannels));
+//
+//            // Convert the color to HDR format and write to the frame buffer
+//            for (int channel = 0; channel < numChannels; channel++) {
+//                float[] data = new float[1];
+//                data[0] = (float) average.getComponent(channel);
+//                frameBuffer.getTypedChannel(pixelType, numChannels, channel).set(x, y, data);
+//            }
+//
+//            // Write the frame buffer to the OpenEXR image file
+//            outputFile.setFrameBuffer(frameBuffer);
+//            outputFile.writePixels(1);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     private Vector3D localPixelLocation(double x, double y) {
         double halfWidth = getWidth() / 2.0;
         double halfHeight = getHeight() / 2.0;
