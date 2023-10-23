@@ -161,36 +161,115 @@ public class RayTracedCamera extends Camera {
 
     }
 
-    private void renderPixelAt(int x, int y, WritableImage image,
+    private void renderPixelAt1(int x, int y, WritableImage image,
                                Collider3D<?>[] objects) {
         Vector3D rayPath = getRayPath(x, y);
         int num = 0;
 
+        LightRay ray = new LightRay(
+                getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
+        Collider3D<?> firstCollision = ray.firstCollision();
+
+        if (firstCollision == null) {
+            image.getPixelWriter().setColor(x, y, Color.BLACK);
+            return;
+        }
+        if (firstCollision.getTexture().isLightSource()) {
+            Color pixelColor = firstCollision.getFromParent(Visual3D.class)
+                    .getAppearance()
+                    .getColor();
+            image.getPixelWriter().setColor(x, y, pixelColor);
+            return;
+        }
+
+        Vector3D firstPosition = ray.getPosition();
+        Vector3D firstColor = new Vector3D(
+                firstCollision.getFromParent(Visual3D.class)
+                        .getAppearance()
+                        .getColor());
+
         Vector3D average = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
-            LightRay ray = new LightRay(
-                    getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
-            Vector3D newColor = new Vector3D(ray.getColorFromBounces());
-            average = average.add(newColor);
+            ray = new LightRay(
+                    getLocation(), rayPath, marchDistance, maxDistance,
+                    maxBounces, objects);
+            Vector3D newColor = new Vector3D(ray.getColorFromBounces(
+                    firstPosition, firstCollision, firstColor));
+//            average = average.add(newColor);
+//            if (newColor.magnitude() != 0) {
+//                average = average.add(newColor);
+//                num++;
+//            } else {
+//                num += 2;
+//            }
             if (newColor.magnitude() != 0) {
+                average = average.add(newColor/*.scalarMultiply(2)*/);
+                num += 2;
+            } else {
                 average = average.add(newColor);
                 num++;
-            } else {
-                num += 2;
             }
         }
         average = average.scalarDivide(/*raysPerPixel*/num);
 
         Color pixelColor = average.toColor();
         image.getPixelWriter().setColor(x, y, pixelColor);
-//        if (numRendered < getWidth() * getHeight()) {
-//            if (numRendered % 1 == 0) {
-//                System.out.println(numRendered + " / " + getWidth() * getHeight());
+    }
+
+    private void renderPixelAt(int x, int y, WritableImage image,
+                               Collider3D<?>[] objects) {
+        Vector3D rayPath = getRayPath(x, y);
+        int num = 0;
+
+        LightRay firstRay = new LightRay(
+                getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
+        Collider3D<?> firstCollision = firstRay.firstCollision();
+
+        if (firstCollision == null) {
+            image.getPixelWriter().setColor(x, y, Color.BLACK);
+            return;
+        }
+        if (firstCollision.getTexture().isLightSource()) {
+            Color pixelColor = firstCollision.getFromParent(Visual3D.class)
+                    .getAppearance()
+                    .getColor();
+            image.getPixelWriter().setColor(x, y, pixelColor);
+            return;
+        }
+
+        Vector3D firstPosition = firstRay.getPosition();
+        Vector3D firstColor = new Vector3D(
+                firstCollision.getFromParent(Visual3D.class)
+                        .getAppearance()
+                        .getColor());
+
+        Vector3D average = new Vector3D(0);
+        LightRay ray;
+        for (int i = 0; i < raysPerPixel; i++) {
+//            ray = new LightRay(
+//                    getLocation(), rayPath, marchDistance, maxDistance,
+//                    maxBounces, objects);
+            ray = new LightRay(firstCollision.reflection(firstRay), firstRay/*, objectsInFieldList*/); //TODO: do this instead
+            Vector3D newColor = new Vector3D(ray.getColorFromBounces(firstColor));
+//            average = average.add(newColor);
+//            if (newColor.magnitude() != 0) {
+//                average = average.add(newColor);
+//                num++;
+//            } else {
+//                num += 2;
 //            }
-//            numRendered++;
-//        } else {
-//            System.out.println("Done");
-//        }
+            if (newColor.magnitude() != 0) {
+                average = average.add(newColor/*.scalarMultiply(2)*/);
+                num += 2;
+            } else {
+                average = average.add(newColor);
+                num++;
+            }
+        }
+        average = average.scalarDivide(/*raysPerPixel*/num);
+
+        Color pixelColor = average.toColor();
+        image.getPixelWriter().setColor(x, y, pixelColor);
     }
 
 //    private void renderPixelAtHDR(int x, int y, WritableImage image, Collider3D<?>[] objects) {

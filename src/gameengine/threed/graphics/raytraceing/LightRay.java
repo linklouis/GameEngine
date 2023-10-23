@@ -14,31 +14,16 @@ public class LightRay extends Vector3D {
 
 //    private final Collider3D[] objectsInField;
     private final SinglyLinkedList<Collider3D<?>> objectsInFieldList;
-    private final SinglyLinkedList<Collider3D<?>> objectsInFieldParent;
+//    private final SinglyLinkedList<Collider3D<?>> objectsInFieldParent;
 
     private Vector3D actualMove;
 //    private double actualMoveSize;
     private Vector3D checkMove;
+    private final Collider3D<?> firstCollision = null;
 
     /*
      * Construction:
      */
-
-    public LightRay(Vector3D start, double x, double y, double z, double marchDistance,
-                    double maxDistance, int numBounces, Collider3D<?>[] objectsInField) {
-        super(new Vector3D(x, y, z)
-                .unitVector()
-                .scalarMultiply(marchDistance)
-                .getComponents());
-        this.start = start;
-        position = start;
-        this.maxDistance = maxDistance;
-        this.numBounces = numBounces;
-//        this.objectsInField = objectsInField;
-        this.objectsInFieldList = new SinglyLinkedList<>(objectsInField);
-        this.objectsInFieldParent = new SinglyLinkedList<>(objectsInField);
-        init();
-    }
 
     public LightRay(Vector3D start, Vector3D vector, double marchDistance,
                     double maxDistance, int numBounces, Collider3D<?>[] objectsInField) {
@@ -50,13 +35,12 @@ public class LightRay extends Vector3D {
         position = start;
         this.maxDistance = maxDistance;
         this.numBounces = numBounces;
-//        this.objectsInField = objectsInField;
         this.objectsInFieldList = new SinglyLinkedList<>(objectsInField);
-        this.objectsInFieldParent = new SinglyLinkedList<>(objectsInField);
+//        this.objectsInFieldParent = new SinglyLinkedList<>(objectsInField);
         init();
     }
 
-    public LightRay(Vector3D direction, LightRay ray, SinglyLinkedList<Collider3D<?>> objectsInFieldList) {
+    public LightRay(Vector3D direction, LightRay ray/*, SinglyLinkedList<Collider3D<?>> objectsInFieldList*/) {
         super(direction
                 .unitVector()
                 .scalarMultiply(ray.magnitude())
@@ -66,8 +50,8 @@ public class LightRay extends Vector3D {
         this.maxDistance = ray.maxDistance;
         this.numBounces = ray.numBounces;
 //        this.objectsInField = new Collider3D[0];//ray.objectsInField;
-        this.objectsInFieldList = objectsInFieldList;
-        objectsInFieldParent = null;
+        this.objectsInFieldList = ray.objectsInFieldList;
+//        objectsInFieldParent = null;
         init();
     }
 
@@ -247,26 +231,35 @@ public class LightRay extends Vector3D {
 //        return Color.BLACK;
 //    }
 
-    public Color getColorFromBounces() {
-        Collider3D<?> collision = firstCollision();
+    public Color getColorFromBounces(Vector3D firstPosition,
+                                     Collider3D<?> firstCollision,
+                                     Vector3D firstColor) {
+//        Collider3D<?> collision;
 
-        if (collision == null) {
-            return Color.BLACK;
-        }
-        if (collision.getTexture().isLightSource()) {
-            return collision.getFromParent(Visual3D.class)
-                    .getAppearance().getColor();
-        }
-        color = color.add(new Vector3D(
-                collision.getFromParent(Visual3D.class)
-                        .getAppearance()
-                        .getColor()));
+//        if (firstCollisionDist < 0) {
+//            System.out.println("A");
+//            collision = firstCollision();
+//
+//            if (collision == null) {
+//                return Color.BLACK;
+//            }
+//            if (collision.getTexture().isLightSource()) {
+//                return collision.getFromParent(Visual3D.class)
+//                        .getAppearance().getColor();
+//            }
+//        } else {
+//        position = position.add(unitVector().scalarMultiply(firstCollisionDist));
+//        Collider3D<?> collision = firstCollision;
+//        }
 
-        LightRay currentRay = new LightRay(collision.reflection(this), this, objectsInFieldParent);
+        position = firstPosition;
+        color = firstColor;
+
+        LightRay currentRay = new LightRay(firstCollision.reflection(this), this/*, objectsInFieldList*/);
         double bounces = 2;
+        Collider3D<?> collision;
 
         while (bounces <= numBounces) {
-            // First collision always the same, so just save it?
             collision = currentRay.firstCollision();
 
             if (collision == null) {
@@ -285,7 +278,96 @@ public class LightRay extends Vector3D {
             }
 
             // Create a new LightRay with the reflection direction
-            currentRay = new LightRay(collision.reflection(currentRay), currentRay, objectsInFieldParent);
+            currentRay = new LightRay(collision.reflection(currentRay), currentRay/*, objectsInFieldList*/);
+
+            bounces++;
+        }
+
+        return Color.BLACK;
+    }
+
+    public Color getColorFromBounces() {
+        Collider3D<?> collision = firstCollision();
+
+        if (collision == null) {
+            return Color.BLACK;
+        }
+        if (collision.getTexture().isLightSource()) {
+            return collision.getFromParent(Visual3D.class)
+                    .getAppearance().getColor();
+        }
+        color = color.add(new Vector3D(
+                collision.getFromParent(Visual3D.class)
+                        .getAppearance()
+                        .getColor()));
+
+        LightRay currentRay = new LightRay(collision.reflection(this), this/*, objectsInFieldList*/);
+        double bounces = 2;
+
+        while (bounces <= numBounces) {
+            collision = currentRay.firstCollision();
+
+            if (collision == null) {
+                return Color.BLACK;
+            }
+
+            color = color.add(
+                    new Vector3D(collision.getFromParent(Visual3D.class)
+                            .getAppearance().getColor())
+                            .scalarDivide(bounces / 2 + 0.5)
+                            /*.scalarDivide(
+                                    collision.getTexture().getReflectivity())*/);
+
+            if (collision.getTexture().isLightSource()) {
+                return color.toColor();
+            }
+
+            // Create a new LightRay with the reflection direction
+            currentRay = new LightRay(collision.reflection(currentRay), currentRay/*, objectsInFieldList*/);
+
+            bounces++;
+        }
+
+        return Color.BLACK;
+    }
+
+    public Color getColorFromBounces(Vector3D firstColor) {
+        color = firstColor;
+        double bounces = 2;
+        Collider3D<?> collision = firstCollision();
+
+        if (collision == null) {
+            return Color.BLACK;
+        }
+        color = color.add(
+                new Vector3D(collision.getFromParent(Visual3D.class)
+                        .getAppearance().getColor())
+                        .scalarDivide(bounces / 2 + 0.5));
+        if (collision.getTexture().isLightSource()) {
+            return color.toColor();
+        }
+
+        LightRay currentRay = new LightRay(collision.reflection(this), this/*, objectsInFieldList*/);
+        bounces++;
+
+        while (bounces <= numBounces) {
+            collision = currentRay.firstCollision();
+
+            if (collision == null) {
+                return Color.BLACK;
+            }
+
+            color = color.add(
+                    new Vector3D(collision.getFromParent(Visual3D.class)
+                            .getAppearance().getColor())
+                            .scalarDivide(bounces / 2 + 0.5));
+
+            if (collision.getTexture().isLightSource()) {
+                return color.toColor();
+            }
+
+            // Create a new LightRay with the reflection direction
+            currentRay = new LightRay(collision.reflection(currentRay), currentRay/*, objectsInFieldList*/);
 
             bounces++;
         }
@@ -296,29 +378,13 @@ public class LightRay extends Vector3D {
     public Collider3D<?> firstCollision() {
         SinglyLinkedList<Collider3D<?>> inRangeOf = new SinglyLinkedList<>();
 
-//        Collider3D<?> closest = objectsInFieldList.getPointer().getNext().getValue();
-        double closestDist = Double.MAX_VALUE;
-//                objectsInFieldList.getHead().getValue()
-//                .distanceToEnterRange(start, this);
-        SinglyLinkedList<Collider3D<?>>.Element element = objectsInFieldList.getPointer();
-        while (element.hasNext()) {
-            element = element.getNext();
-            Collider3D<?> collider = element.getValue();
-//            System.out.println(collider);
-            double newDistance = collider.distanceToEnterRange(start, this);
-            if (newDistance >= 0) {
-                inRangeOf.add(collider);
-                if (newDistance < closestDist) {
-//                    closest = collider;
-                    closestDist = newDistance;
-                }
-            }
-        }
+        double closestDist = getFirstCollisionDistance(inRangeOf);
 
-        if (closestDist < 0){
+        if (closestDist == Double.MAX_VALUE){
             return null;
         }
-        position = position.add(unitVector().scalarMultiply(closestDist));
+        position = position.add(unitVector().scalarMultiply(closestDist /*- *//*0.01*//*checkMove.magnitude()*/));
+
         return getCollision(inRangeOf);
 
 
@@ -345,24 +411,59 @@ public class LightRay extends Vector3D {
 //        return null;
     }
 
-    private Collider3D<?> getCollision(SinglyLinkedList<Collider3D<?>> colliders) {
-        double distanceMoved = 0;
-        double moveDistance = checkMove.magnitude();
-        while (distanceMoved < maxDistance) {
-            SinglyLinkedList<Collider3D<?>>.Element element = colliders.getPointer();
-            while (element.hasNext()) {
-                Collider3D<?> collider = element.getNext().getValue();
-                if (collider.contains(position)) {
-                    while (collider.contains(position)) {
-                        position = position.subtract(checkMove);
-                    }
-                    return collider;
+    public double getFirstCollisionDistance(SinglyLinkedList<Collider3D<?>> inRangeOf) {
+        double closestDist = Double.MAX_VALUE;
+
+        SinglyLinkedList<Collider3D<?>>.Element element = objectsInFieldList.getHead();
+        while (element != null) {
+            double newDistance = element.getValue().distanceToEnterRange(start, this);
+            if (newDistance >= 0) {
+                inRangeOf.add(element.getValue());
+                if (newDistance < closestDist) {
+                    closestDist = newDistance;
                 }
+            }
+            element = element.getNext();
+        }
+
+        return closestDist;
+    }
+
+    private Collider3D<?> getCollision(SinglyLinkedList<Collider3D<?>> colliders) {
+        // TODO Have list of all currently in range of.If an object in that
+        //  list is no longer colliding, remove it.
+        double distanceMoved = 0;
+        double checkDistance = checkMove.magnitude();
+        double moveDistance = actualMove.magnitude();
+        boolean inARange;
+        while (distanceMoved < maxDistance) {
+            inARange = false;
+
+            SinglyLinkedList<Collider3D<?>>.Element element = colliders.getHead();
+            while (element != null) {
+//                Collider3D<?> collider = element.getValue();
+                if (element.getValue().inRange(position)) {
+                    if (!inARange) {
+                        inARange = true;
+                    }
+                    if (element.getValue().contains(position)) {
+                        while (element.getValue().contains(position)) {
+                            position = position.subtract(checkMove.scalarDivide(4));
+                        }
+                        return element.getValue();
+                    }
+                }
+
                 element = element.getNext();
             }
 
-            position = position.add(checkMove);
-            distanceMoved += moveDistance;
+            if (inARange) {
+                position = position.add(checkMove);
+                distanceMoved += checkDistance;
+            } else {
+                position = position.add(actualMove);
+                distanceMoved += moveDistance;
+            }
         }
 
         return null;
@@ -412,6 +513,10 @@ public class LightRay extends Vector3D {
 
     public Vector3D getPosition() {
         return position;
+    }
+
+    public double getDistanceTraveled() {
+        return Math.abs(position.subtract(start).magnitude());
     }
 
 }

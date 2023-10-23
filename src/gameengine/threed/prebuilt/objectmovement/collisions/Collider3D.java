@@ -176,13 +176,7 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
     public boolean inRange(Vector3D position) {
         return getCenter()
                 .subtract(position)
-                .magnitude() <= getRange();
-    }
-
-    public boolean inRange(Vector3D position, double offset) {
-        return getCenter()
-                .subtract(position)
-                .magnitude() <= getRange() + offset;
+                .magnitude() < getRange();
     }
 
     public boolean willEnterRange(Vector3D start, Vector3D dir) {
