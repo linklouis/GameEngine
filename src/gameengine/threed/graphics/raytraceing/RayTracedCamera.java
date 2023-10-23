@@ -165,7 +165,7 @@ public class RayTracedCamera extends Camera {
 //        Vector3D rayPath = getRayPath(x, y);
 //        int num = 0;
 //
-//        LightRay ray = new LightRay(
+//        PixelRay ray = new PixelRay(
 //                getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
 //        Collider3D<?> firstCollision = ray.firstCollision();
 //
@@ -189,7 +189,7 @@ public class RayTracedCamera extends Camera {
 //
 //        Vector3D average = new Vector3D(0);
 //        for (int i = 0; i < raysPerPixel; i++) {
-//            ray = new LightRay(
+//            ray = new PixelRay(
 //                    getLocation(), rayPath, marchDistance, maxDistance,
 //                    maxBounces, objects);
 //            Vector3D newColor = new Vector3D(ray.getColorFromBounces(
@@ -218,11 +218,11 @@ public class RayTracedCamera extends Camera {
     private void renderPixelAt(int x, int y, WritableImage image,
                                Collider3D<?>[] objects) {
 
-        LightRay lightRay = new LightRay(
+        PixelRay pixelRay = new PixelRay(
                 new Ray(getLocation(), getRayPath(x, y).atMagnitude(marchDistance)),
                 0.4, maxDistance, maxBounces, raysPerPixel, marchDistance, objects);
 
-        image.getPixelWriter().setColor(x, y, lightRay.getFinalColor());
+        image.getPixelWriter().setColor(x, y, pixelRay.getFinalColor());
     }
 
 //    private void renderPixelAtHDR(int x, int y, WritableImage image, Collider3D<?>[] objects) {
@@ -231,7 +231,7 @@ public class RayTracedCamera extends Camera {
 //
 //        Vector3D average = new Vector3D(0);
 //        for (int i = 0; i < raysPerPixel; i++) {
-//            LightRay ray = new LightRay(
+//            PixelRay ray = new PixelRay(
 //                    getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
 //            Vector3D newColor = new Vector3D(ray.getColorFromBounces());
 //            average = average.add(newColor);

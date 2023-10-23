@@ -88,7 +88,7 @@ public class SinglyLinkedListAttribute {
     }
 
     public boolean isEmpty() {
-        return head == null;
+        return head == null || head.getValue() == null;
     }
 
     public Element getHead() {
@@ -107,7 +107,7 @@ public class SinglyLinkedListAttribute {
     public String toString() {
         StringBuilder output = new StringBuilder("SinglyLinkedList: ");
 
-        for (Element element = head; element.hasNext(); element = element.getNext()) {
+        for (Element element = pointer; element != null; element = element.getNext()) {
             output.append(element.value);
         }
 

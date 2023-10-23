@@ -1,6 +1,6 @@
 package gameengine.vectormath;
 
-import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.PixelRay;
 import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
@@ -206,9 +206,9 @@ public class Vector3D extends Vector<Vector3D> {
 
     public Color toColor() {
         return new Color(
-                LightRay.clamp(getX(), 0, 1),
-                LightRay.clamp(getY(), 0, 1),
-                LightRay.clamp(getZ(), 0, 1),
+                PixelRay.clamp(getX(), 0, 1),
+                PixelRay.clamp(getY(), 0, 1),
+                PixelRay.clamp(getZ(), 0, 1),
                 1);
     }
 
@@ -235,20 +235,17 @@ public class Vector3D extends Vector<Vector3D> {
 
     public Vector3D signs() {
         return new Vector3D(
-                getX() / Math.abs(getX()),
-                getY() / Math.abs(getY()),
-                getZ() / Math.abs(getZ())
+                getX() < 0 ? -1 : 1,
+                getY() < 0 ? -1 : 1,
+                getZ() < 0 ? -1 : 1
         );
     }
 
     public Vector3D multiplyAcross(Vector3D vector) {
         return new Vector3D(
-//               getX() * vector.getX(),
-//               getY() * vector.getY(),
-//               getZ() * vector.getZ()
-                getX() < 0 ? -1 : 1,
-                getY() < 0 ? -1 : 1,
-                getZ() < 0 ? -1 : 1
+               getX() * vector.getX(),
+               getY() * vector.getY(),
+               getZ() * vector.getZ()
         );
     }
 

@@ -2,7 +2,6 @@ package gameengine.threed.graphics;
 
 import gameengine.skeletons.GraphicsObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;

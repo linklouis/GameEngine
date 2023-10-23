@@ -19,8 +19,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 0.3,
-                        10, 100, 100, true)),
+                        700, 700, 0.1,
+                        10, 10, 10, true)),
                 new PhysicsEngine3D());
     }
 
@@ -32,21 +32,37 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        setupScene2();
+        setupScene1();
     }
 
     private void setupScene2() {
-        double reflectivity = 0;
+        double reflectivity = 0.9;
 
         mainCam.setDirection(new Vector3D(1, 0, 0));
-        mainCam.setLocation(new Vector3D(-15, 0, 0));
+        mainCam.setLocation(new Vector3D(-10, 0, 0));
 
-//        newObject(new Rectangle(5, 0, 0, new Vector3D(1, 5, 5), new BaseTexture(Color.RED, false, reflectivity)));
-//        newObject(new Rectangle(0, -5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
+        newObject(new Sphere(0, 0, 0, 2, new BaseTexture(Color.WHITE, false, 0.9)));
+
+        newObject(new Rectangle(5, 0, 0, new Vector3D(1, 5, 5), new BaseTexture(Color.RED, false, reflectivity)));
+        newObject(new Rectangle(0, -5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
         newObject(new Rectangle(0, 5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
         newObject(new Rectangle(0, 0, -5, new Vector3D(5, 5, 1), new BaseTexture(Color.GREEN, false, reflectivity)));
+        newObject(new Rectangle(0, 0, 5, new Vector3D(5, 5, 1), new BaseTexture(Color.GREEN, false, reflectivity)));
+
+        newObject(new Rectangle(-12, 0, 0, new Vector3D(1, 5, 5), new BaseTexture(Color.RED, true, 0)));
+
+//        setupBoundingBox(20);
 
         newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
+    }
+
+    private void setupBoundingBox(double size) {
+        newObject(new Rectangle(-size, 0, 0, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)));
+        newObject(new Rectangle(size, 0, 0, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)));
+        newObject(new Rectangle(0, -size, 0, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)));
+        newObject(new Rectangle(0, size, 0, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)));
+        newObject(new Rectangle(0, 0, -size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)));
+        newObject(new Rectangle(0, 0, size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)));
     }
 
     private void setupScene1() {
@@ -60,6 +76,15 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(0, 0, 100, 100, new BaseTexture(Color.BROWN, false, reflectivity)));
         newObject(new Sphere(-10, 2, -10, 7, Color.WHITE, true));
     }
+
+//    private void setupScene3() {
+//        double reflectivity = 1;
+//
+//        mainCam.setDirection(new Vector3D(0, 0, -1));
+//        mainCam.setLocation(new Vector3D(0, 0, -10));
+//
+//        newObject(new Sphere());
+//    }
 
     private void measureTimeWithoutDisplay() {
         while (true) {

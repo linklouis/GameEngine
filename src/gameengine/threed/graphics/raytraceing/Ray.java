@@ -33,7 +33,7 @@ public class Ray {
         SinglyLinkedListAttribute.Element element = objectsInFieldList.getHead();
         while (element != null) {
             double newDistance = element.getValue().distanceToEnterRange(start, direction);
-            if (newDistance >= 0) {
+            if (newDistance > 0) {
                 inRangeOf.add(element.getValue());
                 if (newDistance < closestDist) {
                     closestDist = newDistance;
@@ -45,85 +45,38 @@ public class Ray {
         return closestDist;
     }
 
-    private Collider3D<?> getCollision2(SinglyLinkedListAttribute colliders, double precisionScale, double maxDistance) {
-        // TODO Have list of all currently in range of.If an object in that
-        //  list is no longer colliding, remove it.
-        SinglyLinkedListAttribute inRange = new SinglyLinkedListAttribute(colliders);
-        double distanceMoved = 0;
-        Vector3D checkMove = direction.scalarMultiply(precisionScale);
-        double checkDistance = checkMove.magnitude();
-        double moveDistance = direction.magnitude();
-        while (distanceMoved < maxDistance) {
-            if (!colliders.isEmpty()) {
-                SinglyLinkedListAttribute.Element element = colliders.getPointer();
-                while (element.hasNext()) {
-                    Collider3D<?> collider = element.getNext().getValue();
-                    if (collider.inRange(position)) {
-                        inRange.add(collider);
-                        element.removeNext();
-                    } else {
-                        element = element.getNext();
-                    }
-                }
-            }
-            if (!inRange.isEmpty()) {
-                SinglyLinkedListAttribute.Element element = inRange.getPointer();
-                while (element.hasNext()) {
-                    Collider3D<?> collider = element.getNext().getValue();
-                    if (collider.inRange(position)) {
-                        if (collider.contains(position)) {
-                            while (collider.contains(position)) {
-                                position = position.subtract(checkMove.scalarDivide(10));
-                            }
-                            return collider;
-                        }
-                        element = element.getNext();
-                    } else {
-                        element.removeNext();
-                    }
-
-                }
-            }
-
-            if (inRange.isEmpty()) {
-                position = position.add(direction);
-                distanceMoved += moveDistance;
-            } else {
-                position = position.add(checkMove);
-                distanceMoved += checkDistance;
-            }
-        }
-
-        return null;
-    }
-
     private Collider3D<?> getCollision(SinglyLinkedListAttribute colliders, double precisionScale, double maxDistance) {
-        double distanceMoved = 0;
+//        double distanceMoved = 0;
         Vector3D checkMove = direction.scalarMultiply(precisionScale);
-        double checkDistance = checkMove.magnitude();
-        double moveDistance = direction.magnitude();
+//        double checkDistance = checkMove.magnitude();
+//        double moveDistance = direction.magnitude();
         boolean inARange;
-        while (distanceMoved < maxDistance) {
+//        System.out.println("\n" + colliders);
+//        System.out.println(colliders.isEmpty());
+
+        while (!colliders.isEmpty()/*distanceMoved < maxDistance*/) {
             inARange = false;
 
             SinglyLinkedListAttribute.Element currentElement = colliders.getPointer();
             while (currentElement.hasNext()) {
                 SinglyLinkedListAttribute.Element element = currentElement.getNext();
                 if (element.getValue().inRange(position)) {
+//                    System.out.print("a");
                     if (!element.isInRange()) {
                         element.setInRange(true);
                     }
                     if (!inARange) {
                         inARange = true;
                     }
+
                     if (element.getValue().contains(position)) {
-                        while (element.getValue().contains(position)) {
-                            position = position.subtract(checkMove.scalarDivide(10));
-                        }
+                        escapeObject(element.getValue(), checkMove);
                         return element.getValue();
                     }
+
                     currentElement = element;
                 } else {
+//                    System.out.print("(" + position + ", " + element.getValue().getCenter() + ")");
                     if (element.isInRange()) {
                         currentElement.removeNext();
                     } else {
@@ -134,14 +87,20 @@ public class Ray {
 
             if (inARange) {
                 position = position.add(checkMove);
-                distanceMoved += checkDistance;
+//                distanceMoved += checkDistance;
             } else {
                 position = position.add(direction);
-                distanceMoved += moveDistance;
+//                distanceMoved += moveDistance;
             }
         }
 
         return null;
+    }
+
+    private void escapeObject(Collider3D<?> collision, Vector3D checkMove) {
+        while (collision.contains(position)) {
+            position = position.subtract(checkMove.scalarDivide(10));
+        }
     }
 
     private Collider3D<?> getCollision1(SinglyLinkedListAttribute colliders, double precisionScale, double maxDistance) {

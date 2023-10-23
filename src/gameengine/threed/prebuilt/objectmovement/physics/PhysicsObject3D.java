@@ -2,7 +2,6 @@ package gameengine.threed.prebuilt.objectmovement.physics;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
-import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.vectormath.Vector3D;

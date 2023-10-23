@@ -34,12 +34,57 @@ public class RectCollider extends Collider3D<RectCollider> {
 
     @Override
     public Vector3D surfaceNormal(Vector3D point) {
-        Vector3D displacementNorm = getCenter().subtract(point);
+        Vector3D displacement = point.subtract(getCenter());
 
-        return space.subtract(displacementNorm.abs())
+        return displacement.abs().subtract(space.abs()).abs()
                 .min()
-                .unitVector()
-                .multiplyAcross(displacementNorm.signs());
+                .multiplyAcross(displacement)
+                .unitVector();
+//        Vector3D displacement = point.subtract(getCenter());
+//
+//        Vector3D smallest = displacement.abs().subtract(space.abs()).abs()
+//                .min();
+//        double x = 0;
+//        double y = 0;
+//        double z = 0;
+//        if (smallest.getX() != 0) {
+//            x = space.getX();
+//        }
+//        if (smallest.getY() != 0) {
+//            y = space.getY();
+//        }
+//        if (smallest.getZ() != 0) {
+//            z = space.getZ();
+//        }
+//
+//        return new Vector3D(x, y, z);
+
+//        // Calculate relative position of the point
+//        Vector3D displacement = point.subtract(getCenter());
+//
+//        // Calculate the absolute values of displacement and space vectors
+//        Vector3D absDisplacement = displacement.abs();
+//        Vector3D absSpace = space.abs();
+//
+//        // Determine which component of displacement is the largest
+//        double maxComponent = Math.max(Math.max(absDisplacement.getX(), absDisplacement.getY()), absDisplacement.getZ());
+//
+//        // Check which face the point is on and return the corresponding normal
+//        if (absDisplacement.getX() == maxComponent) {
+//            // Point is on a face perpendicular to the X-axis
+//            return new Vector3D(displacement.getX() > 0 ? 1 : -1, 0, 0);
+//        } else if (absDisplacement.getY() == maxComponent) {
+//            // Point is on a face perpendicular to the Y-axis
+//            return new Vector3D(0, displacement.getY() > 0 ? 1 : -1, 0);
+//        } else {
+//            // Point is on a face perpendicular to the Z-axis
+//            return new Vector3D(0, 0, displacement.getZ() > 0 ? 1 : -1);
+//        }
+
+//        Vector3D spaceNormalized = space.unitVector();
+//        Vector3D side1 = spaceNormalized.crossProduct(getX()); // Assuming +X is one of the sides
+//        Vector3D side2 = spaceNormalized.crossProduct(side1);
+
     }
 
     @Override

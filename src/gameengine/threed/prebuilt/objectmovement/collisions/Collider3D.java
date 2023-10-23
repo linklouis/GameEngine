@@ -3,6 +3,7 @@ package gameengine.threed.prebuilt.objectmovement.collisions;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
+import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.twod.prebuilt.objectmovement.collisions.CollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.collisions.PhysicsCollisionHandler;
@@ -165,6 +166,11 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
         }
     }
 
+    public GraphicsObject3D getAppearance() {
+        return getFromParent(Visual3D.class)
+                .getAppearance();
+    }
+
     public double getRange() {
         return range;
     }
@@ -189,12 +195,6 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
         double d = b * b - 4 * a * c;  // discriminant of quadratic
 
         return !(d < 0);
-//        if (d <  0) {
-//            return false; //then solutions are complex, so no intersections
-//        }
-//        if (d >= 0) {
-//            return true; //then solutions are real, so there are intersections
-//        }
     }
 
     /**
@@ -205,6 +205,37 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
      * Otherwise, the distance to first hit
      */
     public double distanceToEnterRange(Vector3D start, Vector3D dir) {
+        if (inRange(start)) {
+            return 0;
+        }
+        double stepSize = dir.magnitude();
+        dir = dir.unitVector();
+
+        Vector3D Q = start.subtract(getCenter());
+        double b = dir.scalarMultiply(2).dotProduct(Q);
+//        double c = Q.dotProduct(Q) - getRange() * getRange();
+        double d = b * b - 4 * (Q.dotProduct(Q) - getRange() * getRange())/*c*/;  // discriminant of quadratic
+
+        if (d <= 0) {
+            return -1; // Solutions are complex, so no intersections
+        } else {
+            // Intersections exists
+            double t1 = (-b + Math.sqrt(d)) / (2);
+            double t2 = (-b - Math.sqrt(d)) / (2);
+            if (Math.abs(t1 - t2) <= stepSize) {
+                return -1;
+            }
+            if (Math.min(t1, t2) < 0) {
+                if (Math.max(t1, t2) < 0) {
+                    return -1;
+                }
+                return Math.max(t1, t2);
+            }
+            return Math.min(t1, t2);
+        }
+    }
+
+    public double distanceToEnterRange1(Vector3D start, Vector3D dir) {
         dir = dir.unitVector();
 
         Vector3D Q = start.subtract(getCenter());
