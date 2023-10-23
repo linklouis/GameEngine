@@ -19,8 +19,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 0.3,
-                        10, 100, 10, true)),
+                        800, 800, 1,
+                        10, 100, 100, true)),
                 new PhysicsEngine3D());
     }
 

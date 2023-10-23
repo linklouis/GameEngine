@@ -90,6 +90,10 @@ public abstract class Vector<T extends Vector<T>> {
         return forEach(component -> component / magnitude);
     }
 
+    public T atMagnitude(double newMagnitude) {
+        return unitVector().scalarMultiply(newMagnitude);
+    }
+
     public T forEach(Function<Double, Double> function) {
         double[] resultComponents = new double[size()];
         for (int i = 0; i < size(); i++) {

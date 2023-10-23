@@ -3,6 +3,7 @@ package gameengine.threed.graphics;
 import gameengine.skeletons.GraphicsObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -26,8 +27,8 @@ public abstract class GraphicsObject3D extends GraphicsObject {
      * Functionality:
      */
 
-    public Vector3D reflection(LightRay ray) {
-        return texture.reflection(ray, surfaceNormal(ray.getPosition()));
+    public Vector3D reflection(Ray ray) {
+        return texture.reflection(ray.getDirection(), surfaceNormal(ray.getPosition()));
     }
 
     public abstract Vector3D surfaceNormal(Vector3D point);
