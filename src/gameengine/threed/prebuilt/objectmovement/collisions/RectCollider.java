@@ -36,27 +36,10 @@ public class RectCollider extends Collider3D<RectCollider> {
     public Vector3D surfaceNormal(Vector3D point) {
         Vector3D displacementNorm = getCenter().subtract(point);
 
-        Vector3D displacement = displacementNorm.abs();
-//
-//        Vector3D max = new Vector3D(
-//                Math.max(displacement.getX() - displacement.getZ(), Math.max(displacement.getX() - displacement.getY(), 0)),
-//                Math.max(displacement.getY() - displacement.getZ(), Math.max(displacement.getY() - displacement.getX(), 0)),
-//                Math.max(displacement.getZ() - displacement.getY(), Math.max(displacement.getZ() - displacement.getX(), 0))
-//        );
-//        System.out.println(max);
-//
-//        max = max.
-
-        return space.subtract(displacement).min().unitVector();
-
-//        double error = 0.1;
-//        if (displacement.getX() + error > space.getX()) {
-//            return new Vector3D(space.getX(), 0, 0);
-//        }
-//        if (displacement.getY() + error > space.getY()) {
-//            return new Vector3D(0, space.getY(), 0);
-//        }
-//        else return new Vector3D(0, 0, space.getZ());
+        return space.subtract(displacementNorm.abs())
+                .min()
+                .unitVector()
+                .multiplyAcross(displacementNorm.signs());
     }
 
     @Override

@@ -19,7 +19,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        800, 800, 1,
+                        700, 700, 0.3,
                         10, 100, 100, true)),
                 new PhysicsEngine3D());
     }
@@ -31,26 +31,34 @@ public class RayTracing extends GameDriver3D {
     @Override
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
+        mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
+        setupScene2();
+    }
+
+    private void setupScene2() {
+        double reflectivity = 0;
+
+        mainCam.setDirection(new Vector3D(1, 0, 0));
+        mainCam.setLocation(new Vector3D(-15, 0, 0));
+
+//        newObject(new Rectangle(5, 0, 0, new Vector3D(1, 5, 5), new BaseTexture(Color.RED, false, reflectivity)));
+//        newObject(new Rectangle(0, -5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
+        newObject(new Rectangle(0, 5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
+        newObject(new Rectangle(0, 0, -5, new Vector3D(5, 5, 1), new BaseTexture(Color.GREEN, false, reflectivity)));
+
+        newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
+    }
+
+    private void setupScene1() {
         double reflectivity = 0.3;
 
-        mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-//        mainCam.newPostProcess(new Smooth(0.3));
-
         newObject(new Rectangle(0, -1, -2, new Vector3D(1,1, 1), new BaseTexture(Color.AZURE, false, reflectivity)));
+//        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new BaseTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2, new BaseTexture(Color.AQUA, false, reflectivity)));
         newObject(new Sphere(-1, 2, -3, 3, new BaseTexture(Color.GREEN, false, reflectivity)));
         newObject(new Sphere(0, 0, 100, 100, new BaseTexture(Color.BROWN, false, reflectivity)));
-
-//        newObject(new Sphere(0, 205, 0, 100, Color.GRAY, true));
-//        newObject(new Sphere(0, -125, 0, 100, Color.DARKGRAY, true));
-
-//        newObject(new Sphere(-15, 0, -10, 7, Color.WHITE, true));
         newObject(new Sphere(-10, 2, -10, 7, Color.WHITE, true));
-//        newObject(new Sphere(-5, -14, -10, 3, Color.WHITE, true));
-//        newObject(new Sphere(-10, -20, -10, 3, Color.WHITE, true));
-
-//        mainCam.requestUpdate();
     }
 
     private void measureTimeWithoutDisplay() {

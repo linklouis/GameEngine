@@ -144,6 +144,10 @@ public abstract class Camera extends GameObject {
         return get(InPlane3D.class).getLocation();
     }
 
+    public void setLocation(Vector3D newLocation) {
+        get(InPlane3D.class).setLocation(newLocation);
+    }
+
     public WritableImage getImage() {
         return image;
     }

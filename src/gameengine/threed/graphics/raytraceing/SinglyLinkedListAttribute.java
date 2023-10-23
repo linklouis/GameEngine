@@ -1,6 +1,8 @@
 package gameengine.threed.graphics.raytraceing;
 
-public class SinglyLinkedList<E> {
+import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
+
+public class SinglyLinkedListAttribute {
     /**
      * A reference to the first Element in the list
      */
@@ -10,34 +12,43 @@ public class SinglyLinkedList<E> {
      */
     private final Element pointer = new Element(null, head);
 
-    public SinglyLinkedList() {
+    public SinglyLinkedListAttribute() {
         head = null;
     }
 
-    public SinglyLinkedList(E[] items) {
-        for (E item : items) {
+    public SinglyLinkedListAttribute(Collider3D<?>[] items) {
+        for (Collider3D<?> item : items) {
             add(item);
         }
     }
 
-    public SinglyLinkedList(SinglyLinkedList<E> items) {
+    public SinglyLinkedListAttribute(SinglyLinkedListAttribute items) {
         Element element = items.getHead();
-        while(element != null) {
+        while (element != null) {
+            add(element.getValue());
+            element = element.getNext();
+        }
+    }
+
+    public SinglyLinkedListAttribute(SinglyLinkedList<Collider3D<?>> items) {
+        SinglyLinkedList<Collider3D<?>>.Element element = items.getHead();
+        while (element != null) {
             add(element.getValue());
             element = element.getNext();
         }
     }
 
     public class Element {
-        Element next;
-        E value;
+        private Element next;
+        private final Collider3D<?> value;
+        private boolean isInRange = false;
 
-        public Element(E value, Element next) {
+        public Element(Collider3D<?> value, Element next) {
             this.value = value;
             this.next = next;
         }
 
-        public Element(E value) {
+        public Element(Collider3D<?> value) {
             this.value = value;
             this.next = null;
         }
@@ -59,12 +70,20 @@ public class SinglyLinkedList<E> {
             return next != null;
         }
 
-        public E getValue() {
+        public Collider3D<?> getValue() {
             return value;
+        }
+
+        public boolean isInRange() {
+            return isInRange;
+        }
+
+        public void setInRange(boolean inRange) {
+            isInRange = inRange;
         }
     }
 
-    public void add(E value) {
+    public void add(Collider3D<?> value) {
         setHead(new Element(value, head));
     }
 
@@ -95,3 +114,4 @@ public class SinglyLinkedList<E> {
         return output.toString();
     }
 }
+    

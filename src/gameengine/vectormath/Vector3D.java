@@ -233,6 +233,25 @@ public class Vector3D extends Vector<Vector3D> {
         return new Vector3D(x, y, z);
     }
 
+    public Vector3D signs() {
+        return new Vector3D(
+                getX() / Math.abs(getX()),
+                getY() / Math.abs(getY()),
+                getZ() / Math.abs(getZ())
+        );
+    }
+
+    public Vector3D multiplyAcross(Vector3D vector) {
+        return new Vector3D(
+//               getX() * vector.getX(),
+//               getY() * vector.getY(),
+//               getZ() * vector.getZ()
+                getX() < 0 ? -1 : 1,
+                getY() < 0 ? -1 : 1,
+                getZ() < 0 ? -1 : 1
+        );
+    }
+
     public double distance(Vector3D vector) {
         return Math.abs(subtract(vector).magnitude());
     }

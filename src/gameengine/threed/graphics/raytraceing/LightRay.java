@@ -16,7 +16,7 @@ public class LightRay {
     private final int NUM_ITERATIONS;
     private final double STEP_SIZE;
 
-    private final SinglyLinkedList<Collider3D<?>> objectsInFieldList;
+    private final SinglyLinkedListAttribute objectsInFieldList;
 
 
     /*
@@ -30,7 +30,7 @@ public class LightRay {
         this.MAX_BOUNCES = maxBounces;
         NUM_ITERATIONS = numIterations;
         STEP_SIZE = stepSize;
-        this.objectsInFieldList = new SinglyLinkedList<>(objectsInFieldList);
+        this.objectsInFieldList = new SinglyLinkedListAttribute(objectsInFieldList);
     }
 
 
@@ -58,9 +58,9 @@ public class LightRay {
 //        int num = 0;
 
 
-        for (int i = 1; i < NUM_ITERATIONS; i++) {
-            Vector3D newColor = getColorFromBounces(new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE)), startColor);
-            //            average = average.add(newColor);
+        for (int i = 0; i < NUM_ITERATIONS; i++) {
+            averageColor = averageColor.add(getColorFromBounces(new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE)), startColor));
+//            Vector3D newColor = getColorFromBounces(new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE)), startColor);
 //            if (newColor.magnitude() != 0) {
 //                average = average.add(newColor);
 //                num++;
@@ -71,12 +71,12 @@ public class LightRay {
 //                averageColor = averageColor.add(newColor.scalarMultiply(2));
 //                num += 2;
 //            } else {
-                averageColor = averageColor.add(newColor);
+//                averageColor = averageColor.add(newColor);
 //                num++;
 //            }
         }
 
-        return averageColor.scalarDivide(NUM_ITERATIONS + 1/*num*/).toColor();
+        return averageColor.scalarDivide(NUM_ITERATIONS/*num*/).toColor();
     }
 
 //    public Color getFinalColor() {
@@ -131,26 +131,47 @@ public class LightRay {
 //        return BLACK;
 //    }
 
-    public Vector3D getColorFromBounces(Ray startRay, Vector3D color) {
+    public Vector3D getColorFromBounces(Ray currentRay, Vector3D color) {
+        Collider3D<?> collision;
+
+        for (double bounces = 2; bounces <= MAX_BOUNCES; bounces++) {
+            collision = currentRay.firstCollision(
+                    objectsInFieldList, PRECISION_SCALE, MAX_DISTANCE);
+
+            if (collision == null) {
+                return BLACK;
+            }
+
+            color = color.add(getColor(collision, bounces));
+
+            if (collision.getTexture().isLightSource()) {
+                return color/*.scalarDivide(bounces*//* / 2*//*)*/;
+            }
+
+            currentRay = new Ray(currentRay.getPosition(),
+                    collision.reflection(currentRay).atMagnitude(STEP_SIZE));
+        }
+
+        return BLACK;
+    }
+
+    public Vector3D getColorFromBounces1(Ray currentRay, Vector3D color) {
         double bounces = 2;
-        Collider3D<?> collision = startRay.firstCollision(objectsInFieldList, PRECISION_SCALE, MAX_DISTANCE);
+        Collider3D<?> collision;// = startRay.firstCollision(objectsInFieldList, PRECISION_SCALE, MAX_DISTANCE);
+//
+//        if (collision == null) {
+//            return BLACK;
+//        }
+//
+//        color = color.add(getColor(collision, bounces));
+//
+//        if (collision.getTexture().isLightSource()) {
+//            return color;
+//        }
 
-        if (collision == null) {
-            return BLACK;
-        }
-
-        color = color.add(
-                new Vector3D(collision.getFromParent(Visual3D.class)
-                        .getAppearance().getColor())
-                        .scalarDivide(bounces / 2/* + 0.5*/));
-
-        if (collision.getTexture().isLightSource()) {
-            return color;
-        }
-
-        Ray currentRay =
-                new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE));
-        bounces++;
+//        Ray currentRay =
+//                new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE));
+//        bounces++;
 
         while (bounces <= MAX_BOUNCES) {
             collision =
@@ -160,22 +181,26 @@ public class LightRay {
                 return BLACK;
             }
 
-            color = color.add(
-                    new Vector3D(collision.getFromParent(Visual3D.class)
-                            .getAppearance().getColor())
-                            .scalarDivide(bounces / 2 /*+ 0.5*/));
+            color = color.add(getColor(collision, bounces));
 
             if (collision.getTexture().isLightSource()) {
                 return color;
             }
 
-            // Create a new LightRay with the reflection direction
-            currentRay = new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE));
+            // Create a new Ray with the reflection direction
+            currentRay = new Ray(currentRay.getPosition(), collision.reflection(currentRay).atMagnitude(STEP_SIZE));
+//            currentRay = new Ray(startRay.getPosition(), collision.reflection(startRay).atMagnitude(STEP_SIZE));
 
             bounces++;
         }
 
         return BLACK;
+    }
+
+    public Vector3D getColor(Collider3D<?> collision, double bounces) {
+        return new Vector3D(collision.getFromParent(Visual3D.class)
+                .getAppearance().getColor())
+                .scalarDivide(/*2 / */bounces / 2/* + 0.5*/);
     }
 
     public Vector3D getColorFromBounces() {
@@ -269,11 +294,11 @@ public class LightRay {
 //        return Color.BLACK;
 //    }
 //
-//    private Collider3D<?> updateCollisions(SinglyLinkedList<Collider3D<?>> colliders) {
+//    private Collider3D<?> updateCollisions(SinglyLinkedListAttribute colliders) {
 //        if (colliders.isEmpty()) {
 //            position = position.add(actualMove);
 //        } else {
-//            SinglyLinkedList<Collider3D<?>>.Element element = colliders.getPointer();
+//            SinglyLinkedListAttribute.Element element = colliders.getPointer();
 //            while (element.hasNext()) {
 //                Collider3D<?> collider = element.getNext().getValue();
 //                if (collider.inRange(position)) {
