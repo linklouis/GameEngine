@@ -15,16 +15,16 @@ public class Ray {
     }
 
     public Collider3D<?> firstCollision(SinglyLinkedListAttribute objectsInFieldList, double precisionScale) {
-        SinglyLinkedListAttribute inRangeOf = new SinglyLinkedListAttribute();
+//        SinglyLinkedListAttribute inRangeOf = new SinglyLinkedListAttribute();
 
-        double closestDist = getFirstCollisionDistance(objectsInFieldList, inRangeOf);
+//        double closestDist = getFirstCollisionDistance(objectsInFieldList, inRangeOf);
+//
+//        if (closestDist == Double.MAX_VALUE){
+//            return null;
+//        }
+//        position = position.add(direction.unitVector().scalarMultiply(closestDist /*- *//*0.01*//*checkMove.magnitude()*/));
 
-        if (closestDist == Double.MAX_VALUE){
-            return null;
-        }
-        position = position.add(direction.unitVector().scalarMultiply(closestDist /*- *//*0.01*//*checkMove.magnitude()*/));
-
-        return getCollision(inRangeOf, precisionScale);
+        return getFirstCollision(objectsInFieldList);//getCollision(inRangeOf, precisionScale);
     }
 
     public double getFirstCollisionDistance(SinglyLinkedListAttribute objectsInFieldList, SinglyLinkedListAttribute inRangeOf) {
@@ -32,7 +32,7 @@ public class Ray {
 
         SinglyLinkedListAttribute.Element element = objectsInFieldList.getHead();
         while (element != null) {
-            double newDistance = element.getValue().distanceToEnterRange(start, direction);
+            double newDistance = element.getValue().distanceToCollide(this);
             if (newDistance > 0) {
                 inRangeOf.add(element.getValue());
                 if (newDistance < closestDist) {
@@ -43,6 +43,29 @@ public class Ray {
         }
 
         return closestDist;
+    }
+
+    public Collider3D<?> getFirstCollision(SinglyLinkedListAttribute objectsInFieldList) {
+        double closestDist = Double.MAX_VALUE;
+        Collider3D<?> closest = null;
+
+        SinglyLinkedListAttribute.Element element = objectsInFieldList.getHead();
+        while (element != null) {
+            double newDistance = element.getValue().distanceToCollide(this);
+            if (newDistance >= 0) {
+                if (newDistance < closestDist) {
+                    closestDist = newDistance;
+                    closest = element.getValue();
+                }
+            }
+            element = element.getNext();
+        }
+
+        if (closestDist != Double.MAX_VALUE) {
+            position = start.add(direction.unitVector().scalarMultiply(closestDist));
+        }
+
+        return closest;
     }
 
     private Collider3D<?> getCollision(SinglyLinkedListAttribute colliders, double precisionScale) {

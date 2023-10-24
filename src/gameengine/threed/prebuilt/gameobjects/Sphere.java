@@ -7,6 +7,7 @@ import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.SphereCollider;
+import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -17,6 +18,13 @@ public class Sphere extends GameObject {
         super(new SphereCollider(), new InPlane3D(), new Visual3D());
         get(SphereCollider.class).instantiate(this, r, texture);
         get(InPlane3D.class).instantiate(this, x, y, z);
+        get(Visual3D.class).instantiate(this, get(SphereCollider.class));
+    }
+
+    public Sphere(Vector3D position, double r, Texture texture) {
+        super(new SphereCollider(), new InPlane3D(), new Visual3D());
+        get(SphereCollider.class).instantiate(this, r, texture);
+        get(InPlane3D.class).instantiate(this, position);
         get(Visual3D.class).instantiate(this, get(SphereCollider.class));
     }
 

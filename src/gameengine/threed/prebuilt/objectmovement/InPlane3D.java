@@ -39,7 +39,7 @@ public class InPlane3D extends Modifier {
         return new ArgumentContext[] {
                 new ArgumentContext(
                         new ModifierInstantiateParameter<>(
-                                "location", Vector3D.class, this)
+                                "location", Vector3D.class, this::setLocation)
                 ),
                 new ArgumentContext(
                         new ModifierInstantiateParameter<>(

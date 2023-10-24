@@ -2,6 +2,7 @@ package gameengine.threed.prebuilt.objectmovement.physics;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.vectormath.Vector3D;
@@ -21,7 +22,7 @@ public class PhysicsObject3D extends GraphicsObject3D {
     }
 
     @Override
-    public Vector3D surfaceNormal(Vector3D point, Vector3D incident) {
-        return getFromParent(Collider3D.class).surfaceNormal(point, incident);
+    public Vector3D surfaceNormal(Ray ray) {
+        return getFromParent(Collider3D.class).surfaceNormal(ray);
     }
 }

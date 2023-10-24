@@ -213,14 +213,11 @@ public class Vector3D extends Vector<Vector3D> {
     }
 
     public Vector3D crossProduct(final Vector3D other) {
-        final double[] resultComponents = new double[size()];
-        resultComponents[0] =
-                this.getY() * other.getZ() - this.getZ() * other.getY();
-        resultComponents[1] =
-                this.getZ() * other.getX() - this.getX() * other.getZ();
-        resultComponents[2] =
-                this.getX() * other.getY() - this.getY() * other.getX();
-        return newVector(resultComponents);
+        return newVector(
+                this.getY() * other.getZ() - this.getZ() * other.getY(),
+                this.getZ() * other.getX() - this.getX() * other.getZ(),
+                this.getX() * other.getY() - this.getY() * other.getX()
+        );
     }
 
     public static Vector3D random(double min, double max) {
@@ -249,10 +246,29 @@ public class Vector3D extends Vector<Vector3D> {
         );
     }
 
+    public Vector3D divideAcross(Vector3D vector) {
+        return new Vector3D(
+                getX() / vector.getX(),
+                getY() / vector.getY(),
+                getZ() / vector.getZ()
+        );
+    }
+
     public double distance(Vector3D vector) {
         return Math.abs(subtract(vector).magnitude());
     }
 
+    public Vector3D onlyX() {
+        return new Vector3D(getX(), 0, 0);
+    }
+
+    public Vector3D onlyY() {
+        return new Vector3D(0, getY(), 0);
+    }
+
+    public Vector3D onlyZ() {
+        return new Vector3D(0, 0, getZ());
+    }
 
     /*
      * Utilities:

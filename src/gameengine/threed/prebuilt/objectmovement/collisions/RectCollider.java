@@ -1,6 +1,7 @@
 package gameengine.threed.prebuilt.objectmovement.collisions;
 
 import gameengine.threed.graphics.Texture;
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
@@ -33,8 +34,13 @@ public class RectCollider extends Collider3D<RectCollider> {
     }
 
     @Override
-    public Vector3D surfaceNormal(Vector3D point, Vector3D incident) {
-        Vector3D displacement = point.subtract(getCenter());
+    public double distanceToCollide(Ray ray) {
+        return distanceToEnterRange(ray.getStart(), ray.getDirection());
+    }
+
+    @Override
+    public Vector3D surfaceNormal(Ray ray) {
+        Vector3D displacement = ray.getPosition().subtract(getCenter());
 
         return displacement.abs().subtract(space.abs()).abs()
                 .min()

@@ -2,6 +2,7 @@ package gameengine.threed.prebuilt.objectmovement.collisions;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.Texture;
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
@@ -21,8 +22,8 @@ public class SphereCollider extends Collider3D<SphereCollider> {
     }
 
     @Override
-    public Vector3D surfaceNormal(Vector3D point, Vector3D incident) {
-        return point.subtract(getCenter()).unitVector();
+    public Vector3D surfaceNormal(Ray ray) {
+        return ray.getPosition().subtract(getCenter()).unitVector();
     }
 
     @Override
@@ -40,6 +41,11 @@ public class SphereCollider extends Collider3D<SphereCollider> {
                                 this::setTexture)
                 )
         };
+    }
+
+    @Override
+    public double distanceToCollide(Ray ray) {
+        return distanceToEnterRange(ray.getStart(), ray.getDirection());
     }
 
     @Override
