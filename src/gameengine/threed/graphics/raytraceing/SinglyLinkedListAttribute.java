@@ -88,7 +88,7 @@ public class SinglyLinkedListAttribute {
     }
 
     public boolean isEmpty() {
-        return head == null || head.getValue() == null;
+        return head == null;
     }
 
     public Element getHead() {

@@ -21,7 +21,7 @@ public class PhysicsObject3D extends GraphicsObject3D {
     }
 
     @Override
-    public Vector3D surfaceNormal(Vector3D point) {
-        return getFromParent(Collider3D.class).surfaceNormal(point);
+    public Vector3D surfaceNormal(Vector3D point, Vector3D incident) {
+        return getFromParent(Collider3D.class).surfaceNormal(point, incident);
     }
 }

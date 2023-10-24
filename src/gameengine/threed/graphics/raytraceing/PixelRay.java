@@ -12,10 +12,6 @@ public class PixelRay {
 
     private final double PRECISION_SCALE;
 
-    /**
-     * The maximum distance single {@link Ray}s can move from their start before the path is declared to miss all objects
-     */
-    private final double MAX_DISTANCE;
     private final double STEP_SIZE;
     private final int MAX_BOUNCES;
     private final int NUM_ITERATIONS;
@@ -27,12 +23,11 @@ public class PixelRay {
      * Construction:
      */
 
-    public PixelRay(Ray startRay, double precisionScale, double maxDistance,
-                    int maxBounces, int numIterations, double stepSize,
+    public PixelRay(Ray startRay, double precisionScale, int maxBounces,
+                    int numIterations, double stepSize,
                     Collider3D<?>[] objectsInFieldList) {
         this.startRay = startRay;
         PRECISION_SCALE = precisionScale;
-        this.MAX_DISTANCE = maxDistance;
         this.MAX_BOUNCES = maxBounces;
         NUM_ITERATIONS = numIterations;
         STEP_SIZE = stepSize;
@@ -49,8 +44,7 @@ public class PixelRay {
         Collider3D<?> collision = startRay
                 .firstCollision(
                         objectsInFieldList,
-                        PRECISION_SCALE,
-                        MAX_DISTANCE);
+                        PRECISION_SCALE);
 
         if (collision == null) {
             return Color.BLACK;
@@ -85,7 +79,7 @@ public class PixelRay {
 
         for (double bounces = 2; bounces <= MAX_BOUNCES; bounces++) {
             collision = currentRay.firstCollision(
-                    objectsInFieldList, PRECISION_SCALE, MAX_DISTANCE);
+                    objectsInFieldList, PRECISION_SCALE);
 
             if (collision == null) {
                 return BLACK;

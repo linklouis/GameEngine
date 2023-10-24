@@ -29,7 +29,6 @@ public class RayTracedCamera extends Camera {
     private boolean multiThreaded;
     private double marchDistance;
     private int maxBounces;
-    private double maxDistance;
     public long renderTime;
 
 
@@ -40,11 +39,10 @@ public class RayTracedCamera extends Camera {
     public RayTracedCamera(double x, double y, double z, Vector3D direction,
                            int imageWidth, int imageHeight,
                            double marchDistance, int maxBounces,
-                           double maxDistance, int raysPerPixel, boolean multiThreaded, double fieldOfViewDegrees) {
+                           int raysPerPixel, boolean multiThreaded, double fieldOfViewDegrees) {
         super(x, y, z, direction, imageWidth, imageHeight, fieldOfViewDegrees);
         this.marchDistance = marchDistance;
         this.maxBounces = maxBounces;
-        this.maxDistance = maxDistance;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
     }
@@ -52,12 +50,11 @@ public class RayTracedCamera extends Camera {
     public RayTracedCamera(double x, double y, double z, Vector3D direction,
                            int imageWidth, int imageHeight,
                            double marchDistance, int maxBounces,
-                           double maxDistance, int raysPerPixel,
+                           int raysPerPixel,
                            boolean multiThreaded) {
         super(x, y, z, direction, imageWidth, imageHeight, 60.0);
         this.marchDistance = marchDistance;
         this.maxBounces = maxBounces;
-        this.maxDistance = maxDistance;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
     }
@@ -220,7 +217,7 @@ public class RayTracedCamera extends Camera {
 
         PixelRay pixelRay = new PixelRay(
                 new Ray(getLocation(), getRayPath(x, y).atMagnitude(marchDistance)),
-                0.4, maxDistance, maxBounces, raysPerPixel, marchDistance, objects);
+                0.4, maxBounces, raysPerPixel, marchDistance, objects);
 
         image.getPixelWriter().setColor(x, y, pixelRay.getFinalColor());
     }
@@ -343,10 +340,6 @@ public class RayTracedCamera extends Camera {
 
     public int getMaxBounces() {
         return maxBounces;
-    }
-
-    public double getMaxDistance() {
-        return maxDistance;
     }
 
     public double getScreenProjectionSize() {

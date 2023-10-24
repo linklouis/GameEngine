@@ -21,7 +21,7 @@ public class SphereCollider extends Collider3D<SphereCollider> {
     }
 
     @Override
-    public Vector3D surfaceNormal(Vector3D point) {
+    public Vector3D surfaceNormal(Vector3D point, Vector3D incident) {
         return point.subtract(getCenter()).unitVector();
     }
 

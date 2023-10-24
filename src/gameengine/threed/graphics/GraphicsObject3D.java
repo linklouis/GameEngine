@@ -27,10 +27,10 @@ public abstract class GraphicsObject3D extends GraphicsObject {
      */
 
     public Vector3D reflection(Ray ray) {
-        return texture.reflection(ray.getDirection(), surfaceNormal(ray.getPosition()));
+        return texture.reflection(ray.getDirection(), surfaceNormal(ray.getPosition(), ray.getDirection()));
     }
 
-    public abstract Vector3D surfaceNormal(Vector3D point);
+    public abstract Vector3D surfaceNormal(Vector3D point, Vector3D incident);
 
 
     /*

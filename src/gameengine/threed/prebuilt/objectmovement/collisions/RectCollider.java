@@ -33,7 +33,7 @@ public class RectCollider extends Collider3D<RectCollider> {
     }
 
     @Override
-    public Vector3D surfaceNormal(Vector3D point) {
+    public Vector3D surfaceNormal(Vector3D point, Vector3D incident) {
         Vector3D displacement = point.subtract(getCenter());
 
         return displacement.abs().subtract(space.abs()).abs()
