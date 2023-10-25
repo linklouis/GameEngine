@@ -127,7 +127,6 @@ public class TriCollider extends Collider3D<TriCollider> {
      *
      * @return True if the point is within the vertices, otherwise false.
      */
-    @Override
     public boolean inRange(Vector3D point) {
         // Calculate the vectors from the vertices of the triangle to the given point
         Vector3D v2 = point.subtract(vertex1);

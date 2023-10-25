@@ -15,6 +15,7 @@ public class RectCollider extends Collider3D<RectCollider> {
      * Defines the size of the Rectangle.
      */
     private Vector3D space;
+    private double range;
 
     @Override
     public ArgumentContext[] getArgumentContexts() {
@@ -36,6 +37,44 @@ public class RectCollider extends Collider3D<RectCollider> {
     @Override
     public double distanceToCollide(Ray ray) {
         return distanceToEnterRange(ray.getPosition(), ray.getDirection());
+    }
+
+    /**
+     * Finds the first intersection a ray, starting at start and moving in
+     * direction dir, would have with the range sphere.
+     *
+     * @return -1 if never enters range or if collision is behind start.
+     * Otherwise, the distance to first hit
+     */
+    public double distanceToEnterRange(Vector3D start, Vector3D dir) {
+        if (contains(start)) {
+            return 0;
+        }
+        double stepSize = dir.magnitude();
+        dir = dir.unitVector();
+
+        Vector3D Q = start.subtract(getCenter());
+        double b = dir.scalarMultiply(2).dotProduct(Q);
+//        double c = Q.dotProduct(Q) - getRange() * getRange();
+        double d = b * b - 4 * (Q.dotProduct(Q) - getRange() * getRange())/*c*/;  // discriminant of quadratic
+
+        if (d <= 0) {
+            return -1; // Solutions are complex, so no intersections
+        } else {
+            // Intersections exists
+            double t1 = (-b + Math.sqrt(d)) / (2);
+            double t2 = (-b - Math.sqrt(d)) / (2);
+            if (Math.abs(t1 - t2) <= stepSize) {
+                return -1;
+            }
+            if (Math.min(t1, t2) < 0) {
+                if (Math.max(t1, t2) < 0) {
+                    return -1;
+                }
+                return Math.max(t1, t2);
+            }
+            return Math.min(t1, t2);
+        }
     }
 
     @Override
@@ -167,5 +206,13 @@ public class RectCollider extends Collider3D<RectCollider> {
     public void setSpace(Vector3D space) {
         this.space = space;
         setRange(Math.abs(space.magnitude()));
+    }
+
+    public double getRange() {
+        return range;
+    }
+
+    public void setRange(double range) {
+        this.range = range;
     }
 }
