@@ -207,18 +207,42 @@ public class RayTracedCamera extends Camera {
 //        }
 //    }
 
+//    private Vector3D localPixelLocation(double x, double y) {
+//        double halfWidth = getWidth() / 2.0;
+//        double halfHeight = getHeight() / 2.0;
+//
+//        double aspectRatio = getWidth() / getHeight();
+//        double scaleX = Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+//        double scaleY = scaleX / aspectRatio;
+//
+//        double localX = (x - halfWidth) / halfWidth * scaleX;
+//        double localY = (halfHeight - y) / halfHeight * scaleY;
+//
+//        return new Vector3D(localX, localY, screenDistance);
+//    }
+
     private Vector3D localPixelLocation(double x, double y) {
-        double halfWidth = getWidth() / 2.0;
-        double halfHeight = getHeight() / 2.0;
+        // Easier to read version, but less efficient:
+//        double halfWidth = getWidth() / 2.0;
+//        double halfHeight = getHeight() / 2.0;
+//
+//        double aspectRatio = getWidth() / getHeight();
+//        double scaleX = Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+//        double scaleY = scaleX / aspectRatio;
+//
+//        double localX = (x - halfWidth) / halfWidth * scaleX;
+//        double localY = (halfHeight - y) / halfHeight * scaleY;
+//
+//        return new Vector3D(localX, localY, screenDistance);
+//        double halfWidth = getWidth() / 2.0;
+//        double halfHeight = getHeight() / 2.0;
 
-        double aspectRatio = getWidth() / getHeight();
         double scaleX = Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
-        double scaleY = scaleX / aspectRatio;
 
-        double localX = (x - halfWidth) / halfWidth * scaleX;
-        double localY = (halfHeight - y) / halfHeight * scaleY;
-
-        return new Vector3D(localX, localY, screenDistance);
+        return new Vector3D(
+                scaleX * (2 * x - getWidth()) / getWidth(),
+                scaleX * getWidth() * (getHeight() - 2 * y) / (getHeight() * getHeight()),
+                screenDistance);
     }
 
     private Vector3D getRayPath(double x, double y) {

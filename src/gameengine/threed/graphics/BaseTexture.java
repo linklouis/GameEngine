@@ -12,6 +12,7 @@ public class BaseTexture extends Texture {
     @Override
     public Vector3D reflection(Vector3D rayDirection, Vector3D surfaceNormal) {
         Vector3D reflection;
+        surfaceNormal = surfaceNormal.unitVector();
 
         if (Math.random() > getReflectivity()) {
             reflection = Vector3D.random(-1, 1);

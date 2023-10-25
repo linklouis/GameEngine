@@ -5,7 +5,6 @@ import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.Ray;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.twod.prebuilt.objectmovement.collisions.CollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.collisions.PhysicsCollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
@@ -100,26 +99,12 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
                 );
     }
 
-//    public boolean willEnterRange(Vector3D start, Vector3D dir) {
-//        dir = dir.unitVector();
-//
-//        Vector3D Q = start.subtract(getCenter());
-//        double a = dir.dotProduct(dir);      // should be = 1
-//        double b = dir.scalarMultiply(2).dotProduct(Q);
-//        double c = Q.dotProduct(Q) - getRange() * getRange();
-//        double d = b * b - 4 * a * c;  // discriminant of quadratic
-//
-//        return !(d < 0);
-//    }
-
-
-
-    public abstract double distanceToCollide(Ray ray);
-
 
     /*
      * Abstract Methods:
      */
+
+    public abstract double distanceToCollide(Ray ray, double curSmallestDist);
 
     public abstract boolean isColliding(ColliderType coll);
 

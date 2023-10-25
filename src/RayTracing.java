@@ -2,6 +2,7 @@ import gameengine.drivers.GameDriver3D;
 import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
+import gameengine.threed.prebuilt.gameobjects.RectPlane;
 import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
@@ -19,7 +20,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 10, 10, true)),
+                        1000, 1000, 15, 100, true)),
                 new PhysicsEngine3D());
     }
 
@@ -31,47 +32,53 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        setupScene1();
+        setupScene2();
     }
 
     private void setupScene2() {
-        double reflectivity = 0.9;
+        double reflectivity = 0.8;
 
         mainCam.setDirection(new Vector3D(1, 0, 0));
         mainCam.setLocation(new Vector3D(-10, 0, 0));
 
         newObject(new Sphere(0, 0, 0, 2, new BaseTexture(Color.WHITE, false, 0.9)));
 
-        newObject(new Rectangle(5, 0, 0, new Vector3D(1, 5, 5), new BaseTexture(Color.RED, false, reflectivity)));
-        newObject(new Rectangle(0, -5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
-        newObject(new Rectangle(0, 5, 0, new Vector3D(5, 1, 5), new BaseTexture(Color.BLUE, false, reflectivity)));
-        newObject(new Rectangle(0, 0, -5, new Vector3D(5, 5, 1), new BaseTexture(Color.GREEN, false, reflectivity)));
-        newObject(new Rectangle(0, 0, 5, new Vector3D(5, 5, 1), new BaseTexture(Color.GREEN, false, reflectivity)));
+        double wallSize = 10;
+        double hWallSize = wallSize / 2;
+        new RectPlane(hWallSize, -hWallSize, -hWallSize, new Vector3D(0, wallSize, wallSize), new BaseTexture(Color.RED, false, reflectivity)).initiate(this);
+        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), new BaseTexture(Color.BLUE, false, reflectivity)).initiate(this);
+        new RectPlane(-hWallSize, hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), new BaseTexture(Color.BLUE, false, reflectivity)).initiate(this);
+        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, wallSize, 0), new BaseTexture(Color.GREEN, false, reflectivity)).initiate(this);
+        new RectPlane(-hWallSize, -hWallSize, hWallSize, new Vector3D(wallSize, wallSize, 0), new BaseTexture(Color.GREEN, false, reflectivity)).initiate(this);
 
         newObject(new Rectangle(-12, 0, 0, new Vector3D(1, 5, 5), new BaseTexture(Color.RED, true, 0)));
 
-//        setupBoundingBox(20);
+        setupBoundingBox(40);
 
         newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
     }
 
-    private void setupBoundingBox(double size) {
+    private void setupBoundingBox(double wallSize) {
+        double hWallSize = wallSize / 2;
+        Color color = Color.GRAY;
 //        new Rectangle(-size, -size / 2, -size / 2, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, true, 0)).initiate(this);
 //        new Rectangle(size, -size / 2, -size / 2, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
 //        new Rectangle(-size / 2, -size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
 //        new Rectangle(-size / 2, size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
 //        new Rectangle(-size / 2, -size / 2, -size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
 //        new Rectangle(-size / 2, -size / 2, size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
-        new Rectangle(-size, -size, -size, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, true, 0)).initiate(this);
-        new Rectangle(size, -size, -size, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
-        new Rectangle(size / 2, -size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
-        new Rectangle(-size / 2, size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
-        new Rectangle(-size / 2, -size / 2, -size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
-        new Rectangle(-size / 2, -size / 2, size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+        new Rectangle(hWallSize, -hWallSize, -hWallSize, new Vector3D(1, wallSize, wallSize),  new BaseTexture(color, false, 0)).initiate(this);
+        new Rectangle(-hWallSize, -hWallSize, -hWallSize, new Vector3D(1, wallSize, wallSize),  new BaseTexture(color, false, 0)).initiate(this);
+        new Rectangle(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, 1, wallSize),new BaseTexture(color, false, 0)).initiate(this);
+        new Rectangle(-hWallSize, hWallSize, -hWallSize, new Vector3D(wallSize, 1, wallSize), new BaseTexture(color, false, 0)).initiate(this);
+        new Rectangle(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, wallSize, 1),new BaseTexture(color, false, 0)).initiate(this);
+        new Rectangle(-hWallSize, -hWallSize, hWallSize, new Vector3D(wallSize, wallSize, 1),  new BaseTexture(color, false, 0)).initiate(this);
+        new Rectangle(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, wallSize, 1),  new BaseTexture(color, false, 0)).initiate(this);
+//        new BaseTexture(Color.GRAY, false, 0)).initiate(this);
     }
 
     private void setupScene1() {
-        double reflectivity = 0.8;
+        double reflectivity = 0.7;
 
         new Rectangle(-1, -2, -3, new Vector3D(2,2, 2), new BaseTexture(Color.AZURE, false, reflectivity)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new BaseTexture(Color.AZURE, false, reflectivity)));

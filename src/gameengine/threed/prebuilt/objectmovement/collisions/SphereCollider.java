@@ -51,7 +51,7 @@ public class SphereCollider extends Collider3D<SphereCollider> {
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray ray) {
+    public double distanceToCollide(Ray ray, double curSmallestDist) {
         if (contains(ray.getPosition())) {
             return 0;
         }
