@@ -121,7 +121,7 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
      * Otherwise, the distance to first hit
      */
     public double distanceToEnterRange(Vector3D start, Vector3D dir) {
-        if (inRange(start)) {
+        if (contains(start)) {
             return 0;
         }
         double stepSize = dir.magnitude();
@@ -247,6 +247,10 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
     public GraphicsObject3D getAppearance() {
         return getFromParent(Visual3D.class)
                 .getAppearance();
+    }
+
+    public double distToRange(Vector3D point) {
+        return point.subtract(getCenter()).magnitude() - range;
     }
 
     public double getRange() {

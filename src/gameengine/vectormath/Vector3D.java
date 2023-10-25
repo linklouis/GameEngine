@@ -150,6 +150,12 @@ public class Vector3D extends Vector<Vector3D> {
                 + getZ() * getZ());
     }
 
+    public double dotWithSelf() {
+        return getX() * getX()
+                + getY() * getY()
+                + getZ() * getZ();
+    }
+
     @Override
     public Vector3D unitVector() {
         double magnitude = magnitude();

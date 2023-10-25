@@ -43,10 +43,10 @@ public class ArgumentContext {
     }
 
     private void instantiateWithArgs(Object[] args) {
-        getOtherSetup().run();
         for (int index = 0; index < args.length; index++) {
             parameters[index].acceptValue(args[index]);
         }
+        getOtherSetup().run();
     }
 
     public boolean argumentsValidForContext(Object[] args) {

@@ -19,7 +19,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 10, 10, true)),
+                        700, 700, 10, 100, true)),
                 new PhysicsEngine3D());
     }
 
@@ -56,16 +56,22 @@ public class RayTracing extends GameDriver3D {
     }
 
     private void setupBoundingBox(double size) {
-        newObject(new Rectangle(-size, 0, 0, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)));
-        newObject(new Rectangle(size, 0, 0, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)));
-        newObject(new Rectangle(0, -size, 0, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)));
-        newObject(new Rectangle(0, size, 0, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)));
-        newObject(new Rectangle(0, 0, -size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)));
-        newObject(new Rectangle(0, 0, size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)));
+//        new Rectangle(-size, -size / 2, -size / 2, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, true, 0)).initiate(this);
+//        new Rectangle(size, -size / 2, -size / 2, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+//        new Rectangle(-size / 2, -size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+//        new Rectangle(-size / 2, size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+//        new Rectangle(-size / 2, -size / 2, -size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+//        new Rectangle(-size / 2, -size / 2, size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+        new Rectangle(-size, -size, -size, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, true, 0)).initiate(this);
+        new Rectangle(size, -size, -size, new Vector3D(1, size, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+        new Rectangle(size / 2, -size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+        new Rectangle(-size / 2, size, -size / 2, new Vector3D(size, 1, size), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+        new Rectangle(-size / 2, -size / 2, -size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
+        new Rectangle(-size / 2, -size / 2, size, new Vector3D(size, size, 1), new BaseTexture(Color.GRAY, false, 0)).initiate(this);
     }
 
     private void setupScene1() {
-        double reflectivity = 0.3;
+        double reflectivity = 0.8;
 
         new Rectangle(-1, -2, -3, new Vector3D(2,2, 2), new BaseTexture(Color.AZURE, false, reflectivity)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new BaseTexture(Color.AZURE, false, reflectivity)));
@@ -131,7 +137,42 @@ public class RayTracing extends GameDriver3D {
 //        newObject(new Sphere(p1, r, new BaseTexture(Color.RED, true, 0)));
 //        newObject(new Sphere(p2, r, new BaseTexture(Color.GREEN, true, 0)));
 //        newObject(new Sphere(p3, r, new BaseTexture(Color.BLUE, true, 0)));
+    }
 
+    private void setupScene5() {
+        double reflectivity = 0.5;
+
+        mainCam.setDirection(new Vector3D(-0.5, -0.5, -1));
+        mainCam.setLocation(new Vector3D(5, 5, 10));
+
+        newObject(new Sphere(0, 0, 20, 10, new BaseTexture(Color.WHITE, true, 0)));
+
+        setupBoundingBox(5);
+
+//        double range = 10;
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+//        setupRandRect(range, reflectivity);
+    }
+
+    private void setupRandRect(double range, double reflectivity) {
+        new Rectangle(
+                randomInRange(range), randomInRange(range), randomInRange(range),
+                new Vector3D(randomInRange(range),randomInRange(range), randomInRange(range)),
+                new BaseTexture(new Color(Math.random(), Math.random(), Math.random(), 1), false, reflectivity)).initiate(this);
+    }
+
+    private double randomInRange(double range) {
+        return Math.random() * range - range / 2;
     }
 
     private void measureTimeWithoutDisplay() {

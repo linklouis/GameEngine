@@ -35,7 +35,7 @@ public class RectCollider extends Collider3D<RectCollider> {
 
     @Override
     public double distanceToCollide(Ray ray) {
-        return distanceToEnterRange(ray.getStart(), ray.getDirection());
+        return distanceToEnterRange(ray.getPosition(), ray.getDirection());
     }
 
     @Override

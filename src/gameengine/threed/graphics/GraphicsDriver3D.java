@@ -32,6 +32,7 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
     @Override
     public void initialize(Stage stage) {
         setRoot(new VBox());
+        getRoot().setPrefSize(camera.getWidth(), camera.getHeight());
         setScene(new Scene(getRoot(), Color.BLACK));
 
         stage.setScene(getScene());

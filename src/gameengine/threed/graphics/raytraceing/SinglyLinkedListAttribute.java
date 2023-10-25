@@ -41,7 +41,7 @@ public class SinglyLinkedListAttribute {
     public class Element {
         private Element next;
         private final Collider3D<?> value;
-        private boolean isInRange = false;
+//        private boolean isInRange = false;
 
         public Element(Collider3D<?> value, Element next) {
             this.value = value;
@@ -74,13 +74,13 @@ public class SinglyLinkedListAttribute {
             return value;
         }
 
-        public boolean isInRange() {
-            return isInRange;
-        }
-
-        public void setInRange(boolean inRange) {
-            isInRange = inRange;
-        }
+//        public boolean isInRange() {
+//            return isInRange;
+//        }
+//
+//        public void setInRange(boolean inRange) {
+//            isInRange = inRange;
+//        }
     }
 
     public void add(Collider3D<?> value) {

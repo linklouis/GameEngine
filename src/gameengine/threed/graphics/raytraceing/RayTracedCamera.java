@@ -117,18 +117,19 @@ public class RayTracedCamera extends Camera {
     }
 
     private void renderUnthreaded(WritableImage image, Collider3D<?>[] objects) {
-        for (int pixelX = 0; pixelX < getWidth(); pixelX++) {
-            for (int pixelY = 0; pixelY < getHeight(); pixelY++) {
-                renderPixelAt(pixelX, pixelY, image, objects);
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                PixelRay pixelRay = new PixelRay(
+                        new Ray(getLocation(), getRayPath(x, y)),
+                        maxBounces, raysPerPixel, objects);
+
+                image.getPixelWriter().setColor(x, y, pixelRay.getFinalColor());
             }
         }
     }
 
-//    public static int numRendered = 0;
     private void renderThreaded(WritableImage image, Collider3D<?>[] objects) {
-//        numRendered = 0;
         int numThreads = Runtime.getRuntime().availableProcessors();
-//        System.out.println(numThreads);
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads - 1);
 
         // Split the canvas into smaller tasks for multithreading
@@ -137,12 +138,15 @@ public class RayTracedCamera extends Camera {
                 int finalX = pixelX;
                 int finalY = pixelY;
                 threadPool.submit(() -> {
-                    renderPixelAt(finalX, finalY, image, objects);
+                    image.getPixelWriter().setColor(finalX, finalY,
+                            new PixelRay(
+                                    new Ray(getLocation(), getRayPath(finalX, finalY)),
+                                    maxBounces, raysPerPixel, objects).getFinalColor());
+//                    renderPixelAt(finalX, finalY, image, objects);
                 });
             }
         }
 
-//        System.out.println("start");
         // Make sure all threads are completed before moving forward
         threadPool.shutdown();
         try {
@@ -150,68 +154,10 @@ public class RayTracedCamera extends Camera {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-//        System.out.println("end");
-
     }
-
-//    private void renderPixelAt1(int x, int y, WritableImage image,
-//                               Collider3D<?>[] objects) {
-//        Vector3D rayPath = getRayPath(x, y);
-//        int num = 0;
-//
-//        PixelRay ray = new PixelRay(
-//                getLocation(), rayPath, marchDistance, maxDistance, maxBounces, objects);
-//        Collider3D<?> firstCollision = ray.firstCollision();
-//
-//        if (firstCollision == null) {
-//            image.getPixelWriter().setColor(x, y, Color.BLACK);
-//            return;
-//        }
-//        if (firstCollision.getTexture().isLightSource()) {
-//            Color pixelColor = firstCollision.getFromParent(Visual3D.class)
-//                    .getAppearance()
-//                    .getColor();
-//            image.getPixelWriter().setColor(x, y, pixelColor);
-//            return;
-//        }
-//
-//        Vector3D firstPosition = ray.getPosition();
-//        Vector3D firstColor = new Vector3D(
-//                firstCollision.getFromParent(Visual3D.class)
-//                        .getAppearance()
-//                        .getColor());
-//
-//        Vector3D average = new Vector3D(0);
-//        for (int i = 0; i < raysPerPixel; i++) {
-//            ray = new PixelRay(
-//                    getLocation(), rayPath, marchDistance, maxDistance,
-//                    maxBounces, objects);
-//            Vector3D newColor = new Vector3D(ray.getColorFromBounces(
-//                    firstPosition, firstCollision, firstColor));
-////            average = average.add(newColor);
-////            if (newColor.magnitude() != 0) {
-////                average = average.add(newColor);
-////                num++;
-////            } else {
-////                num += 2;
-////            }
-//            if (newColor.magnitude() != 0) {
-//                average = average.add(newColor/*.scalarMultiply(2)*/);
-//                num += 2;
-//            } else {
-//                average = average.add(newColor);
-//                num++;
-//            }
-//        }
-//        average = average.scalarDivide(/*raysPerPixel*/num);
-//
-//        Color pixelColor = average.toColor();
-//        image.getPixelWriter().setColor(x, y, pixelColor);
-//    }
 
     private void renderPixelAt(int x, int y, WritableImage image,
                                Collider3D<?>[] objects) {
-
         PixelRay pixelRay = new PixelRay(
                 new Ray(getLocation(), getRayPath(x, y)),
                 maxBounces, raysPerPixel, objects);

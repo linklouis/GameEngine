@@ -5,12 +5,12 @@ import gameengine.vectormath.Vector3D;
 
 public class Ray {
     private final Vector3D direction;
-    private final Vector3D start;
+//    private final Vector3D start;
     private Vector3D position;
 
     public Ray(Vector3D start, Vector3D direction) {
         this.direction = direction;
-        this.start = start;
+//        this.start = start;
         this.position = start;
     }
 
@@ -20,18 +20,21 @@ public class Ray {
 
         SinglyLinkedListAttribute.Element element = objectsInFieldList.getHead();
         while (element != null) {
-            double newDistance = element.getValue().distanceToCollide(this);
-            if (newDistance >= 0) {
-                if (newDistance < closestDist) {
+//            if (SphereCollider.distanceToCollide(element.getValue().getCenter(), element.getValue().getRange(), this) < closestDist/*element.getValue().distToRange(start) < closestDist + 10*/) {
+//            if (position.subtract(element.getValue().getCenter()).dotProduct(direction) <= 0
+//            && Math.abs(position.subtract(element.getValue().getCenter()).magnitude()) > 1
+//                    && element.getValue().distToRange(position) < closestDist + 2) {
+                double newDistance = element.getValue().distanceToCollide(this);
+                if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.getValue();
                 }
-            }
+//            }
             element = element.getNext();
         }
 
-        if (closestDist != Double.MAX_VALUE) {
-            position = start.add(direction.unitVector().scalarMultiply(closestDist));
+        if (closest != null) {
+            position = position.add(direction.atMagnitude(closestDist - 0.01));
         }
 
         return closest;
@@ -41,9 +44,9 @@ public class Ray {
         return direction;
     }
 
-    public Vector3D getStart() {
-        return start;
-    }
+//    public Vector3D getStart() {
+//        return start;
+//    }
 
     public Vector3D getPosition() {
         return position;

@@ -35,10 +35,7 @@ public class PixelRay {
      */
 
     public Color getFinalColor() {
-        Collider3D<?> collision = startRay
-                .firstCollision(
-                        objectsInFieldList
-                );
+        Collider3D<?> collision = startRay.firstCollision(objectsInFieldList);
 
         if (collision == null) {
             return Color.BLACK;
@@ -57,10 +54,8 @@ public class PixelRay {
         for (int i = 0; i < NUM_ITERATIONS; i++) {
             averageColor = averageColor.add(
                     getColorFromBounces(
-                            new Ray(
-                                    startRay.getPosition(),
-                                    collision.reflection(startRay)
-                            ),
+                            new Ray(startRay.getPosition(),
+                                    collision.reflection(startRay)),
                             startColor));
         }
 
@@ -71,8 +66,7 @@ public class PixelRay {
         Collider3D<?> collision;
 
         for (double bounces = 2; bounces <= MAX_BOUNCES; bounces++) {
-            collision = currentRay.firstCollision(
-                    objectsInFieldList);
+            collision = currentRay.firstCollision(objectsInFieldList);
 
             if (collision == null) {
                 return BLACK;
