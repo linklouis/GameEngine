@@ -87,22 +87,22 @@ public class Rectangle extends PolyObject {
                 // Right face triangles
                 new Tri(vertices[1], vertices[5], vertices[6], texture),
                 new Tri(vertices[1], vertices[6], vertices[2], texture),
-//
-//                // Back face triangles
-//                new Tri(vertices[5], vertices[4], vertices[7], texture),
-//                new Tri(vertices[5], vertices[7], vertices[6], texture),
-//
-//                // Left face triangles
-//                new Tri(vertices[4], vertices[0], vertices[3], texture),
-//                new Tri(vertices[4], vertices[3], vertices[7], texture),
-//
-//                // Top face triangles
-//                new Tri(vertices[3], vertices[2], vertices[6], texture),
-//                new Tri(vertices[3], vertices[6], vertices[7], texture),
-//
-//                // Bottom face triangles
-//                new Tri(vertices[0], vertices[4], vertices[5], texture),
-//                new Tri(vertices[0], vertices[5], vertices[1], texture),
+
+                // Back face triangles
+                new Tri(vertices[5], vertices[4], vertices[7], texture),
+                new Tri(vertices[5], vertices[7], vertices[6], texture),
+
+                // Left face triangles
+                new Tri(vertices[4], vertices[0], vertices[3], texture),
+                new Tri(vertices[4], vertices[3], vertices[7], texture),
+
+                // Top face triangles
+                new Tri(vertices[3], vertices[2], vertices[6], texture),
+                new Tri(vertices[3], vertices[6], vertices[7], texture),
+
+                // Bottom face triangles
+                new Tri(vertices[0], vertices[4], vertices[5], texture),
+                new Tri(vertices[0], vertices[5], vertices[1], texture),
         };
 
 //        Tri[] polys = new Tri[12]; // 12 triangles for a rectangular prism
@@ -143,11 +143,11 @@ public class Rectangle extends PolyObject {
 
     public void setTexture(Texture texture) {
         this.texture = texture;
-        int num = 1;
+//        int num = 1;
         for (Tri poly : get(Mesh.class).getPolygons()) {
-            double col = (double) num / get(Mesh.class).getPolygons().length;
-            poly.get(TriCollider.class).setTexture(new BaseTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
-            num++;
+//            double col = (double) num / get(Mesh.class).getPolygons().length;
+            poly.get(TriCollider.class).setTexture(texture);//new BaseTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
+//            num++;
         }
     }
 }

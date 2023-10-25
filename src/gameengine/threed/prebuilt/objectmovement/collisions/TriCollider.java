@@ -90,7 +90,7 @@ public class TriCollider extends Collider3D<TriCollider> {
      *
      * @return True if the point is within the vertices, otherwise false.
      */
-    public boolean inRange(Vector3D point) {
+    public boolean inRange2(Vector3D point) {
         Vector3D edge1 = vertex2.subtract(vertex1);
         Vector3D edge2 = vertex3.subtract(vertex2);
         Vector3D edge3 = vertex1.subtract(vertex3);
@@ -107,24 +107,65 @@ public class TriCollider extends Collider3D<TriCollider> {
                 (dotProduct1 <= 0 && dotProduct2 <= 0 && dotProduct3 <= 0);
     }
 
-    public boolean inRange2(Vector3D point) {
+    public boolean inRange(Vector3D point) {
+        // Calculate the vectors from the vertices of the triangle to the given point
+        Vector3D v0 = vertex2.subtract(vertex1);
+        Vector3D v1 = vertex3.subtract(vertex1);
+        Vector3D v2 = point.subtract(vertex1);
+
+        // Calculate dot products
+        double dot00 = v0.dotProduct(v0);
+        double dot01 = v0.dotProduct(v1);
+        double dot02 = v0.dotProduct(v2);
+        double dot11 = v1.dotProduct(v1);
+        double dot12 = v1.dotProduct(v2);
+
+        // Compute barycentric coordinates
+        double invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
+        double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        // Check if the point is inside the triangle
+        return (u >= 0) && (v >= 0) && (u + v <= 1);
+    }
+
+    public boolean inRange5(Vector3D point) {
+//        point = new Vector3D(point.getX(), -point.getY(), point.getZ());
         // Calculate the vectors representing the edges of the triangle
         Vector3D edge1 = vertex2.subtract(vertex1);
         Vector3D edge2 = vertex3.subtract(vertex2);
         Vector3D edge3 = vertex1.subtract(vertex3);
 
-        // Calculate the vectors from the vertices to the point
         Vector3D v1 = point.subtract(vertex1);
         Vector3D v2 = point.subtract(vertex2);
         Vector3D v3 = point.subtract(vertex3);
 
-        // Calculate the dot products of the vectors
-        double dot1 = edge1.dotProduct(v1);
+        double dot1 = edge3.dotProduct(v1);
         double dot2 = edge2.dotProduct(v2);
-        double dot3 = edge3.dotProduct(v3);
+        double dot3 = edge1.dotProduct(v3);
 
         // Check if the point is within the triangle by checking the sign of the dot products
-        return (dot1 >= 0 && dot2 >= 0 && dot3 >= 0)
+        return (dot1 <= 0 && dot2 >= 0 && dot3 <= 0)
+                || (dot1 <= 0 && dot2 >= 0 && dot3 <= 0);
+    }
+
+    public boolean inRange4(Vector3D point) {
+//        point = new Vector3D(point.getX(), -point.getY(), point.getZ());
+        // Calculate the vectors representing the edges of the triangle
+        Vector3D edge1 = vertex2.subtract(vertex1);
+        Vector3D edge2 = vertex3.subtract(vertex2);
+        Vector3D edge3 = vertex1.subtract(vertex3);
+
+        Vector3D v1 = point.subtract(vertex1);
+        Vector3D v2 = point.subtract(vertex2);
+        Vector3D v3 = point.subtract(vertex3);
+
+        double dot1 = edge3.dotProduct(v1);
+        double dot2 = edge2.dotProduct(v3);
+        double dot3 = edge1.dotProduct(v2);
+
+        // Check if the point is within the triangle by checking the sign of the dot products
+        return (dot1 <= 0 && dot2 <= 0 && dot3 >= 0)
                 || (dot1 <= 0 && dot2 <= 0 && dot3 <= 0);
     }
 

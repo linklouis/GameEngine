@@ -34,7 +34,7 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        setupScene4();
+        setupScene1();
     }
 
     private void setupScene2() {
@@ -70,12 +70,13 @@ public class RayTracing extends GameDriver3D {
     private void setupScene1() {
         double reflectivity = 0.3;
 
-        newObject(new Rectangle(0, -1, -2, new Vector3D(1,1, 1), new BaseTexture(Color.AZURE, false, reflectivity)));
+        new Rectangle(0, -1, -2, new Vector3D(1,1, 1), new BaseTexture(Color.AZURE, false, reflectivity)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new BaseTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2, new BaseTexture(Color.AQUA, false, reflectivity)));
         newObject(new Sphere(-1, 2, -3, 3, new BaseTexture(Color.GREEN, false, reflectivity)));
         newObject(new Sphere(0, 0, 100, 100, new BaseTexture(Color.BROWN, false, reflectivity)));
+
         newObject(new Sphere(-10, 2, -10, 7, Color.WHITE, true));
     }
 
@@ -99,12 +100,12 @@ public class RayTracing extends GameDriver3D {
     private void setupScene4() {
         double reflectivity = 0;//.5;
 
-        mainCam.setDirection(new Vector3D(-1, 0, 0));
-        mainCam.setLocation(new Vector3D(10, 0, 0));
+        mainCam.setDirection(new Vector3D(-0.5, -0.5, -1));
+        mainCam.setLocation(new Vector3D(5, 5, 10));
 
-//        newObject(new Sphere(0, 0, -18, 7, new BaseTexture(Color.WHITE, true, 0)));
+        newObject(new Sphere(0, 0, 18, 7, new BaseTexture(Color.WHITE, true, 0)));
 
-        new Rectangle(0, 0, 0, new Vector3D(2, 3, 4), new BaseTexture(Color.RED, true, reflectivity)).initiate(this);
+        new Rectangle(0, 0, 0, new Vector3D(2, 3, 4), new BaseTexture(Color.RED, false, reflectivity)).initiate(this);
 
 //        for (Visual3D collider : getGraphicsDriver().getVisualObjects()) {
 //            System.out.println(collider.getFromParent(Collider3D.class).getAppearance());
@@ -114,22 +115,22 @@ public class RayTracing extends GameDriver3D {
 
 //        newObject(new Sphere(0, 0, -13, -10, new BaseTexture(Color.BROWN, false, 0)));
 //        double dist = 10;
-//        Vector3D p1 = new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0);
-//        Vector3D p2 = new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0);
-//        Vector3D p3 = new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0);
+//        Vector3D p1 = new Vector3D(3, 0, 0)/*new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0)*/;
+//        Vector3D p2 = new Vector3D(3, 2, 0)/*new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0)*/;
+//        Vector3D p3 = new Vector3D(3, 2, 2)/*new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0)*/;
 //
 //        newObject(new Tri(p1, p2, p3,
-//                new BaseTexture(Color.RED, false, reflectivity)));
-
-//        newObject(new Tri(
-//                new Vector3D(0, 0, 0),
-//                new Vector3D(0, 0, 1),
-//                new Vector3D(0, 1, 1), new BaseTexture(Color.WHITE, true, 0)));
-
-//        newObject(new Sphere(0, 0, 0, 10, new BaseTexture(Color.BROWN, true, 0)));
-
-
-//        double r = 0.1;
+//                new BaseTexture(Color.RED, true, reflectivity)));
+//
+////        newObject(new Tri(
+////                new Vector3D(2, 0, 0),
+////                new Vector3D(2, 0, 1),
+////                new Vector3D(2, 1, 1), new BaseTexture(Color.WHITE, true, 0)));
+//
+////        newObject(new Sphere(0, 0, 0, 10, new BaseTexture(Color.BROWN, true, 0)));
+//
+//
+//        double r = 0.2;
 //        newObject(new Sphere(p1, r, new BaseTexture(Color.RED, true, 0)));
 //        newObject(new Sphere(p2, r, new BaseTexture(Color.GREEN, true, 0)));
 //        newObject(new Sphere(p3, r, new BaseTexture(Color.BLUE, true, 0)));
