@@ -9,10 +9,6 @@ public class PixelRay {
     private static final Vector3D BLACK = new Vector3D(0);
 
     private final Ray startRay;
-
-    private final double PRECISION_SCALE;
-
-    private final double STEP_SIZE;
     private final int MAX_BOUNCES;
     private final int NUM_ITERATIONS;
 
@@ -23,14 +19,12 @@ public class PixelRay {
      * Construction:
      */
 
-    public PixelRay(Ray startRay, double precisionScale, int maxBounces,
-                    int numIterations, double stepSize,
+    public PixelRay(Ray startRay, int maxBounces,
+                    int numIterations,
                     Collider3D<?>[] objectsInFieldList) {
         this.startRay = startRay;
-        PRECISION_SCALE = precisionScale;
         this.MAX_BOUNCES = maxBounces;
         NUM_ITERATIONS = numIterations;
-        STEP_SIZE = stepSize;
         this.objectsInFieldList =
                 new SinglyLinkedListAttribute(objectsInFieldList);
     }
@@ -43,8 +37,8 @@ public class PixelRay {
     public Color getFinalColor() {
         Collider3D<?> collision = startRay
                 .firstCollision(
-                        objectsInFieldList,
-                        PRECISION_SCALE);
+                        objectsInFieldList
+                );
 
         if (collision == null) {
             return Color.BLACK;
@@ -66,7 +60,6 @@ public class PixelRay {
                             new Ray(
                                     startRay.getPosition(),
                                     collision.reflection(startRay)
-                                            .atMagnitude(STEP_SIZE)
                             ),
                             startColor));
         }
@@ -79,7 +72,7 @@ public class PixelRay {
 
         for (double bounces = 2; bounces <= MAX_BOUNCES; bounces++) {
             collision = currentRay.firstCollision(
-                    objectsInFieldList, PRECISION_SCALE);
+                    objectsInFieldList);
 
             if (collision == null) {
                 return BLACK;
@@ -92,7 +85,7 @@ public class PixelRay {
             }
 
             currentRay = new Ray(currentRay.getPosition(),
-                    collision.reflection(currentRay).atMagnitude(STEP_SIZE));
+                    collision.reflection(currentRay));
         }
 
         return BLACK;

@@ -27,8 +27,7 @@ public class RayTracedCamera extends Camera {
      */
     private int raysPerPixel;
     private boolean multiThreaded;
-    private double marchDistance;
-    private int maxBounces;
+    private final int maxBounces;
     public long renderTime;
 
 
@@ -38,10 +37,9 @@ public class RayTracedCamera extends Camera {
 
     public RayTracedCamera(double x, double y, double z, Vector3D direction,
                            int imageWidth, int imageHeight,
-                           double marchDistance, int maxBounces,
+                           int maxBounces,
                            int raysPerPixel, boolean multiThreaded, double fieldOfViewDegrees) {
         super(x, y, z, direction, imageWidth, imageHeight, fieldOfViewDegrees);
-        this.marchDistance = marchDistance;
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -49,11 +47,10 @@ public class RayTracedCamera extends Camera {
 
     public RayTracedCamera(double x, double y, double z, Vector3D direction,
                            int imageWidth, int imageHeight,
-                           double marchDistance, int maxBounces,
+                           int maxBounces,
                            int raysPerPixel,
                            boolean multiThreaded) {
         super(x, y, z, direction, imageWidth, imageHeight, 60.0);
-        this.marchDistance = marchDistance;
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -216,8 +213,8 @@ public class RayTracedCamera extends Camera {
                                Collider3D<?>[] objects) {
 
         PixelRay pixelRay = new PixelRay(
-                new Ray(getLocation(), getRayPath(x, y).atMagnitude(marchDistance)),
-                0.4, maxBounces, raysPerPixel, marchDistance, objects);
+                new Ray(getLocation(), getRayPath(x, y)),
+                maxBounces, raysPerPixel, objects);
 
         image.getPixelWriter().setColor(x, y, pixelRay.getFinalColor());
     }
@@ -332,10 +329,6 @@ public class RayTracedCamera extends Camera {
 
     public void setMultiThreaded(boolean multiThreaded) {
         this.multiThreaded = multiThreaded;
-    }
-
-    public double getMarchDistance() {
-        return marchDistance;
     }
 
     public int getMaxBounces() {

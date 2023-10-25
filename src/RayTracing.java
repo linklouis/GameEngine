@@ -3,8 +3,6 @@ import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
 import gameengine.threed.prebuilt.gameobjects.Rectangle;
-import gameengine.threed.prebuilt.gameobjects.Tri;
-import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.threed.prebuilt.gameobjects.Sphere;
@@ -21,8 +19,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 0.3,
-                        15, 30, true)),
+                        700, 700, 10, 10, true)),
                 new PhysicsEngine3D());
     }
 
@@ -70,7 +67,7 @@ public class RayTracing extends GameDriver3D {
     private void setupScene1() {
         double reflectivity = 0.3;
 
-        new Rectangle(0, -1, -2, new Vector3D(1,1, 1), new BaseTexture(Color.AZURE, false, reflectivity)).initiate(this);
+        new Rectangle(-1, -2, -3, new Vector3D(2,2, 2), new BaseTexture(Color.AZURE, false, reflectivity)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new BaseTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2, new BaseTexture(Color.AQUA, false, reflectivity)));
@@ -160,7 +157,6 @@ public class RayTracing extends GameDriver3D {
                             mainCam.getWidth()
                                     * mainCam.getHeight()
                                     * mainCam.getRaysPerPixel())
-                            + "\nMarch distance: " + mainCam.getMarchDistance()
                             + "\nMax bounces: " + mainCam.getMaxBounces()
                             + "\nAverage render time: " + avTime
             );
@@ -170,7 +166,6 @@ public class RayTracing extends GameDriver3D {
                             + (mainCam.getWidth()
                             * mainCam.getHeight()
                             * mainCam.getRaysPerPixel()) + "\t"
-                            + mainCam.getMarchDistance() + "\t"
                             + mainCam.getMaxBounces() + "\t"
                             + avTime
             );
@@ -209,7 +204,6 @@ public class RayTracing extends GameDriver3D {
                             mainCam.getWidth()
                         * mainCam.getHeight()
                         * mainCam.getRaysPerPixel())
-                    + "\nMarch distance: " + mainCam.getMarchDistance()
                     + "\nMax bounces: " + mainCam.getMaxBounces()
                     + "\nAverage render time: " + avTime
             );
@@ -219,7 +213,6 @@ public class RayTracing extends GameDriver3D {
                     + (mainCam.getWidth()
                             * mainCam.getHeight()
                             * mainCam.getRaysPerPixel()) + "\t"
-                    + mainCam.getMarchDistance() + "\t"
                     + mainCam.getMaxBounces() + "\t"
                     + avTime
             );
