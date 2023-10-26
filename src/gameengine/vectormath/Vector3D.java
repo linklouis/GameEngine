@@ -86,10 +86,11 @@ public class Vector3D extends Vector<Vector3D> {
         );
     }
 
-    public void addMutable(Vector3D other) {
+    public Vector3D addMutable(Vector3D other) {
         x += other.getX();
         y += other.getY();
         z += other.getZ();
+        return this;
     }
 
     @Override
@@ -127,6 +128,12 @@ public class Vector3D extends Vector<Vector3D> {
                 getZ() / scalar
         );
     }
+
+//    public void scalarDivideMutable(final double scalar) {
+//        x /= scalar;
+//        y /= scalar;
+//        z /= scalar;
+//    }
 
     @Override
     public Vector3D scalarDivide(final BigDecimal scalar) {

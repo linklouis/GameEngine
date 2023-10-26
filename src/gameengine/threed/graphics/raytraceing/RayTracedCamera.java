@@ -77,7 +77,8 @@ public class RayTracedCamera extends Camera {
 
         long endTime = System.nanoTime();
         renderTime = (endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
-        System.out.println("Execution Time: " + TimeFormatter.format(renderTime) + " milliseconds");
+        System.out.println("Execution Time: " + TimeFormatter.format(renderTime));
+        System.out.println("Execution Time: " + renderTime + " milliseconds");
 
 
         System.out.println("rendered");

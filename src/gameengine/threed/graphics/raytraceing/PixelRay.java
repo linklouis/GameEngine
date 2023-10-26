@@ -52,7 +52,8 @@ public class PixelRay {
         Vector3D averageColor = new Vector3D(0);
 
         for (int i = 0; i < NUM_ITERATIONS; i++) {
-            averageColor = averageColor.add(
+//            averageColor = averageColor.add(
+            averageColor.addMutable(
                     getColorFromBounces(
                             new Ray(startRay.getPosition(),
                                     firstCollision.reflection(startRay)),
@@ -64,6 +65,7 @@ public class PixelRay {
 
     public Vector3D getColorFromBounces(Ray currentRay, Vector3D color) {
         Collider3D<?> collision;
+        color = new Vector3D(color);
 
         for (double bounces = 2; bounces <= MAX_BOUNCES; bounces++) {
             collision = currentRay.firstCollision(objectsInField);
@@ -72,9 +74,11 @@ public class PixelRay {
                 return BLACK;
             }
 
-            color = color.add(
-                    new Vector3D(collision.getAppearance().getColor())
-                            .scalarDivide(/*2 / */bounces / 2/* + 0.5*/));
+            color.addMutable(new Vector3D(collision.getAppearance().getColor())
+                    .scalarDivide(bounces / 2));
+//            color = color.add(
+//                    new Vector3D(collision.getAppearance().getColor())
+//                            .scalarDivide(/*2 / */bounces / 2/* + 0.5*/));
 
             if (collision.getTexture().isLightSource()) {
                 return color/*.scalarDivide(bounces*//* / 2*//*)*/;

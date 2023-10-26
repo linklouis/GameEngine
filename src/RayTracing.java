@@ -21,7 +21,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        700, 700, 10, 10, true)),
+                        700, 700, 10, 100, true)),
                 new PhysicsEngine3D());
     }
 
@@ -33,11 +33,11 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        setupScene2();
+        setupScene1();
     }
 
     private void setupScene2() {
-        double reflectivity = 0.8;
+        double reflectivity = 0.3;
 
         mainCam.setDirection(new Vector3D(1, 0, 0));
         mainCam.setLocation(new Vector3D(-10, 0, 0));
