@@ -1,6 +1,5 @@
 package gameengine.vectormath;
 
-import gameengine.threed.graphics.raytraceing.PixelRay;
 import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
@@ -55,28 +54,28 @@ public class Vector3D extends Vector<Vector3D> {
      * Functionality:
      */
 
-    public interface VectorOperation {
-        void doOperation(Vector3D vector1, Vector3D vector2);
-    }
-
-    public static VectorOperation add =
-            (Vector3D vector1, Vector3D vector2) -> {
-        vector1.setX(vector1.getX() + vector2.getX());
-        vector1.setY(vector1.getY() + vector2.getY());
-        vector1.setZ(vector1.getZ() + vector2.getZ());
-    };
-
-
-
-    public Vector3D doWhile(Vector3D vector1, Vector3D vector2,
-                            VectorOperation operation,
-                            Supplier<Boolean> check) {
-        Vector3D vectorA = new Vector3D(vector1);
-        while (check.get()) {
-            operation.doOperation(vector1, vector2);
-        }
-        return vectorA;
-    }
+//    public interface VectorOperation {
+//        void doOperation(Vector3D vector1, Vector3D vector2);
+//    }
+//
+//    public static VectorOperation add =
+//            (Vector3D vector1, Vector3D vector2) -> {
+//        vector1.setX(vector1.getX() + vector2.getX());
+//        vector1.setY(vector1.getY() + vector2.getY());
+//        vector1.setZ(vector1.getZ() + vector2.getZ());
+//    };
+//
+//
+//
+//    public Vector3D doWhile(Vector3D vector1, Vector3D vector2,
+//                            VectorOperation operation,
+//                            Supplier<Boolean> check) {
+//        Vector3D vectorA = new Vector3D(vector1);
+//        while (check.get()) {
+//            operation.doOperation(vector1, vector2);
+//        }
+//        return vectorA;
+//    }
 
     @Override
     public Vector3D add(Vector3D other) {
@@ -85,6 +84,12 @@ public class Vector3D extends Vector<Vector3D> {
                 getY() + other.getY(),
                 getZ() + other.getZ()
         );
+    }
+
+    public void addMutable(Vector3D other) {
+        x += other.getX();
+        y += other.getY();
+        z += other.getZ();
     }
 
     @Override
@@ -167,6 +172,16 @@ public class Vector3D extends Vector<Vector3D> {
     }
 
     @Override
+    public Vector3D atMagnitude(double newMagnitude) {
+        double magnitude = magnitude();
+        return new Vector3D(
+                getX() * newMagnitude / magnitude,
+                getY() * newMagnitude / magnitude,
+                getZ() * newMagnitude / magnitude
+        );
+    }
+
+    @Override
     public Vector3D forEach(Function<Double, Double> function) {
         return new Vector3D(
                 function.apply(getX()),
@@ -212,9 +227,9 @@ public class Vector3D extends Vector<Vector3D> {
 
     public Color toColor() {
         return new Color(
-                PixelRay.clamp(getX(), 0, 1),
-                PixelRay.clamp(getY(), 0, 1),
-                PixelRay.clamp(getZ(), 0, 1),
+                Vector.clamp(getX(), 0, 1),
+                Vector.clamp(getY(), 0, 1),
+                Vector.clamp(getZ(), 0, 1),
                 1);
     }
 

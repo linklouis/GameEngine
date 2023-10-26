@@ -2,10 +2,8 @@ package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.skeletons.Visual;
 import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.Visual3D;
-import gameengine.threed.prebuilt.objectmovement.collisions.RectCollider;
 import gameengine.threed.prebuilt.objectmovement.collisions.TriCollider;
 import gameengine.vectormath.Vector3D;
 
@@ -27,7 +25,6 @@ public class Tri extends GameObject {
             {
                 add(TriCollider.class);
 //                add(InPlane3D.class);
-//                add(RectCollider.class);
                 add(Visual3D.class);
             }
         };

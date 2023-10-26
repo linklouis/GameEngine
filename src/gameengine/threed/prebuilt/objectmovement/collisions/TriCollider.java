@@ -13,7 +13,7 @@ public class TriCollider extends Collider3D<TriCollider> {
     private Vector3D vertex2;
     private Vector3D vertex3;
 
-    // Precompute values for collision checks
+    // Precomputed values for collision checks
     private Vector3D v0;
     private Vector3D v1;
     private double dot00;
@@ -86,10 +86,6 @@ public class TriCollider extends Collider3D<TriCollider> {
         throw new UnsupportedOperationException("Not valid");
     }
 
-//    public boolean willCollide(Ray ray) {
-//        return surfaceNormal(ray).dotProduct(ray.getDirection()) > 0;
-//    }
-
     public double distanceToCollidePlane(Ray ray) {
         Vector3D planeNormal = surfaceNormal(ray);
         return planeNormal.dotProduct(
@@ -97,25 +93,51 @@ public class TriCollider extends Collider3D<TriCollider> {
                 / planeNormal.dotProduct(ray.getDirection().unitVector());
     }
 
+    /**
+     * Finds the first intersection a ray will have with the
+     * {@code TriCollider}.
+     *
+     * @param ray The ray to find a collision with.
+     * @param curSmallestDist The largest distance the output is looking for.
+     *                        Can be used to count out {@code TriColliders}
+     *                        before having to check if it's in the triangle.
+     * @return -1 if never enters range or if collision is behind start.
+     * Otherwise, the distance to first hit
+     */
     @Override
     public double distanceToCollide(Ray ray, double curSmallestDist) {
-        double distance = distanceToCollidePlane(ray);
+        Vector3D normal = dirTo2.crossProduct(dirTo3);
+        if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
+            normal =  normal.scalarMultiply(-1);
+        }
+        double distance = normal.dotProduct(
+                vertex1.subtract(ray.getPosition()))
+                / normal.dotProduct(ray.getDirection().unitVector());
 
         if (distance <= 0 || distance >= curSmallestDist) {
             return -1; // No collision with the plane
         }
 
-        Vector3D collisionPoint = ray.getPosition().add(
-                        ray.getDirection()
-                                .unitVector()
-                                .scalarMultiply(distance)
-        );
-
-        if (inRange(collisionPoint)) {
+        if (inRange(ray.getPosition().add(
+                ray.getDirection().atMagnitude(distance)))) {
             return distance;
         }
         return -1;
     }
+
+//    public double distanceToCollide(Ray ray, double curSmallestDist) {
+//        double distance = distanceToCollidePlane(ray);
+//
+//        if (distance <= 0 || distance >= curSmallestDist) {
+//            return -1; // No collision with the plane
+//        }
+//
+//        if (inRange(ray.getPosition().add(
+//                ray.getDirection().atMagnitude(distance)))) {
+//            return distance;
+//        }
+//        return -1;
+//    }
 
     /**
      * Assumes the point is on the plane.

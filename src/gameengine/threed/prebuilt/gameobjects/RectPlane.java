@@ -10,43 +10,52 @@ import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RectPlane extends PolyObject {
     private Texture texture;
-    public RectPlane(Vector3D pointA, Vector3D displacement, Texture texture) {
-        //TODO
-        super(new Vector3D[] {
-                pointA,
-                new Vector3D(pointA.getX() + displacement.getX(), pointA.getY() + displacement.getY(), pointA.getZ()),
-                pointA.add(displacement),
-                new Vector3D(pointA.getX(), pointA.getY(), pointA.getZ() + displacement.getZ())
-        }, new Mesh(), new InPlane3D());
-        get(InPlane3D.class).instantiate(this, pointA.getX(), pointA.getY(), pointA.getZ());
+    public RectPlane(Vector3D position, Vector3D displacement,
+                     Texture texture) {
+        super(generateVertices(position, displacement),
+                new Mesh(), new InPlane3D());
+        get(InPlane3D.class).instantiate(this,
+                position.getX(), position.getY(), position.getZ());
+
         setTexture(texture);
     }
 
-    public RectPlane(double x, double y, double z, Vector3D displacement, Texture texture) {
-        //TODO
-        super(new Vector3D[] {
-//                new Vector3D(x, y, z),
-//                new Vector3D(x + displacement.getX(), y, z),
-//                new Vector3D(x + displacement.getX(), y + displacement.getY(), z),
-//                new Vector3D(x, y + displacement.getY(), z),
-                new Vector3D(x, y, z),
-                 new Vector3D(x + displacement.getX(), y + (displacement.getZ() != 0 ? displacement.getY() : 0), z),
-                new Vector3D(x + displacement.getX(), y + displacement.getY(), z + displacement.getZ()),
-                new Vector3D(x, y + (displacement.getZ() == 0 ? displacement.getY() : 0), z + displacement.getZ()),
-        }, new Mesh(), new InPlane3D());
-//        System.out.println(Arrays.toString(new Vector3D[]{
-//                new Vector3D(x, y, z),
-//                new Vector3D(x + displacement.getX(), y, z),
-//                new Vector3D(x + displacement.getX(), y + displacement.getY(), z + displacement.getZ()),
-//                new Vector3D(x, y + displacement.getY(), z + displacement.getZ())
-//        }));
+    public RectPlane(double x, double y, double z,
+                     Vector3D displacement, Texture texture) {
+        super(generateVertices(new Vector3D(x, y, z), displacement),
+                new Mesh(), new InPlane3D());
         get(InPlane3D.class).instantiate(this, x, y, z);
+
         setTexture(texture);
+    }
+
+    private static Vector3D[] generateVertices(Vector3D position,
+                                               Vector3D displacement) {
+        return new Vector3D[] {
+                position,
+                new Vector3D(
+                        position.getX() + displacement.getX(),
+                        position.getY()
+                                + (displacement.getZ() != 0 ?
+                                displacement.getY()
+                                : 0),
+                        position.getZ()),
+                new Vector3D(
+                        position.getX() + displacement.getX(),
+                        position.getY() + displacement.getY(),
+                        position.getZ() + displacement.getZ()),
+                new Vector3D(
+                        position.getX(),
+                        position.getY()
+                                + (displacement.getZ() == 0 ?
+                                displacement.getY()
+                                : 0),
+                        position.getZ() + displacement.getZ()),
+        };
     }
 
     @Override
@@ -64,9 +73,8 @@ public class RectPlane extends PolyObject {
         Texture texture = new BaseTexture(Color.WHITE, true, 0);
 
         return new Tri[]{
-                // Front face triangles
                 new Tri(vertices[0], vertices[1], vertices[2], texture),
-                new Tri(vertices[0], vertices[2], vertices[3], texture),
+                new Tri(vertices[0], vertices[2], vertices[3], texture)
         };
     }
 

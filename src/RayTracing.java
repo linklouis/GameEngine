@@ -7,6 +7,7 @@ import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.threed.prebuilt.gameobjects.Sphere;
+import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -20,7 +21,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        1000, 1000, 15, 100, true)),
+                        700, 700, 10, 10, true)),
                 new PhysicsEngine3D());
     }
 
@@ -206,7 +207,7 @@ public class RayTracing extends GameDriver3D {
                                     * mainCam.getHeight()
                                     * mainCam.getRaysPerPixel())
                             + "\nMax bounces: " + mainCam.getMaxBounces()
-                            + "\nAverage render time: " + avTime
+                            + "\nAverage render time: " + TimeFormatter.format(avTime)
             );
             System.out.println(
                     mainCam.getWidth() + "\t"
@@ -253,7 +254,7 @@ public class RayTracing extends GameDriver3D {
                         * mainCam.getHeight()
                         * mainCam.getRaysPerPixel())
                     + "\nMax bounces: " + mainCam.getMaxBounces()
-                    + "\nAverage render time: " + avTime
+                    + "\nAverage render time: " + TimeFormatter.format(avTime)
             );
             System.out.println(
                     mainCam.getWidth() + "\t"

@@ -5,6 +5,7 @@ import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.prebuilt.objectmovement.physics.PhysicsObject3D;
 import gameengine.twod.prebuilt.objectmovement.collisions.CollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.collisions.PhysicsCollisionHandler;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
@@ -18,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>>  extends GraphicsObject3D {
-    //TODO extends Collider2D & make Collider2D class
-    private CollisionHandler<?> handler = null; // TODO make a CollisionHandler interface and just pass in the handler type + have collection of default handlers?
+    private CollisionHandler<?> handler = null;
 
 
     /*
@@ -42,7 +42,6 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
             throw new RuntimeException(e);
         }
     }
-
     @Override
     public ArgumentContext[] getArgumentContexts() {
         return new ArgumentContext[] {
@@ -64,7 +63,7 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
     public List<Class<? extends Modifier>> getDependencies() {
         List<Class<? extends Modifier>> modifiers = new ArrayList<>();
         if (handler instanceof PhysicsCollisionHandler) {
-            modifiers.add(PhysicsObject2D.class);
+            modifiers.add(PhysicsObject3D.class);
         }
         return modifiers;
     }
@@ -76,13 +75,12 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
 
     public boolean isColliding(GameObject gObj) {
         assert gObj.containsModifier(getColliderClass());
-        ColliderType coll = gObj.get(getColliderClass());
-        return isColliding(coll);
+        return isColliding(gObj.get(getColliderClass()));
     }
 
     public boolean isColliding(PhysicsObject2D pObj) {
-        ColliderType coll = pObj.getFromParent(getColliderClass());
-        return isColliding(coll);
+        return isColliding(
+                pObj.getFromParent(getColliderClass()));
     }
 
     public boolean inRange(Collider3D<?> collider) {
@@ -104,6 +102,17 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
      * Abstract Methods:
      */
 
+    /**
+     * Finds the first intersection a ray will have with the
+     * {@code Collider3D}.
+     *
+     * @param ray The ray to find a collision with.
+     * @param curSmallestDist The largest distance the output is looking for.
+     *                        Can be used for optimization by counting out a
+     *                        {@code Collider3D} early.
+     * @return -1 if never enters range or if collision is behind start.
+     * Otherwise, the distance to first hit
+     */
     public abstract double distanceToCollide(Ray ray, double curSmallestDist);
 
     public abstract boolean isColliding(ColliderType coll);
@@ -171,14 +180,4 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
         return getFromParent(Visual3D.class)
                 .getAppearance();
     }
-
-//    public double distToRange(Vector3D point) {
-//        return point.subtract(getCenter()).magnitude() - range;
-//    }
-
-//    public boolean inRange(Vector3D position) {
-//        return getCenter()
-//                .subtract(position)
-//                .magnitude() < getRange();
-//    }
 }

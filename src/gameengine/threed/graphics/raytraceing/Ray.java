@@ -1,7 +1,6 @@
 package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
-import gameengine.threed.prebuilt.objectmovement.collisions.TriCollider;
 import gameengine.vectormath.Vector3D;
 
 public class Ray {
@@ -13,23 +12,20 @@ public class Ray {
         this.position = start;
     }
 
-    public Collider3D<?> firstCollision(SinglyLinkedListAttribute objectsInFieldList) {
+    public Collider3D<?> firstCollision(Collider3DList objectsInFieldList) {
         double closestDist = Double.MAX_VALUE;
         Collider3D<?> closest = null;
 
-        SinglyLinkedListAttribute.Element element = objectsInFieldList.getHead();
+        Collider3DList.Element element = objectsInFieldList.getHead();
         while (element != null) {
-//            if (SphereCollider.distanceToCollide(element.getValue().getCenter(), element.getValue().getRange(), this) < closestDist/*element.getValue().distToRange(start) < closestDist + 10*/) {
-            if (!(position.subtract(element.getValue().getCenter()).dotProduct(direction) > 0
-                    && Math.abs(position.subtract(element.getValue().getCenter()).magnitude()) < 1)
-                /*    && element.getValue().distToRange(position) < closestDist + 2*/) {
-                double newDistance = element.getValue().distanceToCollide(this, closestDist);
+            if (objectIsInDirection(element.value())) {
+                double newDistance = element.value().distanceToCollide(this, closestDist);
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
-                    closest = element.getValue();
+                    closest = element.value();
                 }
             }
-            element = element.getNext();
+            element = element.next();
         }
 
         if (closest != null) {
@@ -38,6 +34,15 @@ public class Ray {
 
         return closest;
     }
+
+    public boolean objectIsInDirection(Collider3D<?> collider) {
+        Vector3D toCenter = position.subtract(collider.getCenter());
+        return !(toCenter.dotProduct(direction) > 0 && Math.abs(toCenter.magnitude()) < 1);
+    }
+
+    /*
+     * Utilities:
+     */
 
     public Vector3D getDirection() {
         return direction;

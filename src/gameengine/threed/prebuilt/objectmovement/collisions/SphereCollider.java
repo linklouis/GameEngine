@@ -13,17 +13,17 @@ import javafx.scene.paint.Color;
 public class SphereCollider extends Collider3D<SphereCollider> {
     private double radius;
 
+
+    /*
+     * Construction:
+     */
+
     public SphereCollider() {
         super();
     }
 
     public SphereCollider(Modifier... modifiers) {
         super(modifiers);
-    }
-
-    @Override
-    public Vector3D surfaceNormal(Ray ray) {
-        return ray.getPosition().subtract(getCenter())/*.unitVector()*/;
     }
 
     @Override
@@ -43,10 +43,22 @@ public class SphereCollider extends Collider3D<SphereCollider> {
         };
     }
 
+
+    /*
+     * Functionality:
+     */
+
+    @Override
+    public Vector3D surfaceNormal(Ray ray) {
+        return ray.getPosition().subtract(getCenter())/*.unitVector()*/;
+    }
+
     /**
-     * Finds the first intersection a ray, starting at start and moving in
-     * direction dir, would have with the range sphere.
+     * Finds the first intersection a ray would have with the Sphere.
      *
+     * @param ray The ray to find a collision with.
+     * @param curSmallestDist The largest distance the output is looking for.
+     *                        not used for optimization for Spheres.
      * @return -1 if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
@@ -57,39 +69,6 @@ public class SphereCollider extends Collider3D<SphereCollider> {
         }
 
         Vector3D Q = ray.getPosition().subtract(getCenter());
-        double b = ray.getDirection().atMagnitude(2).dotProduct(Q);
-        double d = b * b - 4 * (Q.dotWithSelf() - radius * radius);  // discriminant of quadratic
-
-        if (d <= 0) {
-            return -1; // Solutions are complex, no intersections
-        }
-        // Intersections exists
-        d = Math.sqrt(d);
-        double t1 = (d - b) / 2;
-        double t2 = -(d + b) / 2;
-
-        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
-            return t1;
-        }
-        if (t2 > 0) {
-            return t2;
-        }
-        return -1;
-//        if (Math.min(t1, t2) < 0) {
-//            if (Math.max(t1, t2) < 0) {
-//                return -1;
-//            }
-//            return Math.max(t1, t2);
-//        }
-//        return Math.min(t1, t2);
-    }
-
-    public static double distanceToCollide(Vector3D center, double radius, Ray ray) {
-        if (Math.abs(ray.getPosition().subtract(center).magnitude()) <= radius) {
-            return 0;
-        }
-
-        Vector3D Q = ray.getPosition().subtract(center);
         double b = ray.getDirection().atMagnitude(2).dotProduct(Q);
         double d = b * b - 4 * (Q.dotWithSelf() - radius * radius);  // discriminant of quadratic
 
@@ -164,7 +143,6 @@ public class SphereCollider extends Collider3D<SphereCollider> {
 
     @Override
     public void paint(GraphicsContext gc, Color color) {
-
     }
 
     public double getRadius() {

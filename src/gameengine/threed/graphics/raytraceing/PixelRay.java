@@ -1,6 +1,5 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
@@ -12,7 +11,7 @@ public class PixelRay {
     private final int MAX_BOUNCES;
     private final int NUM_ITERATIONS;
 
-    private final SinglyLinkedListAttribute objectsInFieldList;
+    private final Collider3DList objectsInField;
 
 
     /*
@@ -21,12 +20,11 @@ public class PixelRay {
 
     public PixelRay(Ray startRay, int maxBounces,
                     int numIterations,
-                    Collider3D<?>[] objectsInFieldList) {
+                    Collider3DList objectsInField) {
         this.startRay = startRay;
         this.MAX_BOUNCES = maxBounces;
         NUM_ITERATIONS = numIterations;
-        this.objectsInFieldList =
-                new SinglyLinkedListAttribute(objectsInFieldList);
+        this.objectsInField = objectsInField;
     }
 
 
@@ -35,19 +33,21 @@ public class PixelRay {
      */
 
     public Color getFinalColor() {
-        Collider3D<?> collision = startRay.firstCollision(objectsInFieldList);
+        Collider3D<?> firstCollision = startRay.firstCollision(objectsInField);
 
-        if (collision == null) {
+        if (firstCollision == null) {
             return Color.BLACK;
         }
-        if (collision.getTexture().isLightSource()) {
-            return collision.getAppearance().getColor();
+        if (firstCollision.getTexture().isLightSource()) {
+            return firstCollision.getAppearance().getColor();
         }
 
+        return getAllCollisions(firstCollision);
+    }
+
+    private Color getAllCollisions(Collider3D<?> firstCollision) {
         Vector3D startColor = new Vector3D(
-                collision.getFromParent(Visual3D.class)
-                        .getAppearance()
-                        .getColor());
+                firstCollision.getAppearance().getColor());
 
         Vector3D averageColor = new Vector3D(0);
 
@@ -55,7 +55,7 @@ public class PixelRay {
             averageColor = averageColor.add(
                     getColorFromBounces(
                             new Ray(startRay.getPosition(),
-                                    collision.reflection(startRay)),
+                                    firstCollision.reflection(startRay)),
                             startColor));
         }
 
@@ -66,13 +66,15 @@ public class PixelRay {
         Collider3D<?> collision;
 
         for (double bounces = 2; bounces <= MAX_BOUNCES; bounces++) {
-            collision = currentRay.firstCollision(objectsInFieldList);
+            collision = currentRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
             }
 
-            color = color.add(getColor(collision, bounces));
+            color = color.add(
+                    new Vector3D(collision.getAppearance().getColor())
+                            .scalarDivide(/*2 / */bounces / 2/* + 0.5*/));
 
             if (collision.getTexture().isLightSource()) {
                 return color/*.scalarDivide(bounces*//* / 2*//*)*/;
@@ -83,14 +85,5 @@ public class PixelRay {
         }
 
         return BLACK;
-    }
-
-    public Vector3D getColor(Collider3D<?> collision, double bounces) {
-        return new Vector3D(collision.getAppearance().getColor())
-                .scalarDivide(/*2 / */bounces / 2/* + 0.5*/);
-    }
-
-    public static double clamp(double num, double min, double max) {
-        return Math.min(max, Math.max(min, num));
     }
 }

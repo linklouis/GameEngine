@@ -1,5 +1,6 @@
 package gameengine.threed.graphics;
 
+import gameengine.experimental.PostProcess;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
@@ -13,9 +14,6 @@ import javafx.scene.layout.Pane;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 

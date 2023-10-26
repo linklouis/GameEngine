@@ -31,6 +31,10 @@ public abstract class Vector<T extends Vector<T>> {
         }
     }
 
+    public static double clamp(double num, double min, double max) {
+        return Math.min(max, Math.max(min, num));
+    }
+
 
     /*
      * Functionality:
