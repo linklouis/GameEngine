@@ -7,6 +7,7 @@ import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 import java.io.IOException;
@@ -45,6 +46,14 @@ public class RayTracedCamera extends Camera {
      * The time in nanoseconds it took to render the last frame.
      */
     private long renderTime;
+    /**
+     * The target size of the tiles for the image to be broken into for
+     * increased threaded performance.
+     * <p>The actual tile size may end up being different than the set target.
+     */
+    private int targetTileSize;
+    private Vector2D tileDimensions;
+
 
 
     /*
@@ -77,6 +86,7 @@ public class RayTracedCamera extends Camera {
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
+        setTargetTileSize(15 / raysPerPixel);
     }
 
     /**
@@ -102,6 +112,7 @@ public class RayTracedCamera extends Camera {
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
+        setTargetTileSize(15 / raysPerPixel);
     }
 
     /**
@@ -133,6 +144,7 @@ public class RayTracedCamera extends Camera {
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
+        setTargetTileSize(15 / raysPerPixel);
     }
 
     /**
@@ -161,6 +173,7 @@ public class RayTracedCamera extends Camera {
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
+        setTargetTileSize(15 / raysPerPixel);
     }
 
 
@@ -182,9 +195,11 @@ public class RayTracedCamera extends Camera {
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
-            renderThreaded(getImage(), new Collider3DList(objects));
+            renderThreaded(getImage().getPixelWriter(),
+                    new Collider3DList(objects));
         } else {
-            renderUnthreaded(getImage(), new Collider3DList(objects));
+            renderUnthreaded(getImage().getPixelWriter(),
+                    new Collider3DList(objects));
         }
 
 
@@ -194,9 +209,8 @@ public class RayTracedCamera extends Camera {
         System.out.println("Execution Time: "
                 + TimeConversionFactor.MILLISECOND.convert(renderTime)
                 + " milliseconds");
-
-
         System.out.println("rendered");
+
         try {
             saveToFile("RayTraced_0_1_("
                     + (int) getWidth() + "," + (int) getHeight() + ")_"
@@ -208,49 +222,32 @@ public class RayTracedCamera extends Camera {
         return getImage();
     }
 
-    private void renderUnthreaded(final WritableImage image,
+    private void renderUnthreaded(final PixelWriter writer,
                                   final Collider3DList objects) {
         for (int x = 0; x < getWidth(); x++) {
             for (int y = 0; y < getHeight(); y++) {
-                PixelRay pixelRay = new PixelRay(
-                        new Ray(getLocation(), getRayPath(x, y)),
-                        maxBounces, raysPerPixel, objects);
-
-                image.getPixelWriter().setColor(x, y, pixelRay.getFinalColor());
-
-//                image.getPixelWriter().setColor(x, y,
-//                        PixelRayStatic.getFinalColor(
-//                                new Ray(getLocation(), getRayPath(x, y)),
-//                                maxBounces, raysPerPixel, objects));
+                renderPixelAt(x, y, writer, objects);
             }
         }
     }
 
-    private void renderThreaded(final WritableImage image,
+    private void renderThreaded(final PixelWriter writer,
                                 final Collider3DList objects) {
         int numThreads = Runtime.getRuntime().availableProcessors() - 1;
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
+        int width = findClosestFactor((int) getWidth(), 150);
+        int height = findClosestFactor((int) getHeight(), 150);
 
         // Split the canvas into smaller tasks for multithreading
-        for (int pixelX = 0; pixelX < getWidth(); pixelX++) {
-            for (int pixelY = 0; pixelY < getHeight(); pixelY++) {
-                int finalX = pixelX;
-                int finalY = pixelY;
-
-                threadPool.submit(() -> {
-                    image.getPixelWriter().setColor(finalX, finalY,
-                            new PixelRay(
-                                    new Ray(getLocation(),
-                                            getRayPath(finalX, finalY)),
-                                    maxBounces, raysPerPixel, objects)
-                                    .getFinalColor());
-//                    image.getPixelWriter().setColor(finalX, finalY,
-//                            PixelRayStatic.getFinalColor(
-//                                    new Ray(getLocation(),
-//                                            getRayPath(finalX, finalY)),
-//                                    maxBounces, raysPerPixel, objects));
-//                    renderPixelAt(finalX, finalY, image, objects);
-                });
+        for (int x = 0; x < getWidth(); x += width) {
+            for (int y = 0; y < getHeight(); y += height) {
+                int finalX = x;
+                int finalY = y;
+                threadPool.submit(() ->
+                        renderPixels(finalX, finalY,
+                                finalX + width, finalY + height,
+                                writer, objects));
+//                        renderPixelAt(finalX, finalY, writer, objects));
             }
         }
 
@@ -263,18 +260,44 @@ public class RayTracedCamera extends Camera {
         }
     }
 
-//    private void renderPixelAt(int x, int y, WritableImage image,
-//                               Collider3DList objects) {
-//        PixelRay pixelRay = new PixelRay(
+    private void renderPixels(int startX, int startY, int endX, int endY, PixelWriter writer,
+                              Collider3DList objects) {
+        for (int x = startX; x < endX; x++) {
+            for (int y = startY; y < endY; y++) {
+                renderPixelAt(x, y, writer, objects);
+            }
+        }
+    }
+
+    private void renderPixelAt(int x, int y, PixelWriter writer,
+                               Collider3DList objects) {
+        writer.setColor(x, y,
+                new PixelRay(
+                        new Ray(getLocation(), getRayPath(x, y)),
+                        maxBounces, raysPerPixel, objects).getFinalColor());
+
+//        writer.setColor(x, y, PixelRayStatic.getFinalColor(
 //                new Ray(getLocation(), getRayPath(x, y)),
-//                MAX_BOUNCES, raysPerPixel, objects);
-//
-//        image.getPixelWriter().setColor(x, y, pixelRay.getFinalColor());
-////        Color color = PixelRayStatic.getFinalColor(
-////                new Ray(getLocation(), getRayPath(x, y)),
-////                MAX_BOUNCES, raysPerPixel, objects);
-////        image.getPixelWriter().setColor(x, y, color);
-//    }
+//                maxBounces, raysPerPixel, objects));
+    }
+
+    private Vector3D getRayPath(final double x, final double y) {
+        // Thx to ChatGPT
+        Vector3D localPixelLocation = localPixelLocation(x, y);
+
+        Vector3D truePixelLocation = getLocation()
+                .add(getDirection()
+                        .scalarMultiply(localPixelLocation.getZ()))
+                .add(getDirection()
+                        .crossProduct(new Vector3D(0, 1, 0))
+                        .scalarMultiply(localPixelLocation.getY()))
+                .add(getDirection()
+                        .crossProduct(getDirection()
+                                .crossProduct(new Vector3D(0, 1, 0)))
+                        .scalarMultiply(localPixelLocation.getX()));
+
+        return truePixelLocation.subtract(getLocation());
+    }
 
     private Vector3D localPixelLocation(final double x, final double y) {
         // Easier to read version, but less efficient:
@@ -301,24 +324,6 @@ public class RayTracedCamera extends Camera {
                 scaleX * getWidth() * (getHeight() - 2 * y)
                         / (getHeight() * getHeight()),
                 screenDistance);
-    }
-
-    private Vector3D getRayPath(final double x, final double y) {
-        // Thx to ChatGPT
-        Vector3D localPixelLocation = localPixelLocation(x, y);
-
-        Vector3D truePixelLocation = getLocation()
-                .add(getDirection()
-                        .scalarMultiply(localPixelLocation.getZ()))
-                .add(getDirection()
-                        .crossProduct(new Vector3D(0, 1, 0))
-                        .scalarMultiply(localPixelLocation.getY()))
-                .add(getDirection()
-                        .crossProduct(getDirection()
-                                .crossProduct(new Vector3D(0, 1, 0)))
-                        .scalarMultiply(localPixelLocation.getX()));
-
-        return truePixelLocation.subtract(getLocation());
     }
 
     private Collider3D<?>[] getValidColliders(final Visual3D[] visuals) {
@@ -365,6 +370,46 @@ public class RayTracedCamera extends Camera {
 
     public long getRenderTime() {
         return renderTime;
+    }
+
+    public int getTargetTileSize() {
+        return targetTileSize;
+    }
+
+    public void setTargetTileSize(int targetTileSize) {
+        this.targetTileSize = targetTileSize;
+        tileDimensions = new Vector2D(
+                findClosestFactor((int) getWidth(), targetTileSize),
+                findClosestFactor((int) getHeight(), targetTileSize));
+    }
+
+    public Vector2D getTileDimensions() {
+        return tileDimensions;
+    }
+
+    @Override
+    public void setImage(WritableImage image) {
+        super.setImage(image);
+        tileDimensions = new Vector2D(
+                findClosestFactor((int) getWidth(), targetTileSize),
+                findClosestFactor((int) getHeight(), targetTileSize));
+    }
+
+    private static int findClosestFactor(int imageSize, int targetTileSize) {
+        int closestFactor = 0;
+        int minDifference = Integer.MAX_VALUE;
+
+        for (int i = 1; i <= imageSize; i++) {
+            if (imageSize % i == 0) {
+                int difference = Math.abs(targetTileSize - i);
+                if (difference < minDifference) {
+                    minDifference = difference;
+                    closestFactor = i;
+                }
+            }
+        }
+
+        return closestFactor;
     }
 }
 

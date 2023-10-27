@@ -12,7 +12,7 @@ import gameengine.vectormath.Vector3D;
  */
 public class Ray {
     /**
-     * The direction the {@code Ray} moves in.
+     * The direction the {@code Ray} moves.
      */
     private final Vector3D direction;
     /**
@@ -45,12 +45,14 @@ public class Ray {
     public Collider3D<?> firstCollision(final Collider3DList objectsInField) {
         double closestDist = Double.MAX_VALUE;
         Collider3D<?> closest = null;
+        double newDistance;
 
         Collider3DList.Element element = objectsInField.getHead();
         while (element != null) {
             if (objectIsInDirection(element.value())) {
-                double newDistance = element.value()
+                newDistance = element.value()
                         .distanceToCollide(this, closestDist);
+
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.value();
@@ -77,6 +79,7 @@ public class Ray {
      */
     public boolean objectIsInDirection(final Collider3D<?> collider) {
         Vector3D toCenter = position.subtract(collider.getCenter());
+
         return !(toCenter.dotProduct(direction) > 0
                 && Math.abs(toCenter.magnitude()) < 1);
     }
