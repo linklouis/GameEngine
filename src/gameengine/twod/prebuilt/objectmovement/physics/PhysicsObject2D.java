@@ -28,7 +28,7 @@ public class PhysicsObject2D extends GraphicsObject2D {
     private boolean renderVelocityVector = false;
 
     private long mass;
-    private Vector2D velocity = Vector2D.empty();
+    private Vector2D velocity = new Vector2D(0);
     private Color color;
 
 
@@ -171,7 +171,7 @@ public class PhysicsObject2D extends GraphicsObject2D {
                     .unitVector()
                     .scalarMultiply(scalarForce);
         }
-        return Vector2D.empty();
+        return new Vector2D(0);
     }
 
     public void applyForce(final Vector2D force) {
@@ -206,7 +206,7 @@ public class PhysicsObject2D extends GraphicsObject2D {
 //                        .scalarDivide(frameRate);
 
         Vector2D resultantVelocity = Vector2D
-                .sum(Vector2D.empty(), forces)
+                .sum(new Vector2D(0), forces)
                 .scalarDivide(getMass())
                 .scalarDivide(frameRate);
 

@@ -1,86 +1,290 @@
 package gameengine.vectormath;
 
 import java.awt.geom.Point2D;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 public class Vector2D extends Vector<Vector2D> {
-    // TODO implement new Vector format
     private static final int SIZE = 2;
+    private double x;
+    private double y;
+
+
+    /*
+     * Construction:
+     */
+
+    public Vector2D(double value) {
+        this.x = value;
+        this.y = value;
+    }
+
     public Vector2D(final double x, final double y) {
-        super(x, y);
+        this.x = x;
+        this.y = y;
     }
+
     public Vector2D(final double[] components) {
-        super(components);
+        this.x = components[0];
+        this.y = components[1];
     }
+
+    public Vector2D(final Vector2D other) {
+        this.x = other.getX();
+        this.y = other.getY();
+    }
+
+    public Vector2D(final Point2D point) {
+        this.x = point.getX();
+        this.y = point.getY();
+    }
+
+
+    /*
+     * Functionality:
+     */
 
     @Override
-    public double[] getComponents() {
-        return new double[0];
+    public Vector2D add(Vector2D other) {
+        return new Vector2D(
+                getX() + other.getX(),
+                getY() + other.getY()
+        );
     }
 
-    @Override
-    public double getComponent(int index) {
-        return 0;
+    public Vector2D add(Point2D other) {
+        return new Vector2D(
+                getX() + other.getX(),
+                getY() + other.getY()
+        );
     }
 
-    @Override
-    protected void setComponent(int component, double newValue) {
-
-    }
-
-    public Vector2D add(final Point2D other) {
-        return super.add(asVector(other));
-    }
-
-    public Vector2D subtract(final Point2D other) {
-        return super.subtract(asVector(other));
-    }
-
-    public double dotProduct(final Point2D other) {
-        return super.dotProduct(asVector(other));
-    }
-
-    public double getX() {
-        return getComponents()[0];
-    }
-
-    public double getY() {
-        return getComponents()[1];
-    }
-
-    public Point2D.Double toPoint() {
+    public Point2D toPoint() {
         return new Point2D.Double(getX(), getY());
     }
 
-    public Point2D pointAtDistanceFrom(Point2D point) {
-        return new Point2D.Double(point.getX() + getX(), point.getY() + getY());
-    }
+//    public Vector2D addMutable(Vector2D other) {
+//        x += other.getX();
+//        y += other.getY();
+//        return this;
+//    }
 
-    public static Vector2D asVector(Point2D point) {
-        return new Vector2D(point.getX(), point.getY());
-    }
-
-
-    public static Vector2D displacement(Point2D p1, Point2D p2) {
-        return new Vector2D(p1.getX() - p2.getX(), p1.getY() - p2.getY());
-    }
-
-    public static Vector2D empty() {
-        double[] newComponents = new double[SIZE];
-        return new Vector2D(newComponents);
+    @Override
+    public Vector2D subtract(final Vector2D other) {
+        return new Vector2D(
+                getX() - other.getX(),
+                getY() - other.getY()
+        );
     }
 
     @Override
-    public Vector2D newVector(final double... components) {
+    public Vector2D scalarMultiply(final double scalar) {
+        return new Vector2D(
+                getX() * scalar,
+                getY() * scalar
+        );
+    }
+
+    @Override
+    public Vector2D scalarMultiply(final BigDecimal scalar) {
+        return new Vector2D(
+                scalar.multiply(BigDecimal.valueOf(getX())).doubleValue(),
+                scalar.multiply(BigDecimal.valueOf(getY())).doubleValue()
+        );
+    }
+
+    @Override
+    public Vector2D scalarDivide(final double scalar) {
+        return new Vector2D(
+                getX() / scalar,
+                getY() / scalar
+        );
+    }
+
+    @Override
+    public Vector2D scalarDivide(final BigDecimal scalar) {
+        return new Vector2D(
+                BigDecimal.valueOf(x)
+                        .divide(scalar, RoundingMode.HALF_DOWN).doubleValue(),
+                BigDecimal.valueOf(y)
+                        .divide(scalar, RoundingMode.HALF_DOWN).doubleValue()
+    );
+    }
+
+    @Override
+    public double dotProduct(final Vector2D other) {
+        return getX() * other.getX() + getY() * other.getY();
+    }
+
+    @Override
+    public double magnitude() {
+        return Math.sqrt(getX() * getX() + getY() * getY());
+    }
+
+    public double dotWithSelf() {
+        return getX() * getX() + getY() * getY();
+    }
+
+    @Override
+    public Vector2D unitVector() {
+        double magnitude = magnitude();
+        return new Vector2D(
+                getX() / magnitude,
+                getY() / magnitude
+        );
+    }
+
+    @Override
+    public Vector2D atMagnitude(double newMagnitude) {
+        double magnitude = magnitude();
+        return new Vector2D(
+                getX() * newMagnitude / magnitude,
+                getY() * newMagnitude / magnitude
+        );
+    }
+
+    @Override
+    public Vector2D forEach(Function<Double, Double> function) {
+        return new Vector2D(
+                function.apply(getX()),
+                function.apply(getY())
+        );
+    }
+
+    /**
+     * @return a Vector2D with only the component with the largest value
+     * preserved, and all others set to 0.
+     */
+    @Override
+    public Vector2D max() {
+        double maxVal = Math.max(getX(), getY());
+        return new Vector2D(
+                getX() == maxVal ? maxVal : 0,
+                getY() == maxVal ? maxVal : 0);
+    }
+
+    /**
+     * @return a Vector2D with only the component with the smallest value
+     * preserved, and all others set to 0.
+     */
+    @Override
+    public Vector2D min() {
+        double minVal = Math.min(getX(), getY());
+        return new Vector2D(
+                getX() == minVal ? minVal : 0,
+                getY() == minVal ? minVal : 0);
+    }
+
+    @Override
+    public Vector2D abs() {
+        return new Vector2D(
+                Math.abs(getX()),
+                Math.abs(getY())
+        );
+    }
+
+    public static Vector2D random(double min, double max) {
+        double x = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
+        double y = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
+        return new Vector2D(x, y);
+    }
+
+    public Vector2D signs() {
+        return new Vector2D(
+                getX() < 0 ? -1 : 1,
+                getY() < 0 ? -1 : 1
+        );
+    }
+
+    public Vector2D multiplyAcross(Vector2D other) {
+        return new Vector2D(
+                getX() * other.getX(),
+                getY() * other.getY()
+        );
+    }
+
+    public Vector2D divideAcross(Vector2D other) {
+        return new Vector2D(
+                getX() / other.getX(),
+                getY() / other.getY()
+        );
+    }
+
+    public double distance(Vector2D other) {
+        return Math.abs(subtract(other).magnitude());
+    }
+
+    public static Vector2D displacement(Point2D location, Point2D location1) {
+        return new Vector2D(location).subtract(new Vector2D(location1));
+    }
+
+    public Vector2D onlyX() {
+        return new Vector2D(getX(), 0);
+    }
+
+    public Vector2D onlyY() {
+        return new Vector2D(0, getY());
+    }
+
+    public Vector2D onlyZ() {
+        return new Vector2D(0, 0);
+    }
+
+    /*
+     * Utilities:
+     */
+
+    @Override
+    public  Vector2D newVector(final double... components) {
         return new Vector2D(components);
     }
 
     @Override
+    public double[] getComponents() {
+        return new double[] { getX(), getY() };
+    }
+
+    @Override
+    public double getComponent(int index) {
+        return getComponents()[index];
+    }
+
+    @Override
+    protected void setComponent(int component, double newValue) {
+        switch (component) {
+            case 0:
+                x = newValue;
+                return;
+            case 1:
+                y = newValue;
+                return;
+        }
+    }
+
     public Vector2D newEmpty() {
-        return empty();
+        return new Vector2D(0);
     }
 
     @Override
     protected int size() {
         return SIZE;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    private void setX(double x) {
+        this.x = x;
+    }
+
+    private void setY(double y) {
+        this.y = y;
     }
 }

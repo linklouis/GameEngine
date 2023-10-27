@@ -62,6 +62,12 @@ public class Raycast extends Vector2D {
         return null;
     }
 
+    private Point2D pointAtDistanceFrom(Point2D position) {
+        return new Point2D.Double(
+                getX() + position.getX(),
+                getY() + position.getY());
+    }
+
     private Collider2D<?>[] potentialColliders() {
         return Arrays.stream(objectsInField)
                 .filter(gameObject ->

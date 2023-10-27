@@ -137,14 +137,14 @@ public class Vector3D extends Vector<Vector3D> {
 
     @Override
     public Vector3D scalarDivide(final BigDecimal scalar) {
-        double[] resultComponents = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            resultComponents[i] =
-                    BigDecimal.valueOf(this.getComponent(i))
-                            .divide(scalar, RoundingMode.HALF_DOWN)
-                            .doubleValue();
-        }
-        return newVector(resultComponents);
+        return new Vector3D(
+                BigDecimal.valueOf(getX())
+                        .divide(scalar, RoundingMode.HALF_DOWN).doubleValue(),
+                BigDecimal.valueOf(getY())
+                        .divide(scalar, RoundingMode.HALF_DOWN).doubleValue(),
+                BigDecimal.valueOf(getZ())
+                        .divide(scalar, RoundingMode.HALF_DOWN).doubleValue()
+        );
     }
 
     @Override

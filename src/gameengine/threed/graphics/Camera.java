@@ -5,6 +5,7 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.twod.graphics.Visual2D;
+import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
@@ -17,19 +18,60 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A skeleton for a Camera that renders a 3D scene from a certain perspective.
+ *
+ * @author Louis Link
+ * @since 1.0
+ */
 public abstract class Camera extends GameObject {
+    /**
+     * a {@link Vector3D} representing the amount the {@code Camera} is facing
+     * in each direction.
+     */
     private Vector3D direction;
+    /**
+     * The {@link WritableImage} the {@code Camera} will render the image on.
+     */
     private WritableImage image;
     /**
      * The number of degrees in the horizontal field of view.
      */
     private double fieldOfViewDegrees;
+    /**
+     * A flag indicating that the scene has changed, and the {@code Camera}
+     * needs to render a new frame.
+     */
     private boolean updateNeeded = true;
+    /**
+     * A {@link List} of all the {@link PostProcess}es that the {@code Camera}
+     * applies to the rendered image.
+     */
     private List<PostProcess> postProcesses = new ArrayList<>();
 
     /*
      * Construction:
      */
+
+    public Camera(Vector3D position, Vector3D direction,
+                  final Vector2D imageDimensions, double fieldOfViewDegrees) {
+        super(new InPlane3D(), new Visual2D());
+        get(InPlane3D.class).instantiate(this, position);
+
+        this.direction = direction.unitVector();
+        image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
+        setFieldOfViewDegrees(fieldOfViewDegrees);
+    }
+
+    public Camera(double x, double y, double z, Vector3D direction,
+                  Vector2D imageDimensions, double fieldOfViewDegrees) {
+        super(new InPlane3D(), new Visual2D());
+        get(InPlane3D.class).instantiate(this, x, y, z);
+
+        this.direction = direction.unitVector();
+        image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
+        setFieldOfViewDegrees(fieldOfViewDegrees);
+    }
 
     public Camera(double x, double y, double z, Vector3D direction,
                   int imageWidth, int imageHeight, double fieldOfViewDegrees) {
@@ -55,6 +97,14 @@ public abstract class Camera extends GameObject {
      * Functionality:
      */
 
+    /**
+     * Renders a new frame if it has been requested and applies
+     * post-processing, otherwise returns.
+     *
+     * @param renderableObjects The {@link Visual3D} objects to be rendered in
+     *                          the scene.
+     * @return True if a new frame has been rendered, otherwise false.
+     */
     public boolean update(Visual3D[] renderableObjects) {
         if (updateNeeded) {
 //            renderImage(renderableObjects);
@@ -80,20 +130,37 @@ public abstract class Camera extends GameObject {
         updateNeeded = true;
     }
 
+    /**
+     * Saves {@link #image} to a .png file with the given path.
+     *
+     * @param fileName The file path to save the image to.
+     * @throws IOException
+     */
     public void saveToFile(String fileName) throws IOException {
-        String format = "png" ;
-        File file = new File(fileName) ;
-        // Get the directory path from the fileName
-//        Path directoryPath = Paths.get(file.getParent());
+        File file = new File(fileName);
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+    }
 
-        // Check if the directory exists, and if not, create it
-//        if (!Files.exists(directoryPath)) {
-//            Files.createDirectories(directoryPath);
-//        }
-
+    /**
+     * Saves {@link #image} to a file of the given image format and file path.
+     *
+     * @param fileName The file path to save the image to.
+     * @param format The image format to use to save the file.
+     * @throws IOException
+     */
+    public void saveToFile(String fileName, String format) throws IOException {
+        File file = new File(fileName);
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), format, file);
     }
 
+    /**
+     * Applies the {@code Camera}'s post-processing routine to the given
+     * {@link WritableImage}.
+     *
+     * @param image The {@link WritableImage} to apply the post-processing to.
+     * @return The {@link WritableImage} with the {@code Camera}'s
+     * post-processing routine preformed on it.
+     */
     public WritableImage applyPostProcessing(WritableImage image) {
         WritableImage currentImage = image;
         for (PostProcess process : postProcesses) {
