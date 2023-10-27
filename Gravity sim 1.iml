@@ -11,5 +11,9 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="JavaFX" level="application" />
+    <orderEntry type="library" name="jocl" level="project" />
+    <orderEntry type="library" name="jogamp.jogl.all.main" level="application" />
+    <orderEntry type="library" name="jocl1" level="application" />
+    <orderEntry type="library" name="jogamp.jocl.main" level="application" />
   </component>
 </module>

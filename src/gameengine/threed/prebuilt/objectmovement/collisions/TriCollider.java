@@ -23,6 +23,7 @@ public class TriCollider extends Collider3D<TriCollider> {
 
     private Vector3D dirTo2;
     private Vector3D dirTo3;
+    Vector3D normal;
 
     @Override
     public ArgumentContext[] getArgumentContexts() {
@@ -64,6 +65,7 @@ public class TriCollider extends Collider3D<TriCollider> {
         dirTo2 = vertex2.subtract(vertex1);
         dirTo3 = vertex3.subtract(vertex1);
 
+        normal = dirTo2.crossProduct(dirTo3);
     }
 
     @Override
@@ -106,7 +108,6 @@ public class TriCollider extends Collider3D<TriCollider> {
      */
     @Override
     public double distanceToCollide(Ray ray, double curSmallestDist) {
-        Vector3D normal = dirTo2.crossProduct(dirTo3);
         if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
             normal =  normal.scalarMultiply(-1);
         }
@@ -145,6 +146,7 @@ public class TriCollider extends Collider3D<TriCollider> {
      * @return True if the point is within the vertices, otherwise false.
      */
     public boolean inRange(Vector3D point) {
+        // ChatGPT
         // Calculate the vectors from the vertices of the triangle to the given point
         Vector3D v2 = point.subtract(vertex1);
 
@@ -253,6 +255,7 @@ public class TriCollider extends Collider3D<TriCollider> {
 
         dirTo2 = vertex2.subtract(vertex1);
 
+        normal = dirTo2.crossProduct(dirTo3);
     }
 
     public void setVertex3(Vector3D vertex3) {
@@ -266,6 +269,7 @@ public class TriCollider extends Collider3D<TriCollider> {
 
         dirTo3 = vertex3.subtract(vertex1);
 
+        normal = dirTo2.crossProduct(dirTo3);
     }
 
     @Override

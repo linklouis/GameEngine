@@ -14,7 +14,7 @@ public class Ray {
     /**
      * The direction the {@code Ray} moves.
      */
-    private final Vector3D direction;
+    private Vector3D direction;
     /**
      * The current position of the {@code Ray}. Will only ever have two values:
      * <p>On creation: {@code Ray}'s start
@@ -63,6 +63,33 @@ public class Ray {
 
         if (closest != null) {
             position = position.add(direction.atMagnitude(closestDist - 0.01));
+        }
+
+        return closest;
+    }
+
+    public Collider3D<?> firstCollisionUpdateDirec(final Collider3DList objectsInField) {
+        double closestDist = Double.MAX_VALUE;
+        Collider3D<?> closest = null;
+        double newDistance;
+
+        Collider3DList.Element element = objectsInField.getHead();
+        while (element != null) {
+            if (objectIsInDirection(element.value())) {
+                newDistance = element.value()
+                        .distanceToCollide(this, closestDist);
+
+                if (newDistance >= 0 && newDistance < closestDist) {
+                    closestDist = newDistance;
+                    closest = element.value();
+                }
+            }
+            element = element.next();
+        }
+
+        if (closest != null) {
+            position = position.add(direction.atMagnitude(closestDist - 0.01));
+            direction = closest.reflection(this);
         }
 
         return closest;

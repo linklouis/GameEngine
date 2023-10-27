@@ -75,16 +75,17 @@ public class SphereCollider extends Collider3D<SphereCollider> {
         if (d <= 0) {
             return -1; // Solutions are complex, no intersections
         }
+
         // Intersections exists
         d = Math.sqrt(d);
-        double t1 = (d - b) / 2;
-        double t2 = -(d + b) / 2;
+        double t1 = (d - b);
+        double t2 = -(d + b);
 
         if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
-            return t1;
+            return t1 / 2;
         }
         if (t2 > 0) {
-            return t2;
+            return t2 / 2;
         }
         return -1;
     }

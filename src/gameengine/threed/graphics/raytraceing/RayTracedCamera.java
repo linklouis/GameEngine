@@ -233,7 +233,7 @@ public class RayTracedCamera extends Camera {
 
     private void renderThreaded(final PixelWriter writer,
                                 final Collider3DList objects) {
-        int numThreads = Runtime.getRuntime().availableProcessors() - 1;
+        int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         int width = findClosestFactor((int) getWidth(), 150);
         int height = findClosestFactor((int) getHeight(), 150);

@@ -104,7 +104,7 @@ public class PixelRay {
         color = new Vector3D(color);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollision(objectsInField);
+            collision = currentRay.firstCollisionUpdateDirec(objectsInField);
 
             if (collision == null) {
                 return BLACK;
@@ -117,9 +117,9 @@ public class PixelRay {
                 return color;
             }
 
-            currentRay = new Ray(
-                    currentRay.getPosition(),
-                    collision.reflection(currentRay));
+//            currentRay = new Ray(
+//                    currentRay.getPosition(),
+//                    collision.reflection(currentRay));
         }
 
         return BLACK;
