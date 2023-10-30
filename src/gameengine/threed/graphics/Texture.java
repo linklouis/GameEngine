@@ -1,6 +1,5 @@
 package gameengine.threed.graphics;
 
-import gameengine.threed.prebuilt.objectmovement.collisions.TriCollider;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

@@ -1,6 +1,6 @@
 
-import com.jogamp.opencl.*;
-import org.jocl.CL;
+//import com.jogamp.opencl.*;
+import org.jocl.*;
 
 
 public class JOCLTest {

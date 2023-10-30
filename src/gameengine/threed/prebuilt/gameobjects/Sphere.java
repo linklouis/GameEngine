@@ -3,10 +3,13 @@ package gameengine.threed.prebuilt.gameobjects;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.BaseTexture;
+import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.Visual3D;
+import gameengine.threed.graphics.raytraceing.TriGraphics;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.SphereCollider;
+import gameengine.threed.graphics.raytraceing.SphereGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -15,24 +18,27 @@ import java.util.List;
 
 public class Sphere extends GameObject {
     public Sphere(double x, double y, double z, double r, Texture texture) {
-        super(new SphereCollider(), new InPlane3D(), new Visual3D());
-        get(SphereCollider.class).instantiate(this, r, texture);
+        super(new SphereCollider(), new InPlane3D(), new SphereGraphics(), new Visual3D());
+        get(SphereCollider.class).instantiate(this, r);
         get(InPlane3D.class).instantiate(this, x, y, z);
-        get(Visual3D.class).instantiate(this, get(SphereCollider.class));
+        get(SphereGraphics.class).instantiate(this, r, texture);
+        get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 
     public Sphere(Vector3D position, double r, Texture texture) {
-        super(new SphereCollider(), new InPlane3D(), new Visual3D());
-        get(SphereCollider.class).instantiate(this, r, texture);
+        super(new SphereCollider(), new InPlane3D(), new SphereGraphics(), new Visual3D());
+        get(SphereCollider.class).instantiate(this, r);
         get(InPlane3D.class).instantiate(this, position);
-        get(Visual3D.class).instantiate(this, get(SphereCollider.class));
+        get(SphereGraphics.class).instantiate(this, r, texture);
+        get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 
     public Sphere(double x, double y, double z, double r, Color color, boolean isLightSource) {
-        super(new SphereCollider(), new InPlane3D(), new Visual3D());
-        get(SphereCollider.class).instantiate(this, r, new BaseTexture(color, isLightSource, 0));
+        super(new SphereCollider(), new InPlane3D(), new SphereGraphics(), new Visual3D());
+        get(SphereCollider.class).instantiate(this, r);
         get(InPlane3D.class).instantiate(this, x, y, z);
-        get(Visual3D.class).instantiate(this, get(SphereCollider.class));
+        get(SphereGraphics.class).instantiate(this, r, new BaseTexture(color, isLightSource, 0));
+        get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 
     @Override
@@ -41,7 +47,8 @@ public class Sphere extends GameObject {
             {
                 add(InPlane3D.class);
                 add(SphereCollider.class);
-//                add(Visual2D.class);
+                add(SphereGraphics.class);
+                add(Visual3D.class);
             }
         };
     }

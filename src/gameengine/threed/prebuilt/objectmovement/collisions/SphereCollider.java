@@ -35,10 +35,7 @@ public class SphereCollider extends Collider3D<SphereCollider> {
 //                                this::setHandler),
                         new ModifierInstantiateParameter<>(
                                 "radius", Double.class,
-                                this::setRadius),
-                        new ModifierInstantiateParameter<>(
-                                "texture", Texture.class,
-                                this::setTexture)
+                                this::setRadius)
                 )
         };
     }
@@ -47,48 +44,6 @@ public class SphereCollider extends Collider3D<SphereCollider> {
     /*
      * Functionality:
      */
-
-    @Override
-    public Vector3D surfaceNormal(Ray ray) {
-        return ray.getPosition().subtract(getCenter())/*.unitVector()*/;
-    }
-
-    /**
-     * Finds the first intersection a ray would have with the Sphere.
-     *
-     * @param ray The ray to find a collision with.
-     * @param curSmallestDist The largest distance the output is looking for.
-     *                        not used for optimization for Spheres.
-     * @return -1 if never enters range or if collision is behind start.
-     * Otherwise, the distance to first hit
-     */
-    @Override
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
-        if (contains(ray.getPosition())) {
-            return 0;
-        }
-
-        Vector3D Q = ray.getPosition().subtract(getCenter());
-        double b = ray.getDirection().atMagnitude(2).dotProduct(Q);
-        double d = b * b - 4 * (Q.dotWithSelf() - radius * radius);  // discriminant of quadratic
-
-        if (d <= 0) {
-            return -1; // Solutions are complex, no intersections
-        }
-
-        // Intersections exists
-        d = Math.sqrt(d);
-        double t1 = (d - b);
-        double t2 = -(d + b);
-
-        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
-            return t1 / 2;
-        }
-        if (t2 > 0) {
-            return t2 / 2;
-        }
-        return -1;
-    }
 
     @Override
     public boolean isColliding(SphereCollider coll) {

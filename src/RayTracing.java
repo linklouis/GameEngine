@@ -184,44 +184,44 @@ public class RayTracing extends GameDriver3D {
         return Math.random() * range - range / 2;
     }
 
-    private void measureTimeWithoutDisplay() {
-        while (true) {
-            measureRender();
-        }
-    }
+//    private void measureTimeWithoutDisplay() {
+//        while (true) {
+//            measureRender();
+//        }
+//    }
 
-    private void measureRender() {
-        mainCam.requestUpdate();
-        mainCam.update(getGraphicsDriver().getVisualObjects().toArray(new Visual3D[0]));
-        if (renders < NUM_TO_TEST) {
-            getGraphicsDriver().getCamera().requestUpdate();
-            avTime += mainCam.getRenderTime();
-            avTime /= 2;
-            renders++;
-        } else if (renders < NUM_TO_TEST + 1) {
-            System.out.println(
-                    "\nBenchmark Complete."
-                            + "\nSize: " + mainCam.getWidth()
-                            + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
-                            + "\nTotal rays: " + (
-                            mainCam.getWidth()
-                                    * mainCam.getHeight()
-                                    * mainCam.getRaysPerPixel())
-                            + "\nMax bounces: " + mainCam.getMaxBounces()
-                            + "\nAverage render time: " + TimeFormatter.format(avTime)
-            );
-            System.out.println(
-                    mainCam.getWidth() + "\t"
-                            + mainCam.getRaysPerPixel() + "\t"
-                            + (mainCam.getWidth()
-                            * mainCam.getHeight()
-                            * mainCam.getRaysPerPixel()) + "\t"
-                            + mainCam.getMaxBounces() + "\t"
-                            + avTime
-            );
-            System.exit(0);
-        }
-    }
+//    private void measureRender() {
+//        mainCam.requestUpdate();
+//        mainCam.update(getGraphicsDriver().getCameraObjects());
+//        if (renders < NUM_TO_TEST) {
+//            getGraphicsDriver().getCamera().requestUpdate();
+//            avTime += mainCam.getRenderTime();
+//            avTime /= 2;
+//            renders++;
+//        } else if (renders < NUM_TO_TEST + 1) {
+//            System.out.println(
+//                    "\nBenchmark Complete."
+//                            + "\nSize: " + mainCam.getWidth()
+//                            + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
+//                            + "\nTotal rays: " + (
+//                            mainCam.getWidth()
+//                                    * mainCam.getHeight()
+//                                    * mainCam.getRaysPerPixel())
+//                            + "\nMax bounces: " + mainCam.getMaxBounces()
+//                            + "\nAverage render time: " + TimeFormatter.format(avTime)
+//            );
+//            System.out.println(
+//                    mainCam.getWidth() + "\t"
+//                            + mainCam.getRaysPerPixel() + "\t"
+//                            + (mainCam.getWidth()
+//                            * mainCam.getHeight()
+//                            * mainCam.getRaysPerPixel()) + "\t"
+//                            + mainCam.getMaxBounces() + "\t"
+//                            + avTime
+//            );
+//            System.exit(0);
+//        }
+//    }
 
     private void initDebugVisuals() {
         newObject(new Sphere(0,0,0,10,Color.BLANCHEDALMOND, true));

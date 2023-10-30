@@ -5,7 +5,7 @@ import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Texture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
-import gameengine.threed.prebuilt.objectmovement.collisions.TriCollider;
+import gameengine.threed.graphics.raytraceing.TriGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -128,7 +128,7 @@ public class Rectangle extends PolyObject {
 //        int num = 1;
         for (Tri poly : get(Mesh.class).getPolygons()) {
 //            double col = (double) num / get(Mesh.class).getPolygons().length;
-            poly.get(TriCollider.class).setTexture(texture);//new BaseTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
+            poly.get(TriGraphics.class).setTexture(texture);//new BaseTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
 //            num++;
         }
     }

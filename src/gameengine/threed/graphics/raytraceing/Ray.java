@@ -1,11 +1,10 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.vectormath.Vector3D;
 
 /**
  * A single ray of light which starts at a point and moves in a direction until
- * it hits a {@link Collider3D}.
+ * it hits a {@link RayTraceable}.
  *
  * @author Louis Link
  * @since 1.0
@@ -26,28 +25,28 @@ public class Ray {
     /**
      * Creates a new {@code Ray}.
      *
-     * @param start The initial position of the {@code Ray}.
+     * @param startPosition The initial position of the {@code Ray}.
      * @param direction The direction the {@code Ray} will move in.
      */
-    public Ray(final Vector3D start, final Vector3D direction) {
+    public Ray(final Vector3D startPosition, final Vector3D direction) {
         this.direction = direction;
-        this.position = start;
+        this.position = startPosition;
     }
 
     /**
-     * Finds the first {@link Collider3D} in {@code objectsInField} that the
+     * Finds the first {@link RayTraceable} in {@code objectsInField} that the
      * {@code Ray} will hit.
      *
-     * @param objectsInField The {@link Collider3D}s that the {@code Ray} can
+     * @param objectsInField The {@link RayTraceable}s that the {@code Ray} can
      *                       potentially collide with.
-     * @return The closest {@link Collider3D} the {@code Ray} can collide with.
+     * @return The closest {@link RayTraceable} the {@code Ray} can collide with.
      */
-    public Collider3D<?> firstCollision(final Collider3DList objectsInField) {
+    public RayTraceable firstCollision(final RayTraceableList objectsInField) {
         double closestDist = Double.MAX_VALUE;
-        Collider3D<?> closest = null;
+        RayTraceable closest = null;
         double newDistance;
 
-        Collider3DList.Element element = objectsInField.getHead();
+        RayTraceableList.Element element = objectsInField.getHead();
         while (element != null) {
             if (objectIsInDirection(element.value())) {
                 newDistance = element.value()
@@ -63,33 +62,6 @@ public class Ray {
 
         if (closest != null) {
             position = position.add(direction.atMagnitude(closestDist - 0.01));
-        }
-
-        return closest;
-    }
-
-    public Collider3D<?> firstCollisionUpdateDirec(final Collider3DList objectsInField) {
-        double closestDist = Double.MAX_VALUE;
-        Collider3D<?> closest = null;
-        double newDistance;
-
-        Collider3DList.Element element = objectsInField.getHead();
-        while (element != null) {
-            if (objectIsInDirection(element.value())) {
-                newDistance = element.value()
-                        .distanceToCollide(this, closestDist);
-
-                if (newDistance >= 0 && newDistance < closestDist) {
-                    closestDist = newDistance;
-                    closest = element.value();
-                }
-            }
-            element = element.next();
-        }
-
-        if (closest != null) {
-            position = position.add(direction.atMagnitude(closestDist - 0.01));
-            direction = closest.reflection(this);
         }
 
         return closest;
@@ -99,16 +71,26 @@ public class Ray {
      * Finds whether {@code collider} is possible for the {@code Ray} ray to
      * hit.
      *
-     * @param collider The {@link Collider3D} to check if the {@code Ray}'s
+     * @param collider The {@link RayTraceable} to check if the {@code Ray}'s
      *                 direction lines up with.
      * @return Whether {@code collider} is within 90 degrees of the direction of
      * the {@code Ray} from the {@code Ray}'s initial position.
      */
-    public boolean objectIsInDirection(final Collider3D<?> collider) {
+    public boolean objectIsInDirection(final RayTraceable collider) {
         Vector3D toCenter = position.subtract(collider.getCenter());
 
         return !(toCenter.dotProduct(direction) > 0
                 && Math.abs(toCenter.magnitude()) < 1);
+    }
+
+    /**
+     * Updates the {@code Ray}'s direction based on its reflection of off the
+     * given {@link RayTraceable}.
+     *
+     * @param collider The {@link RayTraceable} to reflect off of.
+     */
+    public void reflect(RayTraceable collider) {
+        direction = collider.reflection(this);
     }
 
 

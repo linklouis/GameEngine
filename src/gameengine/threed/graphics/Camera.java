@@ -15,8 +15,7 @@ import javafx.scene.layout.Pane;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * A skeleton for a Camera that renders a 3D scene from a certain perspective.
@@ -24,7 +23,7 @@ import java.util.List;
  * @author Louis Link
  * @since 1.0
  */
-public abstract class Camera extends GameObject {
+public abstract class Camera<VisualType extends GraphicsObject3D> extends GameObject {
     /**
      * a {@link Vector3D} representing the amount the {@code Camera} is facing
      * in each direction.
@@ -49,13 +48,17 @@ public abstract class Camera extends GameObject {
      */
     private List<PostProcess> postProcesses = new ArrayList<>();
 
+    private final Class<? extends VisualType> visualType;
+
+
     /*
      * Construction:
      */
 
     public Camera(Vector3D position, Vector3D direction,
-                  final Vector2D imageDimensions, double fieldOfViewDegrees) {
+                  final Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
         super(new InPlane3D(), new Visual2D());
+        this.visualType = visualType;
         get(InPlane3D.class).instantiate(this, position);
 
         this.direction = direction.unitVector();
@@ -64,8 +67,9 @@ public abstract class Camera extends GameObject {
     }
 
     public Camera(double x, double y, double z, Vector3D direction,
-                  Vector2D imageDimensions, double fieldOfViewDegrees) {
+                  Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
         super(new InPlane3D(), new Visual2D());
+        this.visualType = visualType;
         get(InPlane3D.class).instantiate(this, x, y, z);
 
         this.direction = direction.unitVector();
@@ -74,8 +78,9 @@ public abstract class Camera extends GameObject {
     }
 
     public Camera(double x, double y, double z, Vector3D direction,
-                  int imageWidth, int imageHeight, double fieldOfViewDegrees) {
+                  int imageWidth, int imageHeight, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
         super(new InPlane3D(), new Visual2D());
+        this.visualType = visualType;
         get(InPlane3D.class).instantiate(this, x, y, z);
 
         this.direction = direction.unitVector();
@@ -105,7 +110,7 @@ public abstract class Camera extends GameObject {
      *                          the scene.
      * @return True if a new frame has been rendered, otherwise false.
      */
-    public boolean update(Visual3D[] renderableObjects) {
+    public boolean update(Collection<VisualType> renderableObjects) {
         if (updateNeeded) {
 //            renderImage(renderableObjects);
             renderWithProcessing(renderableObjects);
@@ -120,11 +125,11 @@ public abstract class Camera extends GameObject {
         root.getChildren().setAll(new ImageView(image));
     }
 
-    public void renderWithProcessing(Visual3D[] renderableObjects) {
+    public void renderWithProcessing(Collection<VisualType> renderableObjects) {
         image = applyPostProcessing(renderImage(renderableObjects));
     }
 
-    public abstract WritableImage renderImage(Visual3D[] renderableObjects);
+    public abstract WritableImage renderImage(Collection<VisualType> renderableObjects);
 
     public void requestUpdate() {
         updateNeeded = true;
@@ -167,6 +172,15 @@ public abstract class Camera extends GameObject {
             currentImage = process.process(image);
         }
         return currentImage;
+    }
+
+    protected List<? extends VisualType> getValidObjects(final Collection<Visual3D> visuals) {
+        return visuals.stream()
+                .filter(object ->
+                        object.getParent().containsModifier(visualType))
+                .map(object -> object.getFromParent(visualType))
+                .sorted(Comparator.comparingDouble(obj ->
+                    -getLocation().distance(obj.getCenter()))).toList();
     }
 
     /*
@@ -235,5 +249,9 @@ public abstract class Camera extends GameObject {
 
     public void newPostProcess(PostProcess process) {
         getPostProcesses().add(process);
+    }
+
+    public Class<? extends Modifier> getVisualType() {
+        return visualType;
     }
 }

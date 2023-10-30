@@ -283,7 +283,10 @@ public class Vector3D extends Vector<Vector3D> {
     }
 
     public double distance(Vector3D vector) {
-        return Math.abs(subtract(vector).magnitude());
+        return Math.sqrt(
+                Math.pow(getX() - vector.getX(), 2)
+                + Math.pow(getY() - vector.getY(), 2)
+                + Math.pow(getZ() - vector.getZ(), 2));
     }
 
     public Vector3D onlyX() {

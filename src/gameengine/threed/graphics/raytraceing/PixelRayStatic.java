@@ -1,6 +1,5 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -13,18 +12,18 @@ public final class PixelRayStatic {
 
     public static Color getFinalColor(Ray startRay, int maxBounces,
                                       int numIterations,
-                                      Collider3DList objectsInField) {
-        Collider3D<?> firstCollision = startRay.firstCollision(objectsInField);
+                                      RayTraceableList objectsInField) {
+        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
         }
         if (firstCollision.getTexture().isLightSource()) {
-            return firstCollision.getAppearance().getColor();
+            return firstCollision.getColor();
         }
 
         Vector3D startColor = new Vector3D(
-                firstCollision.getAppearance().getColor());
+                firstCollision.getColor());
 
         Vector3D averageColor = new Vector3D(0);
 
@@ -39,9 +38,9 @@ public final class PixelRayStatic {
         return averageColor.scalarDivide(numIterations).toColor();
     }
 
-//    private static Color getAllCollisions(Collider3D<?> firstCollision,
+//    private static Color getAllCollisions(RayTraceable firstCollision,
 //                                          Ray startRay,
-//                                          Collider3DList objectsInField,
+//                                          RayTraceableList objectsInField,
 //                                          int numIterations,
 //                                          int maxBounces) {
 //        Vector3D startColor = new Vector3D(
@@ -60,8 +59,8 @@ public final class PixelRayStatic {
 //        return averageColor.scalarDivide(numIterations).toColor();
 //    }
 
-    public static Vector3D getColorFromBounces(Ray currentRay, Vector3D color, Collider3DList objectsInField, int maxBounces) {
-        Collider3D<?> collision;
+    public static Vector3D getColorFromBounces(Ray currentRay, Vector3D color, RayTraceableList objectsInField, int maxBounces) {
+        RayTraceable collision;
         color = new Vector3D(color);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
@@ -71,7 +70,7 @@ public final class PixelRayStatic {
                 return BLACK;
             }
 
-            color.addMutable(new Vector3D(collision.getAppearance().getColor())
+            color.addMutable(new Vector3D(collision.getColor())
                     .scalarDivide(bounces / 2));
 
             if (collision.getTexture().isLightSource()) {

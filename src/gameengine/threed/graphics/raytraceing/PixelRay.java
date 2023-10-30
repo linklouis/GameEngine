@@ -1,6 +1,5 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -32,10 +31,10 @@ public class PixelRay {
     private final int numIterations;
 
     /**
-     * A {@link Collider3DList} of the {@link Collider3D}s to consider for the
+     * A {@link RayTraceableList} of the {@link Collider3D}s to consider for the
      * scene.
      */
-    private final Collider3DList objectsInField;
+    private final RayTraceableList objectsInField;
 
 
     /*
@@ -44,7 +43,7 @@ public class PixelRay {
 
     public PixelRay(final Ray startRay, final int maxBounces,
                     final int numIterations,
-                    final Collider3DList objectsInField) {
+                    final RayTraceableList objectsInField) {
         this.startRay = startRay;
         this.maxBounces = maxBounces;
         this.numIterations = numIterations;
@@ -61,21 +60,21 @@ public class PixelRay {
      * {@link #numIterations}.
      */
     public Color getFinalColor() {
-        Collider3D<?> firstCollision = startRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
         }
         if (firstCollision.getTexture().isLightSource()) {
-            return firstCollision.getAppearance().getColor();
+            return firstCollision.getColor();
         }
 
         return getAllCollisions(firstCollision);
     }
 
-    private Color getAllCollisions(final Collider3D<?> firstCollision) {
+    private Color getAllCollisions(final RayTraceable firstCollision) {
         Vector3D startColor = new Vector3D(
-                firstCollision.getAppearance().getColor());
+                firstCollision.getColor());
 
         Vector3D averageColor = new Vector3D(0);
 
@@ -99,27 +98,25 @@ public class PixelRay {
      *              {@code currentRay}.
      * @return The color of {@code currentRay} after all of its reflections.
      */
-    public Vector3D getColorFromBounces(Ray currentRay, Vector3D color) {
-        Collider3D<?> collision;
+    public Vector3D getColorFromBounces(final Ray currentRay, Vector3D color) {
+        RayTraceable collision;
         color = new Vector3D(color);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollisionUpdateDirec(objectsInField);
+            collision = currentRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
             }
 
-            color.addMutable(new Vector3D(collision.getAppearance().getColor())
+            color.addMutable(new Vector3D(collision.getColor())
                     .scalarDivide(bounces / 2));
 
             if (collision.getTexture().isLightSource()) {
                 return color;
             }
 
-//            currentRay = new Ray(
-//                    currentRay.getPosition(),
-//                    collision.reflection(currentRay));
+            currentRay.reflect(collision);
         }
 
         return BLACK;

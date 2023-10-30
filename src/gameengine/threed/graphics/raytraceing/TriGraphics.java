@@ -1,14 +1,17 @@
-package gameengine.threed.prebuilt.objectmovement.collisions;
+package gameengine.threed.graphics.raytraceing;
 
+import gameengine.skeletons.GameObject;
+import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.graphics.raytraceing.RayTraceable;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
-public class TriCollider extends Collider3D<TriCollider> {
+import java.util.List;
+
+public class TriGraphics extends RayTraceable {
     private Vector3D vertex1;
     private Vector3D vertex2;
     private Vector3D vertex3;
@@ -24,6 +27,16 @@ public class TriCollider extends Collider3D<TriCollider> {
     private Vector3D dirTo2;
     private Vector3D dirTo3;
     Vector3D normal;
+
+
+    /*
+     * Construction:
+     */
+
+    @Override
+    public List<Class<? extends Modifier>> getDependencies() {
+        return null;
+    }
 
     @Override
     public ArgumentContext[] getArgumentContexts() {
@@ -48,6 +61,20 @@ public class TriCollider extends Collider3D<TriCollider> {
                 )
         };
     }
+
+    @Override
+    public void instantiate(GameObject parent, Object... args) {
+        try {
+            super.instantiate(parent, args);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /*
+     * Functionality:
+     */
 
     /**
      * Precomputes values for collision checks
@@ -77,17 +104,6 @@ public class TriCollider extends Collider3D<TriCollider> {
         return normal;
     }
 
-    @Override
-    public boolean isColliding(TriCollider coll) {
-        throw new UnsupportedOperationException("Not implemented Yet");
-        // TODO
-    }
-
-    @Override
-    public boolean contains(Vector3D point) {
-        throw new UnsupportedOperationException("Not valid");
-    }
-
     public double distanceToCollidePlane(Ray ray) {
         Vector3D planeNormal = surfaceNormal(ray);
         return planeNormal.dotProduct(
@@ -97,7 +113,7 @@ public class TriCollider extends Collider3D<TriCollider> {
 
     /**
      * Finds the first intersection a ray will have with the
-     * {@code TriCollider}.
+     * {@code TriGraphics}.
      *
      * @param ray The ray to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
@@ -166,33 +182,25 @@ public class TriCollider extends Collider3D<TriCollider> {
     /*
      * Utilities:
      */
-
-    @Override
     public double minX() {
         return Math.min(Math.min(vertex1.getX(), vertex2.getX()), vertex3.getX());
     }
-
-    @Override
     public double minY() {
         return Math.min(Math.min(vertex1.getY(), vertex2.getY()), vertex3.getY());
     }
 
-    @Override
     public double minZ() {
         return Math.min(Math.min(vertex1.getZ(), vertex2.getZ()), vertex3.getZ());
     }
 
-    @Override
     public double maxX() {
         return Math.max(Math.max(vertex1.getX(), vertex2.getX()), vertex3.getX());
     }
 
-    @Override
     public double maxY() {
         return Math.max(Math.max(vertex1.getY(), vertex2.getY()), vertex3.getY());
     }
 
-    @Override
     public double maxZ() {
         return Math.max(Math.max(vertex1.getZ(), vertex2.getZ()), vertex3.getZ());
     }
@@ -203,16 +211,6 @@ public class TriCollider extends Collider3D<TriCollider> {
                 (maxX() + minX()) / 2,
                 (maxY() + minY()) / 2,
                 (maxZ() + minZ()) / 2 );
-    }
-
-    @Override
-    public Class<TriCollider> getColliderClass() {
-        return TriCollider.class;
-    }
-
-    @Override
-    public void paint(GraphicsContext gc, Color color) {
-
     }
 
     public Vector3D getVertex1() {

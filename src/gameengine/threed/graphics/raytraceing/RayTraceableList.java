@@ -1,10 +1,9 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 
 /**
  * A very lightweight and specific use-case singly linked list implementation
- * to optimize referencing Collider3Ds when ray tracing. Objects can only be
+ * to optimize referencing RayTraceables when ray tracing. Objects can only be
  * added at the head, and no {@code get()} method is provided, the only
  * external access to the list is through the head, so uses must loop through
  * themselves.
@@ -12,41 +11,41 @@ import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
  * @author Louis Link
  * @since 1.0
  */
-public final class Collider3DList {
+public final class RayTraceableList {
     /**
      * A reference to the first Element in the list.
      */
     private Element head;
 
     /**
-     * Creates a new {@code Collider3DList} with no elements and a null
+     * Creates a new {@code RayTraceableList} with no elements and a null
      * {@code head}.
      */
-    public Collider3DList() {
+    public RayTraceableList() {
         head = null;
     }
 
     /**
-     * Creates a new {@code Collider3DList} with matching elements to the
+     * Creates a new {@code RayTraceableList} with matching elements to the
      * passed array.
      *
-     * @param items An array of {@link Collider3D} to initialize the values in
+     * @param items An array of {@link RayTraceable} to initialize the values in
      *              the list.
      */
-    public Collider3DList(final Collider3D<?>[] items) {
-        for (Collider3D<?> item : items) {
+    public RayTraceableList(final RayTraceable[] items) {
+        for (RayTraceable item : items) {
             add(item);
         }
     }
 
-    public record Element(Collider3D<?> value, Collider3DList.Element next) { }
+    public record Element(RayTraceable value, RayTraceableList.Element next) { }
 
     /**
      * Adds a new item at the head of the list.
      *
      * @param value the new Collider3D to be added to the list
      */
-    private void add(final Collider3D<?> value) {
+    private void add(final RayTraceable value) {
         head = new Element(value, head);
     }
 

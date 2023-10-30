@@ -7,12 +7,6 @@ import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 public abstract class GraphicsObject3D extends GraphicsObject {
-    private Texture texture;
-
-    /*
-     * Construction:
-     */
-
     public GraphicsObject3D() {
         super();
     }
@@ -21,35 +15,5 @@ public abstract class GraphicsObject3D extends GraphicsObject {
         super(modifiers);
     }
 
-
-    /*
-     * Functionality:
-     */
-
-    public Vector3D reflection(Ray ray) {
-        return texture.reflection(ray.getDirection(), surfaceNormal(ray));
-    }
-
-    public abstract Vector3D surfaceNormal(Ray ray);
-
-
-    /*
-     * Utilities:
-     */
-
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
-    public Color getColor() {
-        return getTexture().getColor();
-    }
-
-    public void setColor(Color color) {
-        getTexture().setColor(color);
-    }
+    public abstract Vector3D getCenter();
 }

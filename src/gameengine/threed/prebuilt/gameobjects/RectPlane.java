@@ -5,7 +5,7 @@ import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Texture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
-import gameengine.threed.prebuilt.objectmovement.collisions.TriCollider;
+import gameengine.threed.graphics.raytraceing.TriGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -89,7 +89,7 @@ public class RectPlane extends PolyObject {
     public void setTexture(Texture texture) {
         this.texture = texture;
         for (Tri poly : get(Mesh.class).getPolygons()) {
-            poly.get(TriCollider.class).setTexture(texture);
+            poly.get(TriGraphics.class).setTexture(texture);
         }
     }
 }

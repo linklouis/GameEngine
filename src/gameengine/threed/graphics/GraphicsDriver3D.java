@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
     private final List<Visual3D> visualObjects = new ArrayList<>();
+    private List<GraphicsObject3D> cameraObjects = new ArrayList<>();
     private Camera camera;
 
 
@@ -46,7 +47,7 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
 
     @Override
     public void updateGraphics() {
-        camera.update(visualObjects.toArray(new Visual3D[0]));
+        camera.update(cameraObjects);
         camera.displayOn(getRoot());
     }
 
@@ -57,6 +58,7 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
 
     public void add(Visual3D newObject) {
         visualObjects.add(newObject);
+        cameraObjects = camera.getValidObjects(visualObjects);
     }
 
     public Visual3D get(int index) {
@@ -77,5 +79,9 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
 
     public List<Visual3D> getVisualObjects() {
         return visualObjects;
+    }
+
+    public List<? extends GraphicsObject3D> getCameraObjects() {
+        return cameraObjects;
     }
 }

@@ -1,8 +1,8 @@
 package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.Camera;
+import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.Visual3D;
-import gameengine.threed.prebuilt.objectmovement.collisions.Collider3D;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
@@ -11,7 +11,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @author Louis Link
  * @since 1.0
  */
-public class RayTracedCamera extends Camera {
+public class RayTracedCamera extends Camera<RayTraceable> {
     /**
      * The distance from the camera the screen is being simulated to be to find
      * the direction from the camera to each pixel.
@@ -82,7 +82,8 @@ public class RayTracedCamera extends Camera {
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded,
                            final double fieldOfViewDegrees) {
-        super(position, direction, imageDimensions, fieldOfViewDegrees);
+        super(position, direction, imageDimensions, fieldOfViewDegrees,
+                RayTraceable.class);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -108,7 +109,8 @@ public class RayTracedCamera extends Camera {
                            final Vector2D imageDimensions,
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded) {
-        super(position, direction, imageDimensions, 60.0);
+        super(position, direction, imageDimensions, 60.0,
+                RayTraceable.class);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -140,7 +142,8 @@ public class RayTracedCamera extends Camera {
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded,
                            final double fieldOfViewDegrees) {
-        super(x, y, z, direction, imageDimensions, fieldOfViewDegrees);
+        super(x, y, z, direction, imageDimensions, fieldOfViewDegrees,
+                RayTraceable.class);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -169,7 +172,8 @@ public class RayTracedCamera extends Camera {
                            final Vector2D imageDimensions,
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded) {
-        super(x, y, z, direction, imageDimensions, 60.0);
+        super(x, y, z, direction, imageDimensions, 60.0,
+                RayTraceable.class);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -189,17 +193,17 @@ public class RayTracedCamera extends Camera {
      * @return The rendered scene as a {@link WritableImage}.
      */
     @Override
-    public WritableImage renderImage(final Visual3D[] renderableObjects) {
-        Collider3D<?>[] objects = getValidColliders(renderableObjects);
+    public WritableImage renderImage(final Collection<RayTraceable> renderableObjects) {
+        RayTraceable[] objects = renderableObjects.toArray(new RayTraceable[0]);
 
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
             renderThreaded(getImage().getPixelWriter(),
-                    new Collider3DList(objects));
+                    new RayTraceableList(objects));
         } else {
             renderUnthreaded(getImage().getPixelWriter(),
-                    new Collider3DList(objects));
+                    new RayTraceableList(objects));
         }
 
 
@@ -223,7 +227,7 @@ public class RayTracedCamera extends Camera {
     }
 
     private void renderUnthreaded(final PixelWriter writer,
-                                  final Collider3DList objects) {
+                                  final RayTraceableList objects) {
         for (int x = 0; x < getWidth(); x++) {
             for (int y = 0; y < getHeight(); y++) {
                 renderPixelAt(x, y, writer, objects);
@@ -232,7 +236,7 @@ public class RayTracedCamera extends Camera {
     }
 
     private void renderThreaded(final PixelWriter writer,
-                                final Collider3DList objects) {
+                                final RayTraceableList objects) {
         int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         int width = findClosestFactor((int) getWidth(), 150);
@@ -261,7 +265,7 @@ public class RayTracedCamera extends Camera {
     }
 
     private void renderPixels(int startX, int startY, int endX, int endY, PixelWriter writer,
-                              Collider3DList objects) {
+                              RayTraceableList objects) {
         for (int x = startX; x < endX; x++) {
             for (int y = startY; y < endY; y++) {
                 renderPixelAt(x, y, writer, objects);
@@ -270,7 +274,7 @@ public class RayTracedCamera extends Camera {
     }
 
     private void renderPixelAt(int x, int y, PixelWriter writer,
-                               Collider3DList objects) {
+                               RayTraceableList objects) {
         writer.setColor(x, y,
                 new PixelRay(
                         new Ray(getLocation(), getRayPath(x, y)),
@@ -324,14 +328,6 @@ public class RayTracedCamera extends Camera {
                 scaleX * getWidth() * (getHeight() - 2 * y)
                         / (getHeight() * getHeight()),
                 screenDistance);
-    }
-
-    private Collider3D<?>[] getValidColliders(final Visual3D[] visuals) {
-        return Arrays.stream(visuals)
-                .filter(object ->
-                        object.getParent().containsModifier(Collider3D.class))
-                .map(object -> object.getFromParent(Collider3D.class))
-                .toArray(Collider3D[]::new);
     }
 
 

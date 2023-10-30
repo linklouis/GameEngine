@@ -9,7 +9,7 @@ import gameengine.vectormath.Vector3D;
 
 import java.util.List;
 
-public class PhysicsObject3D extends GraphicsObject3D {
+public class PhysicsObject3D extends Modifier {
     //TODO
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
@@ -19,10 +19,5 @@ public class PhysicsObject3D extends GraphicsObject3D {
     @Override
     public ArgumentContext[] getArgumentContexts() {
         return new ArgumentContext[0];
-    }
-
-    @Override
-    public Vector3D surfaceNormal(Ray ray) {
-        return getFromParent(Collider3D.class).surfaceNormal(ray);
     }
 }
