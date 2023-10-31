@@ -1,7 +1,6 @@
 package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.Camera;
-import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
@@ -54,6 +53,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private int targetTileSize;
     private Vector2D tileDimensions;
 
+    private double scaleX =
+            Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+
 
 
     /*
@@ -88,6 +90,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
+        updateScaleX();
     }
 
     /**
@@ -115,6 +118,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
+        updateScaleX();
     }
 
     /**
@@ -148,6 +152,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
+        updateScaleX();
     }
 
     /**
@@ -178,6 +183,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
+        updateScaleX();
     }
 
 
@@ -289,48 +295,64 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private Vector3D getRayPath(final double x, final double y) {
         // Thx to ChatGPT
-        Vector3D localPixelLocation = localPixelLocation(x, y);
+//        Vector2D localPixelLocation = localPixelLocation2D(x, y);
+//
+//        Vector3D truePixelLocation = getLocation()
+//                .add(getDirection().scalarMultiply(screenDistance))
+//                .add(getDirection().crossWithJ(localPixelLocation.getY()))
+//                .add(getDirection()
+//                        .crossWithSelfCrossedWithJ(localPixelLocation.getX()));
+//
+//        return truePixelLocation.subtract(getLocation());
 
-        Vector3D truePixelLocation = getLocation()
-                .add(getDirection()
-                        .scalarMultiply(localPixelLocation.getZ()))
-                .add(getDirection()
-                        .crossProduct(new Vector3D(0, 1, 0))
-                        .scalarMultiply(localPixelLocation.getY()))
-                .add(getDirection()
-                        .crossProduct(getDirection()
-                                .crossProduct(new Vector3D(0, 1, 0)))
-                        .scalarMultiply(localPixelLocation.getX()));
-
-        return truePixelLocation.subtract(getLocation());
+//        return getDirection().scalarMultiply(screenDistance)
+//                .add(getDirection().crossWithJ(
+//                        (getHeight() - y * 2.0) * scaleX / getWidth()))
+//                .add(getDirection().crossWithSelfCrossedWithJ(
+//                                (x * 2.0 / getWidth() - 1) * scaleX));
+//        return getDirection().scalarMultiply(screenDistance)
+//                .add(getDirection().crossWithJPlusCrossWithSelfCrossedWithJ(
+//                        (getHeight() - y * 2.0) * scaleX / getWidth(),
+//                        (x * 2.0 / getWidth() - 1) * scaleX)
+//                );
+        return getDirection().selfPlusXJPlusXSelfXJ(
+                        screenDistance,
+                        (getHeight() - y * 2.0) * scaleX / getWidth(),
+                        (x * 2.0 / getWidth() - 1) * scaleX);
     }
 
-    private Vector3D localPixelLocation(final double x, final double y) {
-        // Easier to read version, but less efficient:
-//        double halfWidth = getWidth() / 2.0;
-//        double halfHeight = getHeight() / 2.0;
+//    private Vector2D localPixelLocation2D(final double x, final double y) {
+//        return new Vector2D(
+//                (x * 2.0 / getWidth() - 1) * scaleX,
+//                (getHeight() - y * 2.0) * scaleX / getWidth());
+//    }
 //
-//        double aspectRatio = getWidth() / getHeight();
-//        double scaleX =
-//                  Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
-//        double scaleY = scaleX / aspectRatio;
+//    private Vector3D localPixelLocation(final double x, final double y) {
+//        // Easier to read version, but less efficient:
+////        double halfWidth = getWidth() / 2.0;
+////        double halfHeight = getHeight() / 2.0;
+////
+////        double aspectRatio = getWidth() / getHeight();
+////        double scaleX =
+////                  Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+////        double scaleY = scaleX / aspectRatio;
+////
+////        double localX = (x - halfWidth) / halfWidth * scaleX;
+////        double localY = (halfHeight - y) / halfHeight * scaleY;
+////
+////        return new Vector3D(localX, localY, screenDistance);
 //
-//        double localX = (x - halfWidth) / halfWidth * scaleX;
-//        double localY = (halfHeight - y) / halfHeight * scaleY;
 //
-//        return new Vector3D(localX, localY, screenDistance);
-//        double halfWidth = getWidth() / 2.0;
-//        double halfHeight = getHeight() / 2.0;
-
-        double scaleX =
-                Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
-
-        return new Vector3D(
-                scaleX * (2 * x - getWidth()) / getWidth(),
-                scaleX * getWidth() * (getHeight() - 2 * y)
-                        / (getHeight() * getHeight()),
-                screenDistance);
-    }
+////        double localX = (x * 2.0 - getWidth()) * scaleX / getWidth();
+////        double localY = (getHeight() - y * 2.0) * scaleX / getWidth();
+//
+////        return new Vector3D(localX, localY, screenDistance);
+//
+//        return new Vector3D(
+//                (x * 2.0 / getWidth() - 1) * scaleX,
+//                (getHeight() - y * 2.0) * scaleX / getWidth(),
+//                screenDistance);
+//    }
 
 
     /*
@@ -340,6 +362,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     @Override
     protected void setFieldOfView(final double fieldOfViewDegrees) {
         super.setFieldOfView(fieldOfViewDegrees);
+        updateScaleX();
     }
 
     public double getScreenDistance() {
@@ -391,6 +414,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         tileDimensions = new Vector2D(
                 findClosestFactor((int) getWidth(), targetTileSize),
                 findClosestFactor((int) getHeight(), targetTileSize));
+        updateScaleX();
     }
 
     private static int findClosestFactor(int imageSize, int targetTileSize) {
@@ -408,6 +432,11 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
 
         return closestFactor;
+    }
+
+    public void updateScaleX() {
+        scaleX =
+                Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
     }
 }
 

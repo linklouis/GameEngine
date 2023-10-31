@@ -24,13 +24,13 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 1;
+    private final int NUM_TO_TEST = 5;
     private RayTracedCamera mainCam;
 
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        new Vector2D(700, 700), 10, 10, true)),
+                        new Vector2D(/*700, 700*/1280, 720/*1920.0/2, 1080.0/2*/), 5, 20, true)),
                 new PhysicsEngine3D());
     }
 

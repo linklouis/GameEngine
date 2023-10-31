@@ -121,7 +121,7 @@ public class TriGraphics extends RayTraceable {
     @Override
     public double distanceToCollide(Ray ray, double curSmallestDist) {
         double distance = normal.dotWithSubtracted(vertex1, ray.getPosition())
-                / normal.dotWithUnit(ray.getDirection());
+                / normal.dotWithUnitOf(ray.getDirection());
 
         if (distance <= 0 || distance >= curSmallestDist) {
             return -1; // No collision with the plane

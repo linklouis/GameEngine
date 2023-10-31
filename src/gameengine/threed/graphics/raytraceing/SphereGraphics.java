@@ -90,9 +90,12 @@ public class SphereGraphics extends RayTraceable {
             return 0;
         }
 
-        Vector3D Q = ray.getPosition().subtract(getCenter());
-        double b = ray.getDirection().atMagnitude(2).dotProduct(Q);
-        double d = b * b - 4 * (Q.dotWithSelf() - radius * radius);  // discriminant of quadratic
+        double b = ray.getDirection()
+                .dotWithSubtracted(ray.getPosition(), getCenter())
+                * 2 / ray.getDirection().magnitude();
+        double d = b * b
+                - 4 * (ray.getPosition().distanceSquared(getCenter())
+                        - radius * radius);  // discriminant of quadratic
 
         if (d <= 0) {
             return -1; // Solutions are complex, no intersections
@@ -118,7 +121,7 @@ public class SphereGraphics extends RayTraceable {
     }
 
     public boolean contains(Vector3D point) {
-        return Math.abs(point.distance(getCenter())) <= radius;
+        return point.distance(getCenter()) <= radius;
     }
 
 

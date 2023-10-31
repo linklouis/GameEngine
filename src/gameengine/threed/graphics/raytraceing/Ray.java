@@ -79,7 +79,7 @@ public class Ray {
     public boolean objectIsInDirection(final RayTraceable collider) {
 //        Vector3D toCenter = position.subtract(collider.getCenter());
 
-        return !(position.subtract(collider.getCenter()).dotProduct(direction) > 0
+        return !(direction.dotWithSubtracted(position, collider.getCenter()) > 0
                 && Math.abs(position.distance(collider.getCenter())/*toCenter.magnitude()*/) < 1);
     }
 

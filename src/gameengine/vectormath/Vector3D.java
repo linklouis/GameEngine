@@ -4,7 +4,6 @@ import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -12,9 +11,9 @@ public class Vector3D implements Vector<Vector3D> {
     /*
      * Unit Vectors:
      */
-    private static final Vector3D i = new Vector3D(1, 0, 0);
-    private static final Vector3D j = new Vector3D(0, 1, 0);
-    private static final Vector3D k = new Vector3D(0, 0, 1);
+    public static final Vector3D I = new Vector3D(1, 0, 0);
+    public static final Vector3D J = new Vector3D(0, 1, 0);
+    public static final Vector3D K = new Vector3D(0, 0, 1);
 
     /*
      * Components:
@@ -22,6 +21,7 @@ public class Vector3D implements Vector<Vector3D> {
     private double x;
     private double y;
     private double z;
+    private double magnitude = Double.MAX_VALUE;
 
 
     /*
@@ -56,6 +56,7 @@ public class Vector3D implements Vector<Vector3D> {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
+        this.magnitude = vector.magnitude();
     }
 
 
@@ -76,6 +77,7 @@ public class Vector3D implements Vector<Vector3D> {
         x += other.x;
         y += other.y;
         z += other.z;
+        magnitude = Double.MAX_VALUE;
         return this;
     }
 
@@ -89,22 +91,22 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public double dotWithSubtracted(final Vector3D v1, final Vector3D v2) {
-        return x * (v1.x - v2.x) + y * (v1.y - v2.y) + z * (v1.z - v2.z);
+        return x * (v1.x - v2.x)
+                + y * (v1.y - v2.y)
+                + z * (v1.z - v2.z);
     }
 
-    public double dotWithUnit(final Vector3D other) {
-        double magnitude = other.magnitude();
+    public double dotWithUnitOf(final Vector3D other) {
         return x * (other.x / other.magnitude())
                 + y * (other.y / other.magnitude())
                 + z * (other.z / other.magnitude());
     }
 
     public Vector3D addAtMagnitude(final Vector3D other, final double newMagnitude) {
-        double magnitude = other.magnitude();
         return new Vector3D(
-                x + other.x * newMagnitude / magnitude,
-                y + other.y * newMagnitude / magnitude,
-                z + other.z * newMagnitude / magnitude);
+                x + other.x * newMagnitude / other.magnitude(),
+                y + other.y * newMagnitude / other.magnitude(),
+                z + other.z * newMagnitude / other.magnitude());
     }
 
 //    public double dotWithAddedAndSubtracted(final Vector3D v1, final Vector3D v2, double dist, final Vector3D v3) {
@@ -163,10 +165,26 @@ public class Vector3D implements Vector<Vector3D> {
 
     @Override
     public double magnitude() {
-        return Math.sqrt(
-                x * x
-                + y * y
-                + z * z);
+//        return Math.sqrt(
+//                x * x
+//                        + y * y
+//                        + z * z);
+        if (magnitude == Double.MAX_VALUE) {
+            magnitude = Math.sqrt(
+                    x * x
+                            + y * y
+                            + z * z);
+        }
+        return magnitude;
+    }
+
+    public void computeMagnitude() {
+        if (magnitude == Double.MAX_VALUE) {
+            magnitude = Math.sqrt(
+                    x * x
+                            + y * y
+                            + z * z);
+        }
     }
 
     public double dotWithSelf() {
@@ -177,21 +195,19 @@ public class Vector3D implements Vector<Vector3D> {
 
     @Override
     public Vector3D unitVector() {
-        double magnitude = magnitude();
         return new Vector3D(
-                x / magnitude,
-                y / magnitude,
-                z / magnitude
+                x / magnitude(),
+                y / magnitude(),
+                z / magnitude()
         );
     }
 
     @Override
     public Vector3D atMagnitude(double newMagnitude) {
-        double magnitude = magnitude();
         return new Vector3D(
-                x * newMagnitude / magnitude,
-                y * newMagnitude / magnitude,
-                z * newMagnitude / magnitude
+                x * newMagnitude / magnitude(),
+                y * newMagnitude / magnitude(),
+                z * newMagnitude / magnitude()
         );
     }
 
@@ -251,8 +267,45 @@ public class Vector3D implements Vector<Vector3D> {
         return new Vector3D(
                 this.y * other.z - this.z * other.y,
                 this.z * other.x - this.x * other.z,
-                this.x * other.y - this.y * other.x
+                this.x * other.y - this.y * other.x);
+    }
+
+    public Vector3D crossWithJ() {
+        return crossWithJ(1);
+    }
+
+    public Vector3D crossWithJ(double multiplier) {
+        return new Vector3D(
+                -z * multiplier,
+                0,
+                x * multiplier);
+    }
+
+    public Vector3D crossWithSelfCrossedWithJ() {
+        return crossWithSelfCrossedWithJ(1);
+    }
+
+    public Vector3D crossWithJPlusCrossWithSelfCrossedWithJ(final double multiplier1, final double multiplier2) {
+        return new Vector3D(
+                y * x * multiplier2 - z * multiplier1,
+                -z * z * multiplier2,
+                x * multiplier1 + y * z * multiplier2
         );
+    }
+
+    public Vector3D selfPlusXJPlusXSelfXJ(final double multiplier1, final double multiplier2, final double multiplier3) {
+        return new Vector3D(
+                x * multiplier1 - z * multiplier2 + y * x * multiplier3,
+                y * multiplier1 - z * z * multiplier3,
+                z * multiplier1 + x * multiplier2 + y * z * multiplier3
+        );
+    }
+
+    public Vector3D crossWithSelfCrossedWithJ(double multiplier) {
+        return new Vector3D(
+                y * x * multiplier,
+                -z * z * multiplier,
+                y * z * multiplier);
     }
 
     public static Vector3D random(double min, double max) {
@@ -289,14 +342,14 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
-    public double distance(Vector3D other) {
-        return Math.sqrt(
-                (x - other.x) * (x - other.x)
+    public double distanceSquared(final Vector3D other) {
+        return (x - other.x) * (x - other.x)
                 + (y - other.y) * (y - other.y)
-                + (z - other.z) * (z - other.z));
-//                Math.pow(x - other.x, 2)
-//                + Math.pow(y - other.y, 2)
-//                + Math.pow(z - other.z, 2));
+                + (z - other.z) * (z - other.z);
+    }
+
+    public double distance(Vector3D other) {
+        return Math.sqrt(distanceSquared(other));
     }
 
     public Vector3D onlyX() {
