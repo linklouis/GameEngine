@@ -224,6 +224,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
             throw new RuntimeException(e);
         }
 //        System.exit(0);
+
         return getImage();
     }
 

@@ -18,6 +18,7 @@ import java.util.List;
 
 public class SphereGraphics extends RayTraceable {
     private double radius;
+    InPlane3D position = null;
 
 
     /*
@@ -61,6 +62,7 @@ public class SphereGraphics extends RayTraceable {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+        position = getFromParent(InPlane3D.class);
     }
 
 
@@ -112,11 +114,11 @@ public class SphereGraphics extends RayTraceable {
 
     @Override
     public Vector3D getCenter() {
-        return getFromParent(InPlane3D.class).getLocation();
+        return position.getLocation();
     }
 
     public boolean contains(Vector3D point) {
-        return Math.abs(point.distance(getCenter())) <= getRadius();
+        return Math.abs(point.distance(getCenter())) <= radius;
     }
 
 

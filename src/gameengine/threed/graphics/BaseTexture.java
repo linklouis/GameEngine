@@ -42,16 +42,14 @@ public class BaseTexture extends Texture {
     @Override
     public Vector3D reflection(final Vector3D rayDirection,
                                Vector3D surfaceNormal) {
-        Vector3D reflection;
-        surfaceNormal = surfaceNormal.unitVector();
-
         if (ThreadLocalRandom.current().nextDouble() > getReflectivity()) {
-            reflection = Vector3D.random(-1, 1);
+            Vector3D reflection = Vector3D.random(-1, 1);
             if (reflection.dotProduct(surfaceNormal) < 0) {
-                reflection = reflection.scalarMultiply(-1);
+                return reflection.scalarMultiply(-1);
             }
             return reflection;
         } else {
+            surfaceNormal = surfaceNormal.unitVector();
             Vector3D incident = surfaceNormal
                     .scalarMultiply(rayDirection.dotProduct(surfaceNormal));
             return rayDirection.subtract(incident.scalarMultiply(2));

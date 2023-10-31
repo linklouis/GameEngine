@@ -1,7 +1,11 @@
 import gameengine.drivers.GameDriver3D;
+import gameengine.skeletons.GameObject;
 import gameengine.threed.graphics.BaseTexture;
 import gameengine.threed.graphics.Visual3D;
+import gameengine.threed.graphics.raytraceing.RayTraceable;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
+import gameengine.threed.graphics.raytraceing.SphereGraphics;
+import gameengine.threed.graphics.raytraceing.TriGraphics;
 import gameengine.threed.prebuilt.gameobjects.RectPlane;
 import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
@@ -11,6 +15,10 @@ import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
+
+import java.util.Collection;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
@@ -22,7 +30,7 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        new Vector2D(700, 700), 10, 10, true)),
+                        new Vector2D(700, 700), 20, 30, true)),
                 new PhysicsEngine3D());
     }
 
@@ -88,6 +96,22 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(3, -1, -2, 2, new BaseTexture(Color.AQUA, false, reflectivity)));
         newObject(new Sphere(-1, 2, -3, 3, new BaseTexture(Color.GREEN, false, reflectivity)));
         newObject(new Sphere(0, 0, 100, 100, new BaseTexture(Color.BROWN, false, reflectivity)));
+
+//        int numTris = 0;
+//        int numSpheres = 0;
+//        for (Visual3D visual : getGraphicsDriver().getVisualObjects()) {
+//            if (visual.getAppearance() instanceof TriGraphics) {
+//                numTris++;
+//            } else if (visual.getAppearance() instanceof SphereGraphics) {
+//                numSpheres++;
+//            }
+//        }
+//        Random rand = new Random();
+//        double range = 5;
+//        while (numTris > numSpheres) {
+//            newObject(new Sphere(rand.nextDouble(-range, range), rand.nextDouble(-range, range), rand.nextDouble(-range, range), rand.nextDouble(-range, range), new BaseTexture(Color.BROWN, false, reflectivity)));
+//            numSpheres++;
+//        }
 
         newObject(new Sphere(-10, 2, -10, 7, Color.WHITE, true));
     }
@@ -184,44 +208,44 @@ public class RayTracing extends GameDriver3D {
         return Math.random() * range - range / 2;
     }
 
-//    private void measureTimeWithoutDisplay() {
-//        while (true) {
-//            measureRender();
-//        }
-//    }
+    private void measureTimeWithoutDisplay() {
+        while (true) {
+            measureRender();
+        }
+    }
 
-//    private void measureRender() {
-//        mainCam.requestUpdate();
-//        mainCam.update(getGraphicsDriver().getCameraObjects());
-//        if (renders < NUM_TO_TEST) {
-//            getGraphicsDriver().getCamera().requestUpdate();
-//            avTime += mainCam.getRenderTime();
-//            avTime /= 2;
-//            renders++;
-//        } else if (renders < NUM_TO_TEST + 1) {
-//            System.out.println(
-//                    "\nBenchmark Complete."
-//                            + "\nSize: " + mainCam.getWidth()
-//                            + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
-//                            + "\nTotal rays: " + (
-//                            mainCam.getWidth()
-//                                    * mainCam.getHeight()
-//                                    * mainCam.getRaysPerPixel())
-//                            + "\nMax bounces: " + mainCam.getMaxBounces()
-//                            + "\nAverage render time: " + TimeFormatter.format(avTime)
-//            );
-//            System.out.println(
-//                    mainCam.getWidth() + "\t"
-//                            + mainCam.getRaysPerPixel() + "\t"
-//                            + (mainCam.getWidth()
-//                            * mainCam.getHeight()
-//                            * mainCam.getRaysPerPixel()) + "\t"
-//                            + mainCam.getMaxBounces() + "\t"
-//                            + avTime
-//            );
+    private void measureRender() {
+        mainCam.requestUpdate();
+        mainCam.update((Collection<RayTraceable>) getGraphicsDriver().getCameraObjects());
+        if (renders < NUM_TO_TEST) {
+            getGraphicsDriver().getCamera().requestUpdate();
+            avTime += mainCam.getRenderTime();
+            avTime /= 2;
+            renders++;
+        } else if (renders < NUM_TO_TEST + 1) {
+            System.out.println(
+                    "\nBenchmark Complete."
+                            + "\nSize: " + mainCam.getWidth()
+                            + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
+                            + "\nTotal rays: " + (
+                            mainCam.getWidth()
+                                    * mainCam.getHeight()
+                                    * mainCam.getRaysPerPixel())
+                            + "\nMax bounces: " + mainCam.getMaxBounces()
+                            + "\nAverage render time: " + TimeFormatter.format(avTime)
+            );
+            System.out.println(
+                    mainCam.getWidth() + "\t"
+                            + mainCam.getRaysPerPixel() + "\t"
+                            + (mainCam.getWidth()
+                            * mainCam.getHeight()
+                            * mainCam.getRaysPerPixel()) + "\t"
+                            + mainCam.getMaxBounces() + "\t"
+                            + avTime
+            );
 //            System.exit(0);
-//        }
-//    }
+        }
+    }
 
     private void initDebugVisuals() {
         newObject(new Sphere(0,0,0,10,Color.BLANCHEDALMOND, true));

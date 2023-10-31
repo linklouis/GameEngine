@@ -104,10 +104,13 @@ public class TriGraphics extends RayTraceable {
     }
 
     public double distanceToCollidePlane(Ray ray) {
-        Vector3D planeNormal = surfaceNormal(ray);
-        return planeNormal.dotProduct(
+//        Vector3D planeNormal = surfaceNormal(ray);
+//        return planeNormal.dotProduct(
+//                vertex1.subtract(ray.getPosition()))
+//                / planeNormal.dotProduct(ray.getDirection().unitVector());
+        return normal.dotProduct(
                 vertex1.subtract(ray.getPosition()))
-                / planeNormal.dotProduct(ray.getDirection().unitVector());
+                / normal.dotProduct(ray.getDirection().unitVector());
     }
 
     /**
@@ -122,27 +125,13 @@ public class TriGraphics extends RayTraceable {
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
-        if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
-            normal =  normal.scalarMultiply(-1);
-        }
-        double distance = normal.dotProduct(
-                vertex1.subtract(ray.getPosition()))
-                / normal.dotProduct(ray.getDirection().unitVector());
-
-        if (distance <= 0 || distance >= curSmallestDist) {
-            return -1; // No collision with the plane
-        }
-
-        if (inRange(ray.getPosition().add(
-                ray.getDirection().atMagnitude(distance)))) {
-            return distance;
-        }
-        return -1;
-    }
-
 //    public double distanceToCollide(Ray ray, double curSmallestDist) {
-//        double distance = distanceToCollidePlane(ray);
+//        if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
+//            normal =  normal.scalarMultiply(-1);
+//        }
+//        double distance = normal.dotProduct(
+//                vertex1.subtract(ray.getPosition()))
+//                / normal.dotProduct(ray.getDirection().unitVector());
 //
 //        if (distance <= 0 || distance >= curSmallestDist) {
 //            return -1; // No collision with the plane
@@ -154,6 +143,20 @@ public class TriGraphics extends RayTraceable {
 //        }
 //        return -1;
 //    }
+
+    public double distanceToCollide(Ray ray, double curSmallestDist) {
+        double distance = distanceToCollidePlane(ray);
+
+        if (distance <= 0 || distance >= curSmallestDist) {
+            return -1; // No collision with the plane
+        }
+
+        if (inRange(ray.getPosition().add(
+                ray.getDirection().atMagnitude(distance)))) {
+            return distance;
+        }
+        return -1;
+    }
 
     /**
      * Assumes the point is on the plane.

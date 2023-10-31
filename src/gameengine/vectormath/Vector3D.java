@@ -279,11 +279,14 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
-    public double distance(Vector3D vector) {
+    public double distance(Vector3D other) {
         return Math.sqrt(
-                Math.pow(x - vector.getX(), 2)
-                + Math.pow(y - vector.getY(), 2)
-                + Math.pow(z - vector.getZ(), 2));
+                (x - other.getX()) * (x - other.getX())
+                + (y - other.getY()) * (y - other.getY())
+                + (z - other.getZ()) * (z - other.getZ()));
+//                Math.pow(x - other.getX(), 2)
+//                + Math.pow(y - other.getY(), 2)
+//                + Math.pow(z - other.getZ(), 2));
     }
 
     public Vector3D onlyX() {
