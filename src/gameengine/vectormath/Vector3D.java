@@ -6,9 +6,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public class Vector3D extends Vector<Vector3D> {
+public class Vector3D implements Vector<Vector3D> {
     private static final int SIZE = 3;
     private double x;
     private double y;
@@ -80,9 +79,9 @@ public class Vector3D extends Vector<Vector3D> {
     @Override
     public Vector3D add(Vector3D other) {
         return new Vector3D(
-                getX() + other.getX(),
-                getY() + other.getY(),
-                getZ() + other.getZ()
+                x + other.getX(),
+                y + other.getY(),
+                z + other.getZ()
         );
     }
 
@@ -96,36 +95,36 @@ public class Vector3D extends Vector<Vector3D> {
     @Override
     public Vector3D subtract(final Vector3D other) {
         return new Vector3D(
-                getX() - other.getX(),
-                getY() - other.getY(),
-                getZ() - other.getZ()
+                x - other.getX(),
+                y - other.getY(),
+                z - other.getZ()
         );
     }
 
     @Override
     public Vector3D scalarMultiply(final double scalar) {
         return new Vector3D(
-                getX() * scalar,
-                getY() * scalar,
-                getZ() * scalar
+                x * scalar,
+                y * scalar,
+                z * scalar
         );
     }
 
     @Override
     public Vector3D scalarMultiply(final BigDecimal scalar) {
         return new Vector3D(
-                scalar.multiply(BigDecimal.valueOf(getX())).doubleValue(),
-                scalar.multiply(BigDecimal.valueOf(getY())).doubleValue(),
-                scalar.multiply(BigDecimal.valueOf(getZ())).doubleValue()
+                scalar.multiply(BigDecimal.valueOf(x)).doubleValue(),
+                scalar.multiply(BigDecimal.valueOf(y)).doubleValue(),
+                scalar.multiply(BigDecimal.valueOf(z)).doubleValue()
         );
     }
 
     @Override
     public Vector3D scalarDivide(final double scalar) {
         return new Vector3D(
-                getX() / scalar,
-                getY() / scalar,
-                getZ() / scalar
+                x / scalar,
+                y / scalar,
+                z / scalar
         );
     }
 
@@ -138,43 +137,41 @@ public class Vector3D extends Vector<Vector3D> {
     @Override
     public Vector3D scalarDivide(final BigDecimal scalar) {
         return new Vector3D(
-                BigDecimal.valueOf(getX())
+                BigDecimal.valueOf(x)
                         .divide(scalar, RoundingMode.HALF_DOWN).doubleValue(),
-                BigDecimal.valueOf(getY())
+                BigDecimal.valueOf(y)
                         .divide(scalar, RoundingMode.HALF_DOWN).doubleValue(),
-                BigDecimal.valueOf(getZ())
+                BigDecimal.valueOf(z)
                         .divide(scalar, RoundingMode.HALF_DOWN).doubleValue()
         );
     }
 
     @Override
     public double dotProduct(final Vector3D other) {
-        return getX() * other.getX()
-                + getY() * other.getY()
-                + getZ() * other.getZ();
+        return x * other.getX() + y * other.getY() + z * other.getZ();
     }
 
     @Override
     public double magnitude() {
         return Math.sqrt(
-                getX() * getX()
-                + getY() * getY()
-                + getZ() * getZ());
+                x * x
+                + y * y
+                + z * z);
     }
 
     public double dotWithSelf() {
-        return getX() * getX()
-                + getY() * getY()
-                + getZ() * getZ();
+        return x * x
+                + y * y
+                + z * z;
     }
 
     @Override
     public Vector3D unitVector() {
         double magnitude = magnitude();
         return new Vector3D(
-                getX() / magnitude,
-                getY() / magnitude,
-                getZ() / magnitude
+                x / magnitude,
+                y / magnitude,
+                z / magnitude
         );
     }
 
@@ -182,18 +179,18 @@ public class Vector3D extends Vector<Vector3D> {
     public Vector3D atMagnitude(double newMagnitude) {
         double magnitude = magnitude();
         return new Vector3D(
-                getX() * newMagnitude / magnitude,
-                getY() * newMagnitude / magnitude,
-                getZ() * newMagnitude / magnitude
+                x * newMagnitude / magnitude,
+                y * newMagnitude / magnitude,
+                z * newMagnitude / magnitude
         );
     }
 
     @Override
     public Vector3D forEach(Function<Double, Double> function) {
         return new Vector3D(
-                function.apply(getX()),
-                function.apply(getY()),
-                function.apply(getZ())
+                function.apply(x),
+                function.apply(y),
+                function.apply(z)
         );
     }
 
@@ -203,11 +200,11 @@ public class Vector3D extends Vector<Vector3D> {
      */
     @Override
     public Vector3D max() {
-        double maxVal = Math.max(Math.max(getX(), getY()), getZ());
+        double maxVal = Math.max(Math.max(x, y), z);
         return new Vector3D(
-                getX() == maxVal ? maxVal : 0,
-                getY() == maxVal ? maxVal : 0,
-                getZ() == maxVal ? maxVal : 0);
+                x == maxVal ? maxVal : 0,
+                y == maxVal ? maxVal : 0,
+                z == maxVal ? maxVal : 0);
     }
 
     /**
@@ -216,27 +213,27 @@ public class Vector3D extends Vector<Vector3D> {
      */
     @Override
     public Vector3D min() {
-        double minVal = Math.min(Math.min(getX(), getY()), getZ());
+        double minVal = Math.min(Math.min(x, y), z);
         return new Vector3D(
-                getX() == minVal ? minVal : 0,
-                getY() == minVal ? minVal : 0,
-                getZ() == minVal ? minVal : 0);
+                x == minVal ? minVal : 0,
+                y == minVal ? minVal : 0,
+                z == minVal ? minVal : 0);
     }
 
     @Override
     public Vector3D abs() {
         return new Vector3D(
-                Math.abs(getX()),
-                Math.abs(getY()),
-                Math.abs(getZ())
+                Math.abs(x),
+                Math.abs(y),
+                Math.abs(z)
         );
     }
 
     public Color toColor() {
         return new Color(
-                Vector.clamp(getX(), 0, 1),
-                Vector.clamp(getY(), 0, 1),
-                Vector.clamp(getZ(), 0, 1),
+                Vector.clamp(x, 0, 1),
+                Vector.clamp(y, 0, 1),
+                Vector.clamp(z, 0, 1),
                 1);
     }
 
@@ -260,67 +257,67 @@ public class Vector3D extends Vector<Vector3D> {
 
     public Vector3D signs() {
         return new Vector3D(
-                getX() < 0 ? -1 : 1,
-                getY() < 0 ? -1 : 1,
-                getZ() < 0 ? -1 : 1
+                x < 0 ? -1 : 1,
+                y < 0 ? -1 : 1,
+                z < 0 ? -1 : 1
         );
     }
 
     public Vector3D multiplyAcross(Vector3D vector) {
         return new Vector3D(
-               getX() * vector.getX(),
-               getY() * vector.getY(),
-               getZ() * vector.getZ()
+               x * vector.getX(),
+               y * vector.getY(),
+               z * vector.getZ()
         );
     }
 
     public Vector3D divideAcross(Vector3D vector) {
         return new Vector3D(
-                getX() / vector.getX(),
-                getY() / vector.getY(),
-                getZ() / vector.getZ()
+                x / vector.getX(),
+                y / vector.getY(),
+                z / vector.getZ()
         );
     }
 
     public double distance(Vector3D vector) {
         return Math.sqrt(
-                Math.pow(getX() - vector.getX(), 2)
-                + Math.pow(getY() - vector.getY(), 2)
-                + Math.pow(getZ() - vector.getZ(), 2));
+                Math.pow(x - vector.getX(), 2)
+                + Math.pow(y - vector.getY(), 2)
+                + Math.pow(z - vector.getZ(), 2));
     }
 
     public Vector3D onlyX() {
-        return new Vector3D(getX(), 0, 0);
+        return new Vector3D(x, 0, 0);
     }
 
     public Vector3D onlyY() {
-        return new Vector3D(0, getY(), 0);
+        return new Vector3D(0, y, 0);
     }
 
     public Vector3D onlyZ() {
-        return new Vector3D(0, 0, getZ());
+        return new Vector3D(0, 0, z);
     }
 
     /*
      * Utilities:
      */
 
-    @Override
+//    @Override
     public  Vector3D newVector(final double... components) {
         return new Vector3D(components);
     }
 
-    @Override
-    public double[] getComponents() {
-        return new double[] { getX(), getY(), getZ() };
-    }
+//    @Override
+//    public double[] getComponents() {
+//        return new double[] { x, y, z };
+//    }
 
-    @Override
-    public double getComponent(int index) {
-        return getComponents()[index];
-    }
+//    @Override
+//    public double getComponent(int index) {
+//        return getComponents()[index];
+//    }
 
-    @Override
+//    @Override
     protected void setComponent(int component, double newValue) {
         switch (component) {
             case 0:
@@ -337,10 +334,10 @@ public class Vector3D extends Vector<Vector3D> {
     public Vector3D newEmpty() {
         return new Vector3D(0);
     }
-    @Override
-    protected int size() {
-        return SIZE;
-    }
+//    @Override
+//    protected int size() {
+//        return SIZE;
+//    }
 
     public double getX() {
         return x;

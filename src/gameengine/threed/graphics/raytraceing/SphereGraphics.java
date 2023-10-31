@@ -116,7 +116,7 @@ public class SphereGraphics extends RayTraceable {
     }
 
     public boolean contains(Vector3D point) {
-        return Math.abs(point.subtract(getCenter()).magnitude()) <= getRadius();
+        return Math.abs(point.distance(getCenter())) <= getRadius();
     }
 
 

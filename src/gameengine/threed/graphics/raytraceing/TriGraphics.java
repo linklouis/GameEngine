@@ -26,7 +26,8 @@ public class TriGraphics extends RayTraceable {
 
     private Vector3D dirTo2;
     private Vector3D dirTo3;
-    Vector3D normal;
+    private Vector3D normal;
+    private Vector3D center;
 
 
     /*
@@ -43,9 +44,6 @@ public class TriGraphics extends RayTraceable {
         return new ArgumentContext[] {
                 new ArgumentContext(
                         this::computeValues,
-//                        new ModifierInstantiateParameter<>(
-//                                "collisionHandler", CollisionHandler.class,
-//                                this::setHandler),
                         new ModifierInstantiateParameter<>(
                                 "vertex1", Vector3D.class,
                                 this::setVertex1NoCompute),
@@ -87,17 +85,18 @@ public class TriGraphics extends RayTraceable {
         dot01 = v0.dotProduct(v1);
         dot11 = v1.dotProduct(v1);
 
-        invDenom = /*1.0 /*/ (dot00 * dot11 - dot01 * dot01);
+        invDenom = (dot00 * dot11 - dot01 * dot01);
 
         dirTo2 = vertex2.subtract(vertex1);
         dirTo3 = vertex3.subtract(vertex1);
 
         normal = dirTo2.crossProduct(dirTo3);
+        calculateCenter();
     }
 
     @Override
     public Vector3D surfaceNormal(Ray ray) {
-        Vector3D normal = dirTo2.crossProduct(dirTo3)/*.unitVector()*/;
+        Vector3D normal = dirTo2.crossProduct(dirTo3);
         if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
             return normal.scalarMultiply(-1);
         }
@@ -194,7 +193,7 @@ public class TriGraphics extends RayTraceable {
     }
 
     public double maxX() {
-        return Math.max(Math.max(vertex1.getX(), vertex2.getX()), vertex3.getX());
+        return max(vertex1.getX(), getVertex2().getX(), vertex3.getX())/*Math.max(Math.max(vertex1.getX(), vertex2.getX()), vertex3.getX())*/;
     }
 
     public double maxY() {
@@ -205,9 +204,20 @@ public class TriGraphics extends RayTraceable {
         return Math.max(Math.max(vertex1.getZ(), vertex2.getZ()), vertex3.getZ());
     }
 
+    private double max(double a, double b, double c) {
+        if (a > b) {
+            return Math.max(a, c);
+        }
+        return Math.max(b, c);
+    }
+
     @Override
     public Vector3D getCenter() {
-        return new Vector3D(
+        return center;
+    }
+
+    public void calculateCenter() {
+        center = new Vector3D(
                 (maxX() + minX()) / 2,
                 (maxY() + minY()) / 2,
                 (maxZ() + minZ()) / 2 );
@@ -254,6 +264,7 @@ public class TriGraphics extends RayTraceable {
         dirTo2 = vertex2.subtract(vertex1);
 
         normal = dirTo2.crossProduct(dirTo3);
+        calculateCenter();
     }
 
     public void setVertex3(Vector3D vertex3) {
@@ -268,6 +279,7 @@ public class TriGraphics extends RayTraceable {
         dirTo3 = vertex3.subtract(vertex1);
 
         normal = dirTo2.crossProduct(dirTo3);
+        calculateCenter();
     }
 
     @Override

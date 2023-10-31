@@ -33,8 +33,8 @@ public final class RayTraceableList {
      *              the list.
      */
     public RayTraceableList(final RayTraceable[] items) {
-        for (RayTraceable item : items) {
-            add(item);
+        for (int i = items.length - 1; i >=0; i--) {
+            add(items[i]);
         }
     }
 

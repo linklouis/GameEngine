@@ -3,6 +3,8 @@ package gameengine.threed.graphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * A basic implementation of {@link Texture} that chooses randomly whether to
  * scatter a light ray, which provides a variable reflectivity and a basic
@@ -43,7 +45,7 @@ public class BaseTexture extends Texture {
         Vector3D reflection;
         surfaceNormal = surfaceNormal.unitVector();
 
-        if (Math.random() > getReflectivity()) {
+        if (ThreadLocalRandom.current().nextDouble() > getReflectivity()) {
             reflection = Vector3D.random(-1, 1);
             if (reflection.dotProduct(surfaceNormal) < 0) {
                 reflection = reflection.scalarMultiply(-1);

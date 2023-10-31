@@ -8,6 +8,7 @@ import gameengine.twod.prebuilt.objectmovement.collisions.Collider2D;
 import gameengine.twod.prebuilt.objectmovement.collisions.LayerCollider2D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.vectormath.Vector;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -205,7 +206,7 @@ public class PhysicsObject2D extends GraphicsObject2D {
 //                        .scalarDivide(getMass())
 //                        .scalarDivide(frameRate);
 
-        Vector2D resultantVelocity = Vector2D
+        Vector2D resultantVelocity = Vector
                 .sum(new Vector2D(0), forces)
                 .scalarDivide(getMass())
                 .scalarDivide(frameRate);

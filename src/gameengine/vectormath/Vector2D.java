@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
-public class Vector2D extends Vector<Vector2D> {
+public class Vector2D implements Vector<Vector2D> {
     private static final int SIZE = 2;
     private double x;
     private double y;
@@ -236,40 +236,35 @@ public class Vector2D extends Vector<Vector2D> {
      * Utilities:
      */
 
-    @Override
-    public  Vector2D newVector(final double... components) {
-        return new Vector2D(components);
-    }
+//    @Override
+//    public  Vector2D newVector(final double... components) {
+//        return new Vector2D(components);
+//    }
 
-    @Override
+//    @Override
     public double[] getComponents() {
         return new double[] { getX(), getY() };
     }
 
-    @Override
-    public double getComponent(int index) {
-        return getComponents()[index];
-    }
-
-    @Override
-    protected void setComponent(int component, double newValue) {
-        switch (component) {
-            case 0:
-                x = newValue;
-                return;
-            case 1:
-                y = newValue;
-                return;
-        }
-    }
+//    @Override
+//    public double getComponent(int index) {
+//        return getComponents()[index];
+//    }
+//
+//    @Override
+//    protected void setComponent(int component, double newValue) {
+//        switch (component) {
+//            case 0:
+//                x = newValue;
+//                return;
+//            case 1:
+//                y = newValue;
+//                return;
+//        }
+//    }
 
     public Vector2D newEmpty() {
         return new Vector2D(0);
-    }
-
-    @Override
-    protected int size() {
-        return SIZE;
     }
 
     public double getX() {
@@ -286,5 +281,26 @@ public class Vector2D extends Vector<Vector2D> {
 
     private void setY(double y) {
         this.y = y;
+    }
+
+    public Vector2D closestMatch(Vector2D... vectors) {
+        if (vectors.length == 0) {
+            return null;
+        }
+        if (vectors.length == 1) {
+            return vectors[0];
+        }
+
+        Vector2D closest = vectors[0];
+        double bestDifference = directionDifference(vectors[0]);
+
+        for (Vector2D vector : vectors) {
+            if (directionDifference(vector) < bestDifference) {
+                closest = vector;
+                bestDifference = directionDifference(closest);
+            }
+        }
+
+        return closest;
     }
 }
