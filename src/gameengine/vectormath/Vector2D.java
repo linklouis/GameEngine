@@ -7,7 +7,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 public class Vector2D implements Vector<Vector2D> {
-    private static final int SIZE = 2;
+    /*
+     * Unit Vectors:
+     */
+    private static final Vector2D i = new Vector2D(1, 0);
+    private static final Vector2D j = new Vector2D(0, 1);
+
     private double x;
     private double y;
 
@@ -198,20 +203,6 @@ public class Vector2D implements Vector<Vector2D> {
         );
     }
 
-    public Vector2D multiplyAcross(Vector2D other) {
-        return new Vector2D(
-                getX() * other.getX(),
-                getY() * other.getY()
-        );
-    }
-
-    public Vector2D divideAcross(Vector2D other) {
-        return new Vector2D(
-                getX() / other.getX(),
-                getY() / other.getY()
-        );
-    }
-
     public double distance(Vector2D other) {
         return Math.abs(subtract(other).magnitude());
     }
@@ -232,37 +223,12 @@ public class Vector2D implements Vector<Vector2D> {
         return new Vector2D(0, 0);
     }
 
+
     /*
      * Utilities:
      */
 
-//    @Override
-//    public  Vector2D newVector(final double... components) {
-//        return new Vector2D(components);
-//    }
-
-//    @Override
-    public double[] getComponents() {
-        return new double[] { getX(), getY() };
-    }
-
-//    @Override
-//    public double getComponent(int index) {
-//        return getComponents()[index];
-//    }
-//
-//    @Override
-//    protected void setComponent(int component, double newValue) {
-//        switch (component) {
-//            case 0:
-//                x = newValue;
-//                return;
-//            case 1:
-//                y = newValue;
-//                return;
-//        }
-//    }
-
+    @Override
     public Vector2D newEmpty() {
         return new Vector2D(0);
     }

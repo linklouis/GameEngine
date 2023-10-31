@@ -22,8 +22,7 @@ public class Raycast extends Vector2D {
                    double maxDistance, GameObject[] objectsInField) {
         super(new Vector2D(x, y)
                 .unitVector()
-                .scalarMultiply(marchDistance)
-                .getComponents());
+                .scalarMultiply(marchDistance));
         this.start = start;
         this.maxDistance = maxDistance;
         this.objectsInField = objectsInField;
@@ -33,8 +32,7 @@ public class Raycast extends Vector2D {
                    double maxDistance, GameObject[] objectsInField) {
         super(vector
                 .unitVector()
-                .scalarMultiply(marchDistance)
-                .getComponents());
+                .scalarMultiply(marchDistance));
         this.start = start;
         this.maxDistance = maxDistance;
         this.objectsInField = objectsInField;

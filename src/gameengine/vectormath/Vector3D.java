@@ -4,11 +4,21 @@ import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 public class Vector3D implements Vector<Vector3D> {
-    private static final int SIZE = 3;
+    /*
+     * Unit Vectors:
+     */
+    private static final Vector3D i = new Vector3D(1, 0, 0);
+    private static final Vector3D j = new Vector3D(0, 1, 0);
+    private static final Vector3D k = new Vector3D(0, 0, 1);
+
+    /*
+     * Components:
+     */
     private double x;
     private double y;
     private double z;
@@ -43,9 +53,9 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public Vector3D(final Vector3D vector) {
-        this.x = vector.getX();
-        this.y = vector.getY();
-        this.z = vector.getZ();
+        this.x = vector.x;
+        this.y = vector.y;
+        this.z = vector.z;
     }
 
 
@@ -53,53 +63,53 @@ public class Vector3D implements Vector<Vector3D> {
      * Functionality:
      */
 
-//    public interface VectorOperation {
-//        void doOperation(Vector3D vector1, Vector3D vector2);
-//    }
-//
-//    public static VectorOperation add =
-//            (Vector3D vector1, Vector3D vector2) -> {
-//        vector1.setX(vector1.getX() + vector2.getX());
-//        vector1.setY(vector1.getY() + vector2.getY());
-//        vector1.setZ(vector1.getZ() + vector2.getZ());
-//    };
-//
-//
-//
-//    public Vector3D doWhile(Vector3D vector1, Vector3D vector2,
-//                            VectorOperation operation,
-//                            Supplier<Boolean> check) {
-//        Vector3D vectorA = new Vector3D(vector1);
-//        while (check.get()) {
-//            operation.doOperation(vector1, vector2);
-//        }
-//        return vectorA;
-//    }
-
     @Override
     public Vector3D add(Vector3D other) {
         return new Vector3D(
-                x + other.getX(),
-                y + other.getY(),
-                z + other.getZ()
+                x + other.x,
+                y + other.y,
+                z + other.z
         );
     }
 
     public Vector3D addMutable(Vector3D other) {
-        x += other.getX();
-        y += other.getY();
-        z += other.getZ();
+        x += other.x;
+        y += other.y;
+        z += other.z;
         return this;
     }
 
     @Override
     public Vector3D subtract(final Vector3D other) {
         return new Vector3D(
-                x - other.getX(),
-                y - other.getY(),
-                z - other.getZ()
+                x - other.x,
+                y - other.y,
+                z - other.z
         );
     }
+
+    public double dotWithSubtracted(final Vector3D v1, final Vector3D v2) {
+        return x * (v1.x - v2.x) + y * (v1.y - v2.y) + z * (v1.z - v2.z);
+    }
+
+    public double dotWithUnit(final Vector3D other) {
+        double magnitude = other.magnitude();
+        return x * (other.x / other.magnitude())
+                + y * (other.y / other.magnitude())
+                + z * (other.z / other.magnitude());
+    }
+
+    public Vector3D addAtMagnitude(final Vector3D other, final double newMagnitude) {
+        double magnitude = other.magnitude();
+        return new Vector3D(
+                x + other.x * newMagnitude / magnitude,
+                y + other.y * newMagnitude / magnitude,
+                z + other.z * newMagnitude / magnitude);
+    }
+
+//    public double dotWithAddedAndSubtracted(final Vector3D v1, final Vector3D v2, double dist, final Vector3D v3) {
+//        return x * (v1.x + v2.x * dist - v3.x) + y * (v1.y + v2.y * dist - v3.y) + z * (v1.z + v2.z * dist - v3.z);
+//    }
 
     @Override
     public Vector3D scalarMultiply(final double scalar) {
@@ -148,7 +158,7 @@ public class Vector3D implements Vector<Vector3D> {
 
     @Override
     public double dotProduct(final Vector3D other) {
-        return x * other.getX() + y * other.getY() + z * other.getZ();
+        return x * other.x + y * other.y + z * other.z;
     }
 
     @Override
@@ -238,10 +248,10 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public Vector3D crossProduct(final Vector3D other) {
-        return newVector(
-                this.getY() * other.getZ() - this.getZ() * other.getY(),
-                this.getZ() * other.getX() - this.getX() * other.getZ(),
-                this.getX() * other.getY() - this.getY() * other.getX()
+        return new Vector3D(
+                this.y * other.z - this.z * other.y,
+                this.z * other.x - this.x * other.z,
+                this.x * other.y - this.y * other.x
         );
     }
 
@@ -265,28 +275,28 @@ public class Vector3D implements Vector<Vector3D> {
 
     public Vector3D multiplyAcross(Vector3D vector) {
         return new Vector3D(
-               x * vector.getX(),
-               y * vector.getY(),
-               z * vector.getZ()
+               x * vector.x,
+               y * vector.y,
+               z * vector.z
         );
     }
 
     public Vector3D divideAcross(Vector3D vector) {
         return new Vector3D(
-                x / vector.getX(),
-                y / vector.getY(),
-                z / vector.getZ()
+                x / vector.x,
+                y / vector.y,
+                z / vector.z
         );
     }
 
     public double distance(Vector3D other) {
         return Math.sqrt(
-                (x - other.getX()) * (x - other.getX())
-                + (y - other.getY()) * (y - other.getY())
-                + (z - other.getZ()) * (z - other.getZ()));
-//                Math.pow(x - other.getX(), 2)
-//                + Math.pow(y - other.getY(), 2)
-//                + Math.pow(z - other.getZ(), 2));
+                (x - other.x) * (x - other.x)
+                + (y - other.y) * (y - other.y)
+                + (z - other.z) * (z - other.z));
+//                Math.pow(x - other.x, 2)
+//                + Math.pow(y - other.y, 2)
+//                + Math.pow(z - other.z, 2));
     }
 
     public Vector3D onlyX() {
@@ -305,42 +315,10 @@ public class Vector3D implements Vector<Vector3D> {
      * Utilities:
      */
 
-//    @Override
-    public  Vector3D newVector(final double... components) {
-        return new Vector3D(components);
-    }
-
-//    @Override
-//    public double[] getComponents() {
-//        return new double[] { x, y, z };
-//    }
-
-//    @Override
-//    public double getComponent(int index) {
-//        return getComponents()[index];
-//    }
-
-//    @Override
-    protected void setComponent(int component, double newValue) {
-        switch (component) {
-            case 0:
-                x = newValue;
-                return;
-            case 1:
-                y = newValue;
-                return;
-            case 2:
-                z = newValue;
-        }
-    }
-
+    @Override
     public Vector3D newEmpty() {
         return new Vector3D(0);
     }
-//    @Override
-//    protected int size() {
-//        return SIZE;
-//    }
 
     public double getX() {
         return x;

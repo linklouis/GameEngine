@@ -51,8 +51,8 @@ public class BaseTexture extends Texture {
         } else {
             surfaceNormal = surfaceNormal.unitVector();
             Vector3D incident = surfaceNormal
-                    .scalarMultiply(rayDirection.dotProduct(surfaceNormal));
-            return rayDirection.subtract(incident.scalarMultiply(2));
+                    .scalarMultiply(2 * rayDirection.dotProduct(surfaceNormal));
+            return rayDirection.subtract(incident);
         }
     }
 }

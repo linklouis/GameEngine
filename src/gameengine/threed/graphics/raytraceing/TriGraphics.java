@@ -96,22 +96,16 @@ public class TriGraphics extends RayTraceable {
 
     @Override
     public Vector3D surfaceNormal(Ray ray) {
-        Vector3D normal = dirTo2.crossProduct(dirTo3);
-        if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
+        if (normal.dotWithSubtracted(ray.getPosition(), vertex1) < 0) {
             return normal.scalarMultiply(-1);
         }
         return normal;
     }
 
-    public double distanceToCollidePlane(Ray ray) {
-//        Vector3D planeNormal = surfaceNormal(ray);
-//        return planeNormal.dotProduct(
-//                vertex1.subtract(ray.getPosition()))
-//                / planeNormal.dotProduct(ray.getDirection().unitVector());
-        return normal.dotProduct(
-                vertex1.subtract(ray.getPosition()))
-                / normal.dotProduct(ray.getDirection().unitVector());
-    }
+//    public double distanceToCollidePlane(Ray ray) {
+//        return normal.dotWithSubtracted(vertex1, ray.getPosition())
+//                / normal.dotWithUnit(ray.getDirection());
+//    }
 
     /**
      * Finds the first intersection a ray will have with the
@@ -125,13 +119,23 @@ public class TriGraphics extends RayTraceable {
      * Otherwise, the distance to first hit
      */
     @Override
+    public double distanceToCollide(Ray ray, double curSmallestDist) {
+        double distance = normal.dotWithSubtracted(vertex1, ray.getPosition())
+                / normal.dotWithUnit(ray.getDirection());
+
+        if (distance <= 0 || distance >= curSmallestDist) {
+            return -1; // No collision with the plane
+        }
+
+        if (inRange(ray.getPosition()
+                .addAtMagnitude(ray.getDirection(), distance))) {
+            return distance;
+        }
+        return -1;
+    }
+
 //    public double distanceToCollide(Ray ray, double curSmallestDist) {
-//        if (ray.getPosition().subtract(vertex1).dotProduct(normal) < 0) {
-//            normal =  normal.scalarMultiply(-1);
-//        }
-//        double distance = normal.dotProduct(
-//                vertex1.subtract(ray.getPosition()))
-//                / normal.dotProduct(ray.getDirection().unitVector());
+//        double distance = distanceToCollidePlane(ray);
 //
 //        if (distance <= 0 || distance >= curSmallestDist) {
 //            return -1; // No collision with the plane
@@ -144,20 +148,6 @@ public class TriGraphics extends RayTraceable {
 //        return -1;
 //    }
 
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
-        double distance = distanceToCollidePlane(ray);
-
-        if (distance <= 0 || distance >= curSmallestDist) {
-            return -1; // No collision with the plane
-        }
-
-        if (inRange(ray.getPosition().add(
-                ray.getDirection().atMagnitude(distance)))) {
-            return distance;
-        }
-        return -1;
-    }
-
     /**
      * Assumes the point is on the plane.
      *
@@ -166,11 +156,13 @@ public class TriGraphics extends RayTraceable {
     public boolean inRange(Vector3D point) {
         // ChatGPT
         // Calculate the vectors from the vertices of the triangle to the given point
-        Vector3D v2 = point.subtract(vertex1);
+//        Vector3D v2 = point.subtract(vertex1);
 
         // Calculate dot products
-        double dot02 = v0.dotProduct(v2);
-        double dot12 = v1.dotProduct(v2);
+//        double dot02 = v0.dotProduct(v2);
+//        double dot12 = v1.dotProduct(v2);
+        double dot02 = v0.dotWithSubtracted(point, vertex1);
+        double dot12 = v1.dotWithSubtracted(point, vertex1);
 
         // Compute barycentric coordinates
         double u = (dot11 * dot02 - dot01 * dot12);
