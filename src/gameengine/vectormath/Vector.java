@@ -34,11 +34,24 @@ public interface Vector<T extends Vector<T>> {
 
     T abs();
 
+    T newEmpty();
+
+
+    /*
+     * Defaults:
+     */
+
     default double directionDifference(T vector) {
         return this.dotProduct(vector) / magnitude();
     }
 
-    public abstract T newEmpty();
+    default double angleInDegreesWith(T other) {
+        return Math.toDegrees(angleInRadWith(other));
+    }
+
+    default double angleInRadWith(T other) {
+        return Math.acos(dotProduct(other) / (magnitude() * other.magnitude()));
+    }
 
 
     /*

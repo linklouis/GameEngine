@@ -1,11 +1,11 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.BaseTexture;
-import gameengine.threed.graphics.Texture;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
-import gameengine.threed.graphics.raytraceing.TriGraphics;
+import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RectPlane extends PolyObject {
-    private Texture texture;
+    private RayTracingTexture texture;
     public RectPlane(Vector3D position, Vector3D displacement,
-                     Texture texture) {
+                     RayTracingTexture texture) {
         super(generateVertices(position, displacement),
                 new Mesh(), new InPlane3D());
         get(InPlane3D.class).instantiate(this,
@@ -25,7 +25,7 @@ public class RectPlane extends PolyObject {
     }
 
     public RectPlane(double x, double y, double z,
-                     Vector3D displacement, Texture texture) {
+                     Vector3D displacement, RayTracingTexture texture) {
         super(generateVertices(new Vector3D(x, y, z), displacement),
                 new Mesh(), new InPlane3D());
         get(InPlane3D.class).instantiate(this, x, y, z);
@@ -70,7 +70,7 @@ public class RectPlane extends PolyObject {
 
     @Override
     protected Tri[] createMesh(Vector3D[] vertices) {
-        Texture texture = new BaseTexture(Color.WHITE, true, 0);
+        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, true, 0);
 
         return new Tri[]{
                 new Tri(vertices[0], vertices[1], vertices[2], texture),
@@ -82,11 +82,11 @@ public class RectPlane extends PolyObject {
         return new Color(Math.random(), Math.random(), Math.random(), 1);
     }
 
-    public Texture getTexture() {
+    public RayTracingTexture getTexture() {
         return texture;
     }
 
-    public void setTexture(Texture texture) {
+    public void setTexture(RayTracingTexture texture) {
         this.texture = texture;
         for (Tri poly : get(Mesh.class).getPolygons()) {
             poly.get(TriGraphics.class).setTexture(texture);

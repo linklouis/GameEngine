@@ -1,9 +1,10 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
-import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.Visual3D;
+import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class RayTraceable extends GraphicsObject3D {
-    private Texture texture = null;
+    private RayTracingTexture texture = null;
 
 
     /*
@@ -62,11 +63,11 @@ public abstract class RayTraceable extends GraphicsObject3D {
      * Utilities:
      */
 
-    public Texture getTexture() {
+    public RayTracingTexture getTexture() {
         return texture;
     }
 
-    public void setTexture(Texture texture) {
+    public void setTexture(RayTracingTexture texture) {
         this.texture = texture;
     }
 

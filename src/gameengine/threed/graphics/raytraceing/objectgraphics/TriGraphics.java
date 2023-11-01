@@ -1,10 +1,9 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.raytraceing.Ray;
-import gameengine.threed.graphics.raytraceing.RayTraceable;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
@@ -54,7 +53,7 @@ public class TriGraphics extends RayTraceable {
                                 "vertex3", Vector3D.class,
                                 this::setVertex3NoCompute),
                         new ModifierInstantiateParameter<>(
-                                "texture", Texture.class,
+                                "texture", RayTracingTexture.class,
                                 this::setTexture)
                 )
         };
@@ -102,11 +101,6 @@ public class TriGraphics extends RayTraceable {
         return normal;
     }
 
-//    public double distanceToCollidePlane(Ray ray) {
-//        return normal.dotWithSubtracted(vertex1, ray.getPosition())
-//                / normal.dotWithUnit(ray.getDirection());
-//    }
-
     /**
      * Finds the first intersection a ray will have with the
      * {@code TriGraphics}.
@@ -134,20 +128,6 @@ public class TriGraphics extends RayTraceable {
         return -1;
     }
 
-//    public double distanceToCollide(Ray ray, double curSmallestDist) {
-//        double distance = distanceToCollidePlane(ray);
-//
-//        if (distance <= 0 || distance >= curSmallestDist) {
-//            return -1; // No collision with the plane
-//        }
-//
-//        if (inRange(ray.getPosition().add(
-//                ray.getDirection().atMagnitude(distance)))) {
-//            return distance;
-//        }
-//        return -1;
-//    }
-
     /**
      * Assumes the point is on the plane.
      *
@@ -155,12 +135,6 @@ public class TriGraphics extends RayTraceable {
      */
     public boolean inRange(Vector3D point) {
         // ChatGPT
-        // Calculate the vectors from the vertices of the triangle to the given point
-//        Vector3D v2 = point.subtract(vertex1);
-
-        // Calculate dot products
-//        double dot02 = v0.dotProduct(v2);
-//        double dot12 = v1.dotProduct(v2);
         double dot02 = v0.dotWithSubtracted(point, vertex1);
         double dot12 = v1.dotWithSubtracted(point, vertex1);
 

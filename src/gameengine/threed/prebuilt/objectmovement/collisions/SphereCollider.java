@@ -1,8 +1,6 @@
 package gameengine.threed.prebuilt.objectmovement.collisions;
 
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.Texture;
-import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;

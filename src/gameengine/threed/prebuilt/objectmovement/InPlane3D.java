@@ -63,6 +63,10 @@ public class InPlane3D extends Modifier {
         location = newLocation;
     }
 
+    public void updateLocation(Vector3D displacement) {
+        location = location.add(displacement);
+    }
+
     public Vector3D getLocation() {
         return location;
     }
@@ -92,7 +96,7 @@ public class InPlane3D extends Modifier {
     }
 
     public double distance(Vector3D point) {
-        return getLocation().subtract(point).magnitude();
+        return getLocation().distance(point);
     }
 
     public double distance(GameObject gObj) {

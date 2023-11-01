@@ -1,6 +1,8 @@
 package gameengine.threed.graphics.raytraceing;
 
 
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+
 /**
  * A very lightweight and specific use-case singly linked list implementation
  * to optimize referencing RayTraceables when ray tracing. Objects can only be

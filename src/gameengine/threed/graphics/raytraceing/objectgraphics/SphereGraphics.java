@@ -1,17 +1,13 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.GraphicsObject3D;
-import gameengine.threed.graphics.Texture;
 import gameengine.threed.graphics.raytraceing.Ray;
-import gameengine.threed.graphics.raytraceing.RayTraceable;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +45,7 @@ public class SphereGraphics extends RayTraceable {
                                 "radius", Double.class,
                                 this::setRadius),
                         new ModifierInstantiateParameter<>(
-                                "texture", Texture.class,
+                                "texture", RayTracingTexture.class,
                                 this::setTexture)
                 )
         };

@@ -109,10 +109,6 @@ public class Vector3D implements Vector<Vector3D> {
                 z + other.z * newMagnitude / other.magnitude());
     }
 
-//    public double dotWithAddedAndSubtracted(final Vector3D v1, final Vector3D v2, double dist, final Vector3D v3) {
-//        return x * (v1.x + v2.x * dist - v3.x) + y * (v1.y + v2.y * dist - v3.y) + z * (v1.z + v2.z * dist - v3.z);
-//    }
-
     @Override
     public Vector3D scalarMultiply(final double scalar) {
         return new Vector3D(
@@ -140,12 +136,6 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
-//    public void scalarDivideMutable(final double scalar) {
-//        x /= scalar;
-//        y /= scalar;
-//        z /= scalar;
-//    }
-
     @Override
     public Vector3D scalarDivide(final BigDecimal scalar) {
         return new Vector3D(
@@ -165,10 +155,6 @@ public class Vector3D implements Vector<Vector3D> {
 
     @Override
     public double magnitude() {
-//        return Math.sqrt(
-//                x * x
-//                        + y * y
-//                        + z * z);
         if (magnitude == Double.MAX_VALUE) {
             magnitude = Math.sqrt(
                     x * x
@@ -185,12 +171,6 @@ public class Vector3D implements Vector<Vector3D> {
                             + y * y
                             + z * z);
         }
-    }
-
-    public double dotWithSelf() {
-        return x * x
-                + y * y
-                + z * z;
     }
 
     @Override
@@ -270,42 +250,17 @@ public class Vector3D implements Vector<Vector3D> {
                 this.x * other.y - this.y * other.x);
     }
 
-    public Vector3D crossWithJ() {
-        return crossWithJ(1);
-    }
-
-    public Vector3D crossWithJ(double multiplier) {
+    public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY, final double scaleZ) {
+//        return new Vector3D(
+//                x * scaleZ - z * scaleY + y * x * scaleX,
+//                y * scaleZ                   - z * z * scaleX,
+//                z * scaleZ + x * scaleY + y * z * scaleX
+//        );
         return new Vector3D(
-                -z * multiplier,
-                0,
-                x * multiplier);
-    }
-
-    public Vector3D crossWithSelfCrossedWithJ() {
-        return crossWithSelfCrossedWithJ(1);
-    }
-
-    public Vector3D crossWithJPlusCrossWithSelfCrossedWithJ(final double multiplier1, final double multiplier2) {
-        return new Vector3D(
-                y * x * multiplier2 - z * multiplier1,
-                -z * z * multiplier2,
-                x * multiplier1 + y * z * multiplier2
+                x * (scaleZ + y * scaleX) - z * scaleY,
+                y * scaleZ  - z * z * scaleX,
+                z * (scaleZ + y * scaleX) + x * scaleY
         );
-    }
-
-    public Vector3D selfPlusXJPlusXSelfXJ(final double multiplier1, final double multiplier2, final double multiplier3) {
-        return new Vector3D(
-                x * multiplier1 - z * multiplier2 + y * x * multiplier3,
-                y * multiplier1 - z * z * multiplier3,
-                z * multiplier1 + x * multiplier2 + y * z * multiplier3
-        );
-    }
-
-    public Vector3D crossWithSelfCrossedWithJ(double multiplier) {
-        return new Vector3D(
-                y * x * multiplier,
-                -z * z * multiplier,
-                y * z * multiplier);
     }
 
     public static Vector3D random(double min, double max) {
@@ -323,22 +278,6 @@ public class Vector3D implements Vector<Vector3D> {
                 x < 0 ? -1 : 1,
                 y < 0 ? -1 : 1,
                 z < 0 ? -1 : 1
-        );
-    }
-
-    public Vector3D multiplyAcross(Vector3D vector) {
-        return new Vector3D(
-               x * vector.x,
-               y * vector.y,
-               z * vector.z
-        );
-    }
-
-    public Vector3D divideAcross(Vector3D vector) {
-        return new Vector3D(
-                x / vector.x,
-                y / vector.y,
-                z / vector.z
         );
     }
 

@@ -1,9 +1,6 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.Texture;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
-import gameengine.threed.prebuilt.objectmovement.collisions.SphereCollider;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
