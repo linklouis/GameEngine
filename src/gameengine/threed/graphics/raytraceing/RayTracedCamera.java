@@ -249,6 +249,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                                 final RayTraceableList objects) {
         int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
+
         int width = findClosestFactor((int) getWidth(), 150);
         int height = findClosestFactor((int) getHeight(), 150);
 
@@ -288,19 +289,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
     }
 
-//    private Vector3D getRayPath(final double x, final double y) {
-//        // Thx to ChatGPT
-////        return getDirection()
-////                .scalarMultiply(screenDistance)
-////                .add(getDirection()
-////                        .crossWithJ((getHeight() - y * 2) * scaleX / getWidth()))
-////                .add(getDirection()
-////                        .crossWithSelfCrossedWithJ((x * 2 / getWidth() - 1) * scaleX));
-//        return  getDirection().transformToNewCoordinates(
-//                (x * 2 / getWidth() - 1) * scaleX,
-//                (getHeight() - y * 2) * scaleX / getWidth());
-//    }
-
     private Ray rayTo(final double x, final double y) {
         return new Ray(
                 getLocation(),
@@ -332,15 +320,41 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
         Vector3D averageColor = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
-            averageColor.addMutable(
-                    getColorFromBounces(
-                            startRay.getReflected(firstCollision),
-                            objectsInField,
-                            firstCollision.colorAsVector()
-                    ));
+//            averageColor.addMutable(
+//                    getColorFromBounces(
+//                            startRay.getReflected(firstCollision),
+//                            objectsInField,
+//                            firstCollision.colorAsVector()
+//                    ));
+            getColorFromBouncesMutable(
+                    startRay.getReflected(firstCollision),
+                    objectsInField,
+                    averageColor);
         }
 
         return averageColor.scalarDivide(raysPerPixel).toColor();
+    }
+
+    public void getColorFromBouncesMutable(final Ray currentRay,
+                                        final RayTraceableList objectsInField,
+                                        final Vector3D color) {
+        RayTraceable collision;
+        for (double bounces = 2; bounces <= maxBounces; bounces++) {
+            collision = currentRay.firstCollision(objectsInField);
+
+            if (collision == null) {
+                return;
+            }
+
+            color.addMutable(new Vector3D(collision.getColor())
+                    .scalarDivide(bounces / 2));
+
+            if (collision.getTexture().isLightSource()) {
+                return;
+            }
+
+            currentRay.reflect(collision);
+        }
     }
 
     /**
