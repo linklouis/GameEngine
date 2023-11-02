@@ -11,6 +11,7 @@ import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.RectPlane;
 import gameengine.threed.prebuilt.gameobjects.Rectangle;
 import gameengine.threed.prebuilt.gameobjects.Tri;
+import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.threed.prebuilt.gameobjects.Sphere;
@@ -38,8 +39,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        new Vector2D(700, 700/*1280, 720*//*1920.0/2, 1080.0/2*/),
-                        4, 20, true, 65)),
+                        new Vector2D(/*700, 700*//*1280, 720*/1920.0, 1080.0),
+                        4, 30, true, 65)),
                 new PhysicsEngine3D());
     }
 
@@ -49,9 +50,15 @@ public class RayTracing extends GameDriver3D {
 
     @Override
     public void initialize() {
-        System.out.println(java.time.LocalDateTime.now());
+//        System.out.println(java.time.LocalDateTime.now());
+//        for (int i = 0; i < 300; i++) {
+//            System.out.print(SubsurfaceTexture.generateSkewedValue(
+//                    0.7,
+//                    0, 90) + "\t");
+//        }
+//        System.exit(0);
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        setupScene2();
+        setupScene1();
     }
 
 
@@ -60,50 +67,61 @@ public class RayTracing extends GameDriver3D {
      */
 
     private void setupScene1() {
-//        double reflectivity = 0.7;
-//        TextureHelper.setMinimumReflectingAngle(80);
-//        TextureHelper.setRandomness(30);
-        TextureHelper.setReflectivity(0.7);
+        TextureHelper.setMinimumReflectingAngle(45);
+        TextureHelper.setRandomness(0.01);
+//        TextureHelper.setReflectivity(0.7);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new Rectangle(-1, -2, -3, new Vector3D(2,2, 2),
-                TextureHelper.newReflecting(Color.AZURE)).initiate(this);
+                TextureHelper.newSubsurface(Color.AZURE)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2,
-                TextureHelper.newReflecting(Color.AQUA)));
+                TextureHelper.newSubsurface(Color.AQUA)));
         newObject(new Sphere(-1, 2, -3, 3,
-                TextureHelper.newReflecting(Color.GREEN)));
+                TextureHelper.newSubsurface(Color.GREEN)));
         newObject(new Sphere(0, 0, 100, 100,
-                TextureHelper.newReflecting(Color.BROWN)));
+                TextureHelper.newSubsurface(Color.BROWN)));
 
         newObject(new Sphere(-10, 2, -10, 7, Color.WHITE, true));
     }
 
     private void setupScene2() {
-        double reflectivity = 0.3;
+        mainCam.setDirection(new Vector3D(1, 0, 0));
+        mainCam.setLocation(new Vector3D(-10, 0, 0));
 
-//        mainCam.setDirection(new Vector3D(1, 0, 0));
-//        mainCam.setLocation(new Vector3D(-10, 0, 0));
-        mainCam.setDirection(new Vector3D(1, -0, 0.2));
-        mainCam.setLocation(new Vector3D(-10, 0, -2));
-        mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-10)));
-        mainCam.setFieldOfViewDegrees(60);
-
-        newObject(new Sphere(0, 0, 0, 2, new ReflectingTexture(Color.WHITE, false, 0.9)));
-
-        double wallSize = 10;
-        double hWallSize = wallSize / 2;
-        new RectPlane(hWallSize, -hWallSize, -hWallSize, new Vector3D(0, wallSize, wallSize), new ReflectingTexture(Color.RED, false, reflectivity)).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), new ReflectingTexture(Color.BLUE, false, reflectivity)).initiate(this);
-        new RectPlane(-hWallSize, hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), new ReflectingTexture(Color.BLUE, false, reflectivity)).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, wallSize, 0), new ReflectingTexture(Color.GREEN, false, reflectivity)).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, hWallSize, new Vector3D(wallSize, wallSize, 0), new ReflectingTexture(Color.GREEN, false, reflectivity)).initiate(this);
-
-        newObject(new Rectangle(-12, 0, 0, new Vector3D(1, 5, 5), new ReflectingTexture(Color.RED, true, 0)));
+        // Center Sphere
+        newObject(new Sphere(3, 0, 0, 2,
+                new ReflectingTexture(Color.WHITE, false, 0.9)));
 
         setupBoundingBox(40);
 
+        // Walls:
+        TextureHelper.setReflectivity(0.8);
+        double wallSize = 10;
+        double hWallSize = wallSize / 2;
+        // Back
+        new RectPlane(hWallSize, -hWallSize, -hWallSize,
+                new Vector3D(0, wallSize, wallSize),
+                TextureHelper.newReflecting(Color.RED)).initiate(this);
+        // Left
+        new RectPlane(-hWallSize, -hWallSize, -hWallSize,
+                new Vector3D(wallSize, 0, wallSize),
+                TextureHelper.newReflecting(Color.BLUE)).initiate(this);
+        // Right
+        new RectPlane(-hWallSize, hWallSize, -hWallSize,
+                new Vector3D(wallSize, 0, wallSize),
+                TextureHelper.newReflecting(Color.BLUE)).initiate(this);
+        // Bottom
+        new RectPlane(-hWallSize, -hWallSize, -hWallSize,
+                new Vector3D(wallSize, wallSize, 0),
+                TextureHelper.newReflecting(Color.GREEN)).initiate(this);
+        // Top
+        new RectPlane(-hWallSize, -hWallSize, hWallSize,
+                new Vector3D(wallSize, wallSize, 0),
+                TextureHelper.newReflecting(Color.GREEN)).initiate(this);
+
+        // Backlight
         newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
     }
 
@@ -244,6 +262,23 @@ public class RayTracing extends GameDriver3D {
         }
     }
 
+    Sphere light = new Sphere(20, 0, 0, 3, new BaseTexture(Color.WHITE, true));
+    private void setupSubsurfaceScene() {
+        mainCam.setDirection(new Vector3D(1, 0, -0.05));
+        mainCam.setLocation(new Vector3D(0, 0, 0.3));
+
+        TextureHelper.setMinimumReflectingAngle(80);
+        TextureHelper.setRandomness(20);
+        TextureHelper.setReflectivity(0.1);
+
+        new RectPlane(
+                0, -5, 0, new Vector3D(5, 10, 0),
+                TextureHelper.newSubsurface(Color.BLUE)
+        ).initiate(this);
+
+        newObject(light);
+    }
+
 
     /*
      * Object and Scene Initialization Utils:
@@ -357,8 +392,7 @@ public class RayTracing extends GameDriver3D {
         private static double reflectivity = 0;
 
         public static SubsurfaceTexture newSubsurface(final Color color) {
-            return new SubsurfaceTexture(color, false,
-                    minimumReflectingAngle, randomness);
+            return new SubsurfaceTexture(color, false, minimumReflectingAngle, randomness);
         }
 
         public static ReflectingTexture newReflecting(final Color color) {
@@ -440,8 +474,10 @@ public class RayTracing extends GameDriver3D {
 
     @Override
     public void updateGame() {
-//        mainCam.setLocation(mainCam.getLocation().add(new Vector3D(0, 0.1, 0)));
-//        mainCam.setDirection(mainCam.getDirection().add(new Vector3D(0, -0.008, 0)));
+        InPlane3D lightLoc = light.get(InPlane3D.class);
+        lightLoc.updateLocation(new Vector3D(0, 0, 0.3));
+//        mainCam.setLocation(mainCam.getLocation().add(new Vector3D(0, 0.15, 0)));
+//        mainCam.setDirection(mainCam.getDirection().add(new Vector3D(0, -0.01, 0)));
 //        for (GraphicsObject3D object : getGraphicsDriver().getCameraObjects()) {
 //                InPlane3D loc = object.getFromParent(InPlane3D.class);
 //                loc.updateLocation(Vector3D.random(0, 0.3));

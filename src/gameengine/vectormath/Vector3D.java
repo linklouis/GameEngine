@@ -250,27 +250,71 @@ public class Vector3D implements Vector<Vector3D> {
                 this.x * other.y - this.y * other.x);
     }
 
+    public Vector3D crossWithJ(final double multiplier) {
+        return new Vector3D(
+                -z * multiplier,
+                0,
+                x * multiplier);
+    }
+
+    public Vector3D crossWithSelfCrossedWithJ(final double multiplier) {
+        return new Vector3D(
+                y * x * multiplier,
+                -(z * z + x * x) * multiplier,
+                y * z * multiplier);
+    }
+
     public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY, final double scaleZ) {
 //        return new Vector3D(
 //                x * scaleZ - z * scaleY + y * x * scaleX,
-//                y * scaleZ                   - z * z * scaleX,
+//                y * scaleZ              - (z * z + x * x) * scaleX,
 //                z * scaleZ + x * scaleY + y * z * scaleX
 //        );
         return new Vector3D(
                 x * (scaleZ + y * scaleX) - z * scaleY,
-                y * scaleZ  - z * z * scaleX,
+                y * scaleZ - (z * z + x * x) * scaleX,
                 z * (scaleZ + y * scaleX) + x * scaleY
         );
     }
 
+//    public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY, final double scaleZ) {
+////        return new Vector3D(
+////                x * scaleZ - z * scaleY + y * x * scaleX,
+////                y * scaleZ              - z * z * scaleX,
+////                z * scaleZ + x * scaleY + y * z * scaleX
+////        );
+//        return new Vector3D(
+//                x * (scaleZ + y * scaleX) - z * scaleY,
+//                y * scaleZ  - z * z * scaleX,
+//                z * (scaleZ + y * scaleX) + x * scaleY
+//        );
+//    }
+
+    public static Vector3D random() {
+        return new Vector3D(
+                ThreadLocalRandom.current().nextGaussian(),
+                ThreadLocalRandom.current().nextGaussian(),
+                ThreadLocalRandom.current().nextGaussian()
+        );
+    }
+
     public static Vector3D random(double min, double max) {
-        double x = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
-        double y = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
-        double z = ThreadLocalRandom.current().nextGaussian((min + max) / 2.0, (max - min) / 2.0);
-//        double x = ThreadLocalRandom.current().nextDouble(min, max);
-//        double y = ThreadLocalRandom.current().nextDouble(min, max);
-//        double z = ThreadLocalRandom.current().nextDouble(min, max);
-        return new Vector3D(x, y, z);
+        return new Vector3D(
+                ThreadLocalRandom.current()
+                        .nextGaussian((min + max) / 2.0, (max - min) / 2.0),
+                ThreadLocalRandom.current()
+                        .nextGaussian((min + max) / 2.0, (max - min) / 2.0),
+                ThreadLocalRandom.current()
+                        .nextGaussian((min + max) / 2.0, (max - min) / 2.0)
+        );
+    }
+
+    public static Vector3D random(Vector3D model, double range) {
+        return new Vector3D(
+                ThreadLocalRandom.current().nextGaussian(model.x, range),
+                ThreadLocalRandom.current().nextGaussian(model.y, range),
+                ThreadLocalRandom.current().nextGaussian(model.z, range)
+        );
     }
 
     public Vector3D signs() {
@@ -334,5 +378,9 @@ public class Vector3D implements Vector<Vector3D> {
 
     private void setZ(double z) {
         this.z = z;
+    }
+
+    public String toString() {
+        return "Vector3D(" + x + ", " + y + ", " + z + ")";
     }
 }

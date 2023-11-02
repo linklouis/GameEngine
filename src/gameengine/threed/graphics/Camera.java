@@ -216,7 +216,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     }
 
     public void setDirection(Vector3D direction) {
-        this.direction = direction;
+        this.direction = direction.unitVector();
     }
 
     public Vector3D getLocation() {

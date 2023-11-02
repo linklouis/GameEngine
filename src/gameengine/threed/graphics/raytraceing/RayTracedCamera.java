@@ -282,6 +282,27 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
     }
 
+//    private void renderPixelAt(int x, int y, PixelWriter writer,
+//                               RayTraceableList objects) {
+//        writer.setColor(x, y,
+//                new PixelRay(
+//                        new Ray(getLocation(), getRayPath(x, y)),
+//                        maxBounces, raysPerPixel, objects).getFinalColor());
+//
+////        writer.setColor(x, y, PixelRayStatic.getFinalColor(
+////                new Ray(getLocation(), getRayPath(x, y)),
+////                maxBounces, raysPerPixel, objects));
+//    }
+//
+//    private Vector3D getRayPath(final double x, final double y) {
+//        // Thx to ChatGPT
+//        updateScaleX();
+//        return getDirection().transformToNewCoordinates(
+//                (x * 2.0 / getWidth() - 1) * scaleX,
+//                (getHeight() - y * 2.0) * scaleX / getWidth(),
+//                screenDistance);
+//    }
+
     private void renderPixelAt(int x, int y, PixelWriter writer,
                                RayTraceableList objects) {
         writer.setColor(x, y,
@@ -296,10 +317,17 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private Vector3D getRayPath(final double x, final double y) {
         // Thx to ChatGPT
-        return getDirection().transformToNewCoordinates(
-                (x * 2.0 / getWidth() - 1) * scaleX,
-                (getHeight() - y * 2.0) * scaleX / getWidth(),
-                screenDistance);
+//        return getDirection()
+//                .scalarMultiply(screenDistance)
+//                .add(getDirection()
+//                        .crossWithJ((getHeight() - y * 2) * scaleX / getWidth()))
+//                .add(getDirection()
+//                        .crossWithSelfCrossedWithJ((x * 2 / getWidth() - 1) * scaleX));
+        return  getDirection().transformToNewCoordinates(
+                (x * 2 / getWidth() - 1) * scaleX,
+                (getHeight() - y * 2) * scaleX / getWidth(),
+                screenDistance
+        );
     }
 
     /*
