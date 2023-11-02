@@ -25,6 +25,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class RayTracedCamera extends Camera<RayTraceable> {
     /**
+     * A precalculated {@link Vector3D} representing the color black in rgb.
+     */
+    private static final Vector3D BLACK = new Vector3D(0);
+
+    /**
      * The number of rays averaged to find each pixel's color.
      */
     private int raysPerPixel;
@@ -232,11 +237,12 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void renderUnthreaded(final PixelWriter writer,
                                   final RayTraceableList objects) {
-        for (int x = 0; x < getWidth(); x++) {
-            for (int y = 0; y < getHeight(); y++) {
-                renderPixelAt(x, y, writer, objects);
-            }
-        }
+        renderPixels(0, 0, (int) getWidth(), (int) getHeight(), writer, objects);
+//        for (int x = 0; x < getWidth(); x++) {
+//            for (int y = 0; y < getHeight(); y++) {
+//                renderPixelAt(x, y, writer, objects);
+//            }
+//        }
     }
 
     private void renderThreaded(final PixelWriter writer,
@@ -255,7 +261,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                         renderPixels(finalX, finalY,
                                 finalX + width, finalY + height,
                                 writer, objects));
-//                        renderPixelAt(finalX, finalY, writer, objects));
             }
         }
 
@@ -268,106 +273,108 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
     }
 
-    private void renderPixels(int startX, int startY, int endX, int endY, PixelWriter writer,
-                              RayTraceableList objects) {
+    private void renderPixels(final int startX, final int startY,
+                              final int endX, final int endY,
+                              final PixelWriter writer,
+                              final RayTraceableList objects) {
         for (int x = startX; x < endX; x++) {
             for (int y = startY; y < endY; y++) {
-                renderPixelAt(x, y, writer, objects);
+//                writer.setColor(x, y, new PixelRay(
+//                        new Ray(getLocation(), getRayPath(x, y)),
+//                        maxBounces, raysPerPixel, objects).getFinalColor()
+//                );
+                writer.setColor(x, y, calculatePixelColor(rayTo(x, y), objects));
             }
         }
     }
 
-//    private void renderPixelAt(int x, int y, PixelWriter writer,
-//                               RayTraceableList objects) {
-//        writer.setColor(x, y,
-//                new PixelRay(
-//                        new Ray(getLocation(), getRayPath(x, y)),
-//                        maxBounces, raysPerPixel, objects).getFinalColor());
-//
-////        writer.setColor(x, y, PixelRayStatic.getFinalColor(
-////                new Ray(getLocation(), getRayPath(x, y)),
-////                maxBounces, raysPerPixel, objects));
-//    }
-//
 //    private Vector3D getRayPath(final double x, final double y) {
 //        // Thx to ChatGPT
-//        updateScaleX();
-//        return getDirection().transformToNewCoordinates(
-//                (x * 2.0 / getWidth() - 1) * scaleX,
-//                (getHeight() - y * 2.0) * scaleX / getWidth(),
-//                screenDistance);
+////        return getDirection()
+////                .scalarMultiply(screenDistance)
+////                .add(getDirection()
+////                        .crossWithJ((getHeight() - y * 2) * scaleX / getWidth()))
+////                .add(getDirection()
+////                        .crossWithSelfCrossedWithJ((x * 2 / getWidth() - 1) * scaleX));
+//        return  getDirection().transformToNewCoordinates(
+//                (x * 2 / getWidth() - 1) * scaleX,
+//                (getHeight() - y * 2) * scaleX / getWidth());
 //    }
 
-    private void renderPixelAt(int x, int y, PixelWriter writer,
-                               RayTraceableList objects) {
-//        writer.setColor(x, y, new PixelRay(
-//                new Ray(getLocation(), getRayPath(x, y)),
-//                maxBounces, raysPerPixel, objects).getFinalColor()
-//        );
-
-        writer.setColor(x, y, PixelRayStatic.getFinalColor(
-                new Ray(getLocation(), getRayPath(x, y)),
-                maxBounces, raysPerPixel, objects));
+    private Ray rayTo(final double x, final double y) {
+        return new Ray(
+                getLocation(),
+                // Thx to ChatGPT:
+                getDirection().transformToNewCoordinates(
+                        (x * 2 / getWidth() - 1) * scaleX,
+                        (getHeight() - y * 2) * scaleX / getWidth()));
     }
 
-    private Vector3D getRayPath1(final double x, final double y) {
-        // Thx to ChatGPT
-//        return getDirection()
-//                .scalarMultiply(screenDistance)
-//                .add(getDirection()
-//                        .crossWithJ((getHeight() - y * 2) * scaleX / getWidth()))
-//                .add(getDirection()
-//                        .crossWithSelfCrossedWithJ((x * 2 / getWidth() - 1) * scaleX));
-        return  getDirection().transformToNewCoordinates(
-                (x * 2 / getWidth() - 1) * scaleX,
-                (getHeight() - y * 2) * scaleX / getWidth());
+
+    /*
+     ** Ray Tracing:
+     */
+
+    /**
+     * @return The average color of each ray to measure based on
+     * {@link #raysPerPixel}.
+     */
+    private Color calculatePixelColor(final Ray startRay,
+                                      final RayTraceableList objectsInField) {
+        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
+
+        if (firstCollision == null) {
+            return Color.BLACK;
+        }
+        if (firstCollision.getTexture().isLightSource()) {
+            return firstCollision.getColor();
+        }
+
+        Vector3D averageColor = new Vector3D(0);
+        for (int i = 0; i < raysPerPixel; i++) {
+            averageColor.addMutable(
+                    getColorFromBounces(
+                            startRay.getReflected(firstCollision),
+                            objectsInField,
+                            firstCollision.colorAsVector()
+                    ));
+        }
+
+        return averageColor.scalarDivide(raysPerPixel).toColor();
     }
 
-    private Vector3D getRayPath(final double x2, final double y2) {
-        // Thx to ChatGPT
-        double xd = getDirection().getX();
-        double yd = getDirection().getY();
-        double zd = getDirection().getZ();
-//        double w = getWidth();
-//        double h = getHeight()
-        double x = (x2 * 2 / getWidth() - 1) * scaleX;
-        double y = (getAspectRatio() - y2 * 2 / getWidth()) * scaleX;
-//        return new Vector3D(
-//                xd * (1 + yd * scaleX) - zd * scaleY,
-//                yd - (zd * zd + x * x) * scaleX,
-//                zd * (1 + yd * scaleX) + xd * scaleY
-//        );
-//        return new Vector3D(
-//                xd * (1 + yd * (x * 2 / w - 1) * scaleX) - zd * (h - y * 2) * scaleX / w,
-//                yd - (zd * zd + xd * xd) * (x * 2 / w - 1) * scaleX,
-//                zd * (1 + yd * (x * 2 / w - 1) * scaleX) + xd * (h - y * 2) * scaleX / w
-//        );
-        // x: xd + xd * yd * (x * 2 / w - 1) * scaleX - zd * (h - y * 2) * scaleX / w,
-//        return new Vector3D(
-//                xd + scaleX * (xd * yd * (x * 2 - w) - zd * (h - y * 2)) / w,
-//                yd - scaleX * (zd * zd + xd * xd) * (x * 2 / w - 1),
-//                zd + scaleX * (zd * yd * (x * 2 - w) + xd * (h - y * 2)) / w
-//        );
-//        return new Vector3D(
-//                xd + scaleX * (xd * yd * (x2 - w) - zd * (h - y2)) / w,
-//                yd - scaleX * (zd * zd + xd * xd) * (x2 / w - 1),
-//                zd + scaleX * (zd * yd * (x2 - w) + xd * (h - y2)) / w
-//        );
-//        return new Vector3D(
-//                xd + scaleX * (xd * yd * x - zd * y),
-//                yd - scaleX * (zd * zd + xd * xd) * x,
-//                zd + scaleX * (zd * yd * x + xd * y)
-//        );
-//        return new Vector3D(
-//                xd + (xd * yd * x - zd * y),
-//                yd - x * (zd * zd + xd * xd),
-//                zd + (zd * yd * x + xd * y)
-//        );
-        return new Vector3D(
-                xd + xd * yd * x - zd * y,
-                yd - x * (zd * zd + xd * xd),
-                zd + zd * yd * x + xd * y
-        );
+    /**
+     * Finds the color of a single {@link Ray} over the course of all it's
+     * reflections.
+     *
+     * @param currentRay The initial {@link Ray} who's path to trace.
+     * @param color A {@link Vector3D} representing the color of the
+     *              {@link Ray} that came before {@code currentRay}.
+     * @return The color of {@code currentRay} after all of its reflections.
+     */
+    public Vector3D getColorFromBounces(final Ray currentRay,
+                                        final RayTraceableList objectsInField,
+                                        final Vector3D color) {
+        RayTraceable collision;
+
+        for (double bounces = 2; bounces <= maxBounces; bounces++) {
+            collision = currentRay.firstCollision(objectsInField);
+
+            if (collision == null) {
+                return BLACK;
+            }
+
+            color.addMutable(new Vector3D(collision.getColor())
+                    .scalarDivide(bounces / 2));
+
+            if (collision.getTexture().isLightSource()) {
+                return color;
+            }
+
+            currentRay.reflect(collision);
+        }
+
+        return BLACK;
     }
 
 

@@ -32,7 +32,7 @@ public class PixelRay {
     private final int numIterations;
 
     /**
-     * A {@link RayTraceableList} of the {@link Collider3D}s to consider for the
+     * A {@link RayTraceableList} of the {@link RayTraceable}s to consider for the
      * scene.
      */
     private final RayTraceableList objectsInField;

@@ -75,6 +75,9 @@ public abstract class RayTraceable extends GraphicsObject3D {
         return getTexture().getColor();
     }
 
+    public Vector3D colorAsVector() {
+        return new Vector3D(getTexture().getColor());
+    }
     public void setColor(Color color) {
         getTexture().setColor(color);
     }
