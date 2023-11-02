@@ -28,6 +28,8 @@ public class TriGraphics extends RayTraceable {
     private Vector3D normal;
     private Vector3D center;
 
+    private double maxDist;
+
 
     /*
      * Construction:
@@ -91,6 +93,8 @@ public class TriGraphics extends RayTraceable {
 
         normal = dirTo2.crossProduct(dirTo3);
         calculateCenter();
+
+        maxDist = Math.max(vertex2.distance(vertex1), vertex3.distance(vertex1));
     }
 
     @Override

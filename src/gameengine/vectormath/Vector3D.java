@@ -310,6 +310,11 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public static Vector3D random(Vector3D model, double range) {
+//        return new Vector3D(
+//                ThreadLocalRandom.current().nextGaussian(model.x, range),
+//                ThreadLocalRandom.current().nextGaussian(model.y, range),
+//                ThreadLocalRandom.current().nextGaussian(model.z, range)
+//        );
         return new Vector3D(
                 ThreadLocalRandom.current().nextGaussian(model.x, range),
                 ThreadLocalRandom.current().nextGaussian(model.y, range),
@@ -383,4 +388,77 @@ public class Vector3D implements Vector<Vector3D> {
     public String toString() {
         return "Vector3D(" + x + ", " + y + ", " + z + ")";
     }
+
+//    public static class FastGaussian {
+//        private long seed;
+//
+//        public FastGaussian(long seed) {
+//            this.seed = seed;
+//        }
+//
+//        public FastGaussian(Vector3D seed) {
+//            setSeed(seed);
+//        }
+//
+//        public double nextGaussian() {
+//            Math.random();
+//            seed ^= (seed << 21);
+//            seed ^= (seed >>> 35);
+//            seed ^= (seed << 4);
+//            return (seed >> 12) * 2.3283064365386963e-16;
+//        }
+//
+//        public void setSeed(long seed) {
+//            this.seed = seed;
+//        }
+//
+//        public void setSeed(Vector3D seed) {
+//            this.seed = (long) ((seed.getX() + seed.getY()) * seed.getZ());
+//        }
+//    }
+public static class FastGaussian {
+    private double mean;
+    private double stdDev;
+    private long seed;
+    private boolean hasValue = false;
+    private double storedValue;
+
+    public FastGaussian(long seed, double mean, double stdDev) {
+        this.seed = seed;
+        this.mean = mean;
+        this.stdDev = stdDev;
+    }
+
+    public FastGaussian(Vector3D seed, double mean, double stdDev) {
+        this.seed = (long) ((seed.getX() + seed.getY()) * seed.getZ());
+        this.mean = mean;
+        this.stdDev = stdDev;
+    }
+
+    public double nextGaussian() {
+        if (hasValue) {
+            hasValue = false;
+            return storedValue;
+        } else {
+            double u, v, s;
+            do {
+                u = customRandom() * 2.0 - 1.0;
+                v = customRandom() * 2.0 - 1.0;
+                s = u * u + v * v;
+            } while (s >= 1.0 || s == 0.0);
+
+            double multiplier = Math.sqrt(-2.0 * Math.log(s) / s);
+            storedValue = mean + stdDev * u * multiplier;
+            hasValue = true;
+            return mean + stdDev * v * multiplier;
+        }
+    }
+
+    private double customRandom() {
+        seed ^= (seed << 21);
+        seed ^= (seed >>> 35);
+        seed ^= (seed << 4);
+        return (seed >> 12) * 2.3283064365386963e-16;
+    }
+}
 }

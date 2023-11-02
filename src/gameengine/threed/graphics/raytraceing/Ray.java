@@ -47,8 +47,9 @@ public class Ray {
         RayTraceable closest = null;
         double newDistance;
 
-        RayTraceableList.Element element = objectsInField.getHead();
-        while (element != null) {
+        for (RayTraceableList.Element element = objectsInField.getHead();
+             element != null; element = element.next()) {
+
             if (objectIsInDirection(element.value())) {
                 newDistance = element.value()
                         .distanceToCollide(this, closestDist);
@@ -58,7 +59,6 @@ public class Ray {
                     closest = element.value();
                 }
             }
-            element = element.next();
         }
 
         if (closest != null) {
@@ -92,6 +92,19 @@ public class Ray {
      */
     public void reflect(RayTraceable collider) {
         direction = collider.reflection(this);
+    }
+
+    /**
+     * Returns a new {@code Ray} representing the current {@code Ray} after
+     * reflecting off of {@code collider}. Assumes the current {@code Ray} is
+     * colliding with {@code collider}.
+     *
+     * @param collider The {@link RayTraceable} to reflect off of.
+     * @return A new {@code Ray} representing the current {@code Ray} after
+     * reflecting off of {@code collider}.
+     */
+    public Ray getReflected(RayTraceable collider) {
+        return new Ray(position, collider.reflection(this));
     }
 
 

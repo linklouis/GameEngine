@@ -9,6 +9,7 @@ import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -305,15 +306,16 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void renderPixelAt(int x, int y, PixelWriter writer,
                                RayTraceableList objects) {
-        writer.setColor(x, y,
-                new PixelRay(
-                        new Ray(getLocation(), getRayPath(x, y)),
-                        maxBounces, raysPerPixel, objects).getFinalColor());
-
-//        writer.setColor(x, y, PixelRayStatic.getFinalColor(
+//        writer.setColor(x, y, new PixelRay(
 //                new Ray(getLocation(), getRayPath(x, y)),
-//                maxBounces, raysPerPixel, objects));
+//                maxBounces, raysPerPixel, objects).getFinalColor()
+//        );
+
+        writer.setColor(x, y, PixelRayStatic.getFinalColor(
+                new Ray(getLocation(), getRayPath(x, y)),
+                maxBounces, raysPerPixel, objects));
     }
+
 
     private Vector3D getRayPath(final double x, final double y) {
         // Thx to ChatGPT

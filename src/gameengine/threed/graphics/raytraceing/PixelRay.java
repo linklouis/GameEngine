@@ -70,21 +70,12 @@ public class PixelRay {
             return firstCollision.getColor();
         }
 
-        return getAllCollisions(firstCollision);
-    }
-
-    private Color getAllCollisions(final RayTraceable firstCollision) {
-        Vector3D startColor = new Vector3D(
-                firstCollision.getColor());
-
         Vector3D averageColor = new Vector3D(0);
-
         for (int i = 0; i < numIterations; i++) {
             averageColor.addMutable(
                     getColorFromBounces(
-                            new Ray(startRay.getPosition(),
-                                    firstCollision.reflection(startRay)),
-                            startColor));
+                            startRay.getReflected(firstCollision),
+                            firstCollision.getColor()));
         }
 
         return averageColor.scalarDivide(numIterations).toColor();
@@ -95,13 +86,14 @@ public class PixelRay {
      * reflections.
      *
      * @param currentRay The initial {@link Ray} who's path to trace.
-     * @param color The color of any {@link Ray}s that came before
+     * @param col The color of any {@link Ray}s that came before
      *              {@code currentRay}.
      * @return The color of {@code currentRay} after all of its reflections.
      */
-    public Vector3D getColorFromBounces(final Ray currentRay, Vector3D color) {
+    public Vector3D getColorFromBounces(final Ray currentRay,
+                                        final Color col) {
         RayTraceable collision;
-        color = new Vector3D(color);
+        Vector3D color = new Vector3D(col);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
             collision = currentRay.firstCollision(objectsInField);
@@ -121,5 +113,25 @@ public class PixelRay {
         }
 
         return BLACK;
+    }
+
+    public static double generatePseudoRandomDouble(double x, double y, double z) {
+//        long xBits = Double.doubleToLongBits(x);
+//        long yBits = Double.doubleToLongBits(y);
+//        long zBits = Double.doubleToLongBits(z);
+//
+//        long resultBits = (xBits ^ yBits ^ zBits);
+//
+//        return Double.longBitsToDouble(resultBits);
+        // Combine the three input values into a single long seed
+        long combinedSeed = Double.doubleToLongBits(x) ^
+                Double.doubleToLongBits(y) ^
+                Double.doubleToLongBits(z);
+
+        // Apply LCG to generate a random long value
+//        combinedSeed = (combinedSeed ^ (combinedSeed >> 32)) * 6364136223846793005L + 1L;
+
+        // Convert the long value to a double in the range [0, 1)
+        return (double) ((combinedSeed ^ (combinedSeed >> 32)) * 6364136223846793005L + 1L >>> 11) / (1L << 53);
     }
 }

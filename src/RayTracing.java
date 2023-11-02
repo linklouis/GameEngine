@@ -39,8 +39,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("Ray Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        new Vector2D(/*700, 700*//*1280, 720*/1920.0, 1080.0),
-                        4, 30, true, 65)),
+                        new Vector2D(700, 700/*1280, 720*//*1920.0, 1080.0*/),
+                        10, 10, true, 65)),
                 new PhysicsEngine3D());
     }
 
@@ -51,10 +51,12 @@ public class RayTracing extends GameDriver3D {
     @Override
     public void initialize() {
 //        System.out.println(java.time.LocalDateTime.now());
+//        Vector3D.FastGaussian rand = new Vector3D.FastGaussian(1L, 0, 1/*new Vector3D(2324, 545, 1)*/);
 //        for (int i = 0; i < 300; i++) {
-//            System.out.print(SubsurfaceTexture.generateSkewedValue(
-//                    0.7,
-//                    0, 90) + "\t");
+//            System.out.print(
+////                    SubsurfaceTexture.generateSkewedValue(0.7, 0, 90)
+//                    rand.nextGaussian()
+//                            + "\t");
 //        }
 //        System.exit(0);
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
@@ -67,21 +69,21 @@ public class RayTracing extends GameDriver3D {
      */
 
     private void setupScene1() {
-        TextureHelper.setMinimumReflectingAngle(45);
-        TextureHelper.setRandomness(0.01);
-//        TextureHelper.setReflectivity(0.7);
+//        TextureHelper.setMinimumReflectingAngle(45);
+//        TextureHelper.setRandomness(0.01);
+        TextureHelper.setReflectivity(0.7);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new Rectangle(-1, -2, -3, new Vector3D(2,2, 2),
-                TextureHelper.newSubsurface(Color.AZURE)).initiate(this);
+                TextureHelper.newReflecting(Color.AZURE)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2,
-                TextureHelper.newSubsurface(Color.AQUA)));
+                TextureHelper.newReflecting(Color.AQUA)));
         newObject(new Sphere(-1, 2, -3, 3,
-                TextureHelper.newSubsurface(Color.GREEN)));
+                TextureHelper.newReflecting(Color.GREEN)));
         newObject(new Sphere(0, 0, 100, 100,
-                TextureHelper.newSubsurface(Color.BROWN)));
+                TextureHelper.newReflecting(Color.BROWN)));
 
         newObject(new Sphere(-10, 2, -10, 7, Color.WHITE, true));
     }
