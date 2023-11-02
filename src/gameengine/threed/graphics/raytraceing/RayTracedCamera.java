@@ -237,12 +237,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void renderUnthreaded(final PixelWriter writer,
                                   final RayTraceableList objects) {
-        renderPixels(0, 0, (int) getWidth(), (int) getHeight(), writer, objects);
-//        for (int x = 0; x < getWidth(); x++) {
-//            for (int y = 0; y < getHeight(); y++) {
-//                renderPixelAt(x, y, writer, objects);
-//            }
-//        }
+        renderPixels(0, 0, getWidth(), getHeight(), writer, objects);
     }
 
     private void renderThreaded(final PixelWriter writer,
@@ -260,7 +255,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                 int finalY = y;
                 threadPool.submit(() ->
                         renderPixels(finalX, finalY,
-                                finalX + width, finalY + height,
+                                width, height,
                                 writer, objects));
             }
         }
@@ -275,11 +270,11 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     }
 
     private void renderPixels(final int startX, final int startY,
-                              final int endX, final int endY,
+                              final double width, final double height,
                               final PixelWriter writer,
                               final RayTraceableList objects) {
-        for (int x = startX; x < endX; x++) {
-            for (int y = startY; y < endY; y++) {
+        for (int x = startX; x < startX + width; x++) {
+            for (int y = startY; y < startY + height; y++) {
 //                writer.setColor(x, y, new PixelRay(
 //                        new Ray(getLocation(), getRayPath(x, y)),
 //                        maxBounces, raysPerPixel, objects).getFinalColor()
@@ -320,41 +315,14 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
         Vector3D averageColor = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
-//            averageColor.addMutable(
-//                    getColorFromBounces(
-//                            startRay.getReflected(firstCollision),
-//                            objectsInField,
-//                            firstCollision.colorAsVector()
-//                    ));
-            getColorFromBouncesMutable(
-                    startRay.getReflected(firstCollision),
-                    objectsInField,
-                    averageColor);
+            averageColor.addMutable(
+                    getColorFromBounces(
+                            startRay.getReflected(firstCollision, 1),
+                            objectsInField,
+                            firstCollision.colorVector()));
         }
 
         return averageColor.scalarDivide(raysPerPixel).toColor();
-    }
-
-    public void getColorFromBouncesMutable(final Ray currentRay,
-                                        final RayTraceableList objectsInField,
-                                        final Vector3D color) {
-        RayTraceable collision;
-        for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollision(objectsInField);
-
-            if (collision == null) {
-                return;
-            }
-
-            color.addMutable(new Vector3D(collision.getColor())
-                    .scalarDivide(bounces / 2));
-
-            if (collision.getTexture().isLightSource()) {
-                return;
-            }
-
-            currentRay.reflect(collision);
-        }
     }
 
     /**
@@ -371,21 +339,19 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                                         final Vector3D color) {
         RayTraceable collision;
 
-        for (double bounces = 2; bounces <= maxBounces; bounces++) {
+        for (int bounces = 2; bounces <= maxBounces; bounces++) {
             collision = currentRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
             }
 
-            color.addMutable(new Vector3D(collision.getColor())
-                    .scalarDivide(bounces / 2));
+//            color.addMutable(collision.colorVector().scalarDivide(bounces));
+            currentRay.reflect(collision, bounces);
 
             if (collision.getTexture().isLightSource()) {
-                return color;
+                return currentRay.getColor();
             }
-
-            currentRay.reflect(collision);
         }
 
         return BLACK;

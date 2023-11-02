@@ -1,5 +1,6 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
@@ -44,12 +45,24 @@ public class ReflectingTexture extends RayTracingTexture {
      *          {@link Vector3D}.
      */
     @Override
-    public Vector3D reflection(final Vector3D rayDirection,
+    public Ray reflection(final Ray ray,
                                final Vector3D surfaceNormal) {
         if (ThreadLocalRandom.current().nextDouble() > getReflectivity()) {
-            return scatterRay(surfaceNormal);
+            return new Ray(
+                    ray.getPosition(),
+                    scatterRay(surfaceNormal),
+                    colorVector());
         } else {
-            return reflectRay(rayDirection, surfaceNormal);
+            if (ThreadLocalRandom.current().nextDouble() > 0.7) {
+                return new Ray(
+                        ray.getPosition(),
+                        reflectRay(ray.getDirection(), surfaceNormal),
+                        colorVector());
+            }
+            return new Ray(
+                    ray.getPosition(),
+                    reflectRay(ray.getDirection(), surfaceNormal),
+                    new Vector3D(0));
         }
     }
 

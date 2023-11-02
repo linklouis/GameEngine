@@ -1,5 +1,6 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -20,9 +21,12 @@ public class SubsurfaceTextureComplex extends RayTracingTexture {
         originalColor = getColor();
     }
 
-    public Vector3D reflection(final Vector3D rayDirection, final Vector3D surfaceNormal) {
+    public Ray reflection(final Ray ray, final Vector3D surfaceNormal) {
         // Perform random walk for subsurface scattering
-        return randomWalk(rayDirection, surfaceNormal, scatterCoefficient, absorptionCoefficient, scatteringAnisotropy);
+        return new Ray(
+                ray.getPosition(),
+                randomWalk(ray.getDirection(), surfaceNormal, scatterCoefficient, absorptionCoefficient, scatteringAnisotropy),
+                ray.getColor().add(colorVector()));
     }
 
     // Simulate subsurface scattering using random walk

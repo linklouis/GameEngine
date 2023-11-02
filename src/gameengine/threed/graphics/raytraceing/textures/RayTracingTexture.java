@@ -1,5 +1,6 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -12,7 +13,7 @@ public abstract class RayTracingTexture {
         this.lightSource = isLightSource;
     }
 
-    public abstract Vector3D reflection(Vector3D rayDirection, Vector3D surfaceNormal);
+    public abstract Ray reflection(Ray rayDirection, Vector3D surfaceNormal);
 
     protected Vector3D scatterRay(Vector3D surfaceNormal) {
         Vector3D reflection = Vector3D.random(-1, 1);
@@ -37,6 +38,10 @@ public abstract class RayTracingTexture {
 
     public Color getColor() {
         return color;
+    }
+
+    public Vector3D colorVector() {
+        return new Vector3D(color);
     }
 
     public void setColor(Color color) {

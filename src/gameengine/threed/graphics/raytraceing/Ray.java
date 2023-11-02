@@ -2,6 +2,7 @@ package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
+import javafx.scene.paint.Color;
 
 /**
  * A single ray of light which starts at a point and moves in a direction until
@@ -23,6 +24,8 @@ public class Ray {
      */
     private Vector3D position;
 
+    private Vector3D color;
+
     /**
      * Creates a new {@code Ray}.
      *
@@ -32,7 +35,21 @@ public class Ray {
     public Ray(final Vector3D startPosition, final Vector3D direction) {
         this.direction = direction;
         this.position = startPosition;
+        color = new Vector3D(0);
     }
+
+    public Ray(final Vector3D startPosition, final Vector3D direction, final Vector3D color) {
+        this.direction = direction;
+        this.position = startPosition;
+        this.color = color;
+    }
+
+    public Ray(final Vector3D startPosition, final Vector3D direction, final Color color) {
+        this.direction = direction;
+        this.position = startPosition;
+        this.color = new Vector3D(color);
+    }
+
 
     /**
      * Finds the first {@link RayTraceable} in {@code objectsInField} that the
@@ -90,8 +107,10 @@ public class Ray {
      *
      * @param collider The {@link RayTraceable} to reflect off of.
      */
-    public void reflect(RayTraceable collider) {
-        direction = collider.reflection(this);
+    public void reflect(RayTraceable collider, int numBounces) {
+        Ray reflectionDetails = collider.reflection(this);
+        direction = reflectionDetails.getDirection();
+        color.addMutable(reflectionDetails.getColor().scalarDivide(numBounces));
     }
 
     /**
@@ -103,8 +122,9 @@ public class Ray {
      * @return A new {@code Ray} representing the current {@code Ray} after
      * reflecting off of {@code collider}.
      */
-    public Ray getReflected(RayTraceable collider) {
-        return new Ray(position, collider.reflection(this));
+    public Ray getReflected(RayTraceable collider, int numBounces) {
+        Ray reflectionDetails = collider.reflection(this);
+        return new Ray(position, reflectionDetails.direction, reflectionDetails.getColor().scalarDivide(numBounces));
     }
 
 
@@ -118,5 +138,9 @@ public class Ray {
 
     public Vector3D getPosition() {
         return position;
+    }
+
+    public Vector3D getColor() {
+        return color;
     }
 }

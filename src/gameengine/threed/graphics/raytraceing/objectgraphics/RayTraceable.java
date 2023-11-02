@@ -39,8 +39,8 @@ public abstract class RayTraceable extends GraphicsObject3D {
      * Functionality:
      */
 
-    public Vector3D reflection(Ray ray) {
-        return texture.reflection(ray.getDirection(), surfaceNormal(ray));
+    public Ray reflection(Ray ray) {
+        return texture.reflection(ray, surfaceNormal(ray));
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class RayTraceable extends GraphicsObject3D {
         return getTexture().getColor();
     }
 
-    public Vector3D colorAsVector() {
+    public Vector3D colorVector() {
         return new Vector3D(getTexture().getColor());
     }
     public void setColor(Color color) {

@@ -74,7 +74,7 @@ public class PixelRay {
         for (int i = 0; i < numIterations; i++) {
             averageColor.addMutable(
                     getColorFromBounces(
-                            startRay.getReflected(firstCollision),
+                            startRay.getReflected(firstCollision, 1),
                             firstCollision.getColor()));
         }
 
@@ -109,7 +109,7 @@ public class PixelRay {
                 return color;
             }
 
-            currentRay.reflect(collision);
+            currentRay.reflect(collision, (int) bounces);
         }
 
         return BLACK;

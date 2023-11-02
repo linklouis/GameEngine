@@ -1,5 +1,6 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -31,8 +32,11 @@ public class BaseTexture extends RayTracingTexture {
      * @return The new direction for the {@code Ray} to move in.
      */
     @Override
-    public Vector3D reflection(final Vector3D rayDirection,
+    public Ray reflection(final Ray ray,
                                final Vector3D surfaceNormal) {
-        return scatterRay(surfaceNormal);
+        return new Ray(
+                ray.getPosition(),
+                scatterRay(surfaceNormal),
+                ray.getColor().add(colorVector()));
     }
 }
