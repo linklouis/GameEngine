@@ -25,11 +25,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class RayTracedCamera extends Camera<RayTraceable> {
     /**
-     * The distance from the camera the screen is being simulated to be to find
-     * the direction from the camera to each pixel.
-     */
-    private final double screenDistance = 0.7;
-    /**
      * The number of rays averaged to find each pixel's color.
      */
     private int raysPerPixel;
@@ -55,8 +50,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private int targetTileSize;
     private Vector2D tileDimensions;
 
-    private double scaleX =
-            Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+    private double scaleX;
 
 
 
@@ -316,8 +310,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                 maxBounces, raysPerPixel, objects));
     }
 
-
-    private Vector3D getRayPath(final double x, final double y) {
+    private Vector3D getRayPath1(final double x, final double y) {
         // Thx to ChatGPT
 //        return getDirection()
 //                .scalarMultiply(screenDistance)
@@ -327,10 +320,56 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 //                        .crossWithSelfCrossedWithJ((x * 2 / getWidth() - 1) * scaleX));
         return  getDirection().transformToNewCoordinates(
                 (x * 2 / getWidth() - 1) * scaleX,
-                (getHeight() - y * 2) * scaleX / getWidth(),
-                screenDistance
+                (getHeight() - y * 2) * scaleX / getWidth());
+    }
+
+    private Vector3D getRayPath(final double x2, final double y2) {
+        // Thx to ChatGPT
+        double xd = getDirection().getX();
+        double yd = getDirection().getY();
+        double zd = getDirection().getZ();
+//        double w = getWidth();
+//        double h = getHeight()
+        double x = (x2 * 2 / getWidth() - 1) * scaleX;
+        double y = (getAspectRatio() - y2 * 2 / getWidth()) * scaleX;
+//        return new Vector3D(
+//                xd * (1 + yd * scaleX) - zd * scaleY,
+//                yd - (zd * zd + x * x) * scaleX,
+//                zd * (1 + yd * scaleX) + xd * scaleY
+//        );
+//        return new Vector3D(
+//                xd * (1 + yd * (x * 2 / w - 1) * scaleX) - zd * (h - y * 2) * scaleX / w,
+//                yd - (zd * zd + xd * xd) * (x * 2 / w - 1) * scaleX,
+//                zd * (1 + yd * (x * 2 / w - 1) * scaleX) + xd * (h - y * 2) * scaleX / w
+//        );
+        // x: xd + xd * yd * (x * 2 / w - 1) * scaleX - zd * (h - y * 2) * scaleX / w,
+//        return new Vector3D(
+//                xd + scaleX * (xd * yd * (x * 2 - w) - zd * (h - y * 2)) / w,
+//                yd - scaleX * (zd * zd + xd * xd) * (x * 2 / w - 1),
+//                zd + scaleX * (zd * yd * (x * 2 - w) + xd * (h - y * 2)) / w
+//        );
+//        return new Vector3D(
+//                xd + scaleX * (xd * yd * (x2 - w) - zd * (h - y2)) / w,
+//                yd - scaleX * (zd * zd + xd * xd) * (x2 / w - 1),
+//                zd + scaleX * (zd * yd * (x2 - w) + xd * (h - y2)) / w
+//        );
+//        return new Vector3D(
+//                xd + scaleX * (xd * yd * x - zd * y),
+//                yd - scaleX * (zd * zd + xd * xd) * x,
+//                zd + scaleX * (zd * yd * x + xd * y)
+//        );
+//        return new Vector3D(
+//                xd + (xd * yd * x - zd * y),
+//                yd - x * (zd * zd + xd * xd),
+//                zd + (zd * yd * x + xd * y)
+//        );
+        return new Vector3D(
+                xd + xd * yd * x - zd * y,
+                yd - x * (zd * zd + xd * xd),
+                zd + zd * yd * x + xd * y
         );
     }
+
 
     /*
      * Utilities:
@@ -340,10 +379,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     protected void setFieldOfView(final double fieldOfViewDegrees) {
         super.setFieldOfView(fieldOfViewDegrees);
         updateScaleX();
-    }
-
-    public double getScreenDistance() {
-        return screenDistance;
     }
 
     public int getRaysPerPixel() {
@@ -412,8 +447,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     }
 
     public void updateScaleX() {
-        scaleX =
-                Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+        scaleX = Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
     }
 }
 

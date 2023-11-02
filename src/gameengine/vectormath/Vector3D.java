@@ -277,6 +277,23 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
+    public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY) {
+        return new Vector3D(
+                x * (1 + y * scaleX) - z * scaleY,
+                y - (z * z + x * x) * scaleX,
+                z * (1 + y * scaleX) + x * scaleY
+        );
+    }
+
+    public Vector3D transformToNewCoordinates1(double scaleX, final double scaleY) {
+        scaleX = (1 + y * scaleX);
+        return new Vector3D(
+                x * scaleX - z * scaleY,
+                y - (z * z + x * x) * (scaleX - 1) / y,
+                z * scaleX + x * scaleY
+        );
+    }
+
 //    public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY, final double scaleZ) {
 ////        return new Vector3D(
 ////                x * scaleZ - z * scaleY + y * x * scaleX,

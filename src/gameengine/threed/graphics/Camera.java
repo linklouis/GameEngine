@@ -243,6 +243,10 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         return getImage().getHeight();
     }
 
+    public double getAspectRatio() {
+        return image.getHeight() / image.getWidth();
+    }
+
     public List<PostProcess> getPostProcesses() {
         return postProcesses;
     }
