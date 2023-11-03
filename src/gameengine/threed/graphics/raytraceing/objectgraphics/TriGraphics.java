@@ -98,18 +98,18 @@ public class TriGraphics extends RayTraceable {
     }
 
     @Override
-    public Vector3D surfaceNormal(Ray ray) {
-        if (normal.dotWithSubtracted(ray.getPosition(), vertex1) < 0) {
+    public Vector3D surfaceNormal(Ray perspective) {
+        if (normal.dotProduct(perspective.getDirection()) > 0) {
             return normal.scalarMultiply(-1);
         }
         return normal;
     }
 
     /**
-     * Finds the first intersection a ray will have with the
+     * Finds the first intersection a lightRay will have with the
      * {@code TriGraphics}.
      *
-     * @param ray The ray to find a collision with.
+     * @param lightRay The lightRay to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
      *                        Can be used to count out {@code TriColliders}
      *                        before having to check if it's in the triangle.
@@ -117,16 +117,16 @@ public class TriGraphics extends RayTraceable {
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
-        double distance = normal.dotWithSubtracted(vertex1, ray.getPosition())
-                / normal.dotWithUnitOf(ray.getDirection());
+    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
+        double distance = normal.dotWithSubtracted(vertex1, lightRay.getPosition())
+                / normal.dotWithUnitOf(lightRay.getDirection());
 
         if (distance <= 0 || distance >= curSmallestDist) {
             return -1; // No collision with the plane
         }
 
-        if (inRange(ray.getPosition()
-                .addAtMagnitude(ray.getDirection(), distance))) {
+        if (inRange(lightRay.getPosition()
+                .addAtMagnitude(lightRay.getDirection(), distance))) {
             return distance;
         }
         return -1;

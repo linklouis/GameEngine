@@ -67,30 +67,30 @@ public class SphereGraphics extends RayTraceable {
      */
 
     @Override
-    public Vector3D surfaceNormal(Ray ray) {
-        return ray.getPosition().subtract(getCenter())/*.unitVector()*/;
+    public Vector3D surfaceNormal(Ray perspective) {
+        return perspective.getPosition().subtract(getCenter())/*.unitVector()*/;
     }
 
     /**
-     * Finds the first intersection a ray would have with the Sphere.
+     * Finds the first intersection a lightRay would have with the Sphere.
      *
-     * @param ray The ray to find a collision with.
+     * @param lightRay The lightRay to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
      *                        not used for optimization for Spheres.
      * @return -1 if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
-        if (contains(ray.getPosition())) {
+    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
+        if (contains(lightRay.getPosition())) {
             return 0;
         }
 
-        double b = ray.getDirection()
-                .dotWithSubtracted(ray.getPosition(), getCenter())
-                * 2 / ray.getDirection().magnitude();
+        double b = lightRay.getDirection()
+                .dotWithSubtracted(lightRay.getPosition(), getCenter())
+                * 2 / lightRay.getDirection().magnitude();
         double d = b * b
-                - 4 * (ray.getPosition().distanceSquared(getCenter())
+                - 4 * (lightRay.getPosition().distanceSquared(getCenter())
                         - radius * radius);  // discriminant of quadratic
 
         if (d <= 0) {

@@ -2,6 +2,7 @@ package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.Camera;
 import gameengine.threed.graphics.Visual3D;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
@@ -24,11 +25,6 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0
  */
 public class RayTracedCamera extends Camera<RayTraceable> {
-    /**
-     * A precalculated {@link Vector3D} representing the color black in rgb.
-     */
-    private static final Vector3D BLACK = new Vector3D(0);
-
     /**
      * The number of rays averaged to find each pixel's color.
      */
@@ -207,10 +203,10 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
         if (multiThreaded) {
             renderThreaded(getImage().getPixelWriter(),
-                    new RayTraceableList(objects));
+                    new RayIntersectableList(objects));
         } else {
             renderUnthreaded(getImage().getPixelWriter(),
-                    new RayTraceableList(objects));
+                    new RayIntersectableList(objects));
         }
 
 
@@ -236,12 +232,12 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     }
 
     private void renderUnthreaded(final PixelWriter writer,
-                                  final RayTraceableList objects) {
+                                  final RayIntersectableList objects) {
         renderPixels(0, 0, getWidth(), getHeight(), writer, objects);
     }
 
     private void renderThreaded(final PixelWriter writer,
-                                final RayTraceableList objects) {
+                                final RayIntersectableList objects) {
         int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
@@ -272,11 +268,11 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private void renderPixels(final int startX, final int startY,
                               final double width, final double height,
                               final PixelWriter writer,
-                              final RayTraceableList objects) {
+                              final RayIntersectableList objects) {
         for (int x = startX; x < startX + width; x++) {
             for (int y = startY; y < startY + height; y++) {
 //                writer.setColor(x, y, new PixelRay(
-//                        new Ray(getLocation(), getRayPath(x, y)),
+//                        new LightRay(getLocation(), getRayPath(x, y)),
 //                        maxBounces, raysPerPixel, objects).getFinalColor()
 //                );
                 writer.setColor(x, y, calculatePixelColor(rayTo(x, y), objects));
@@ -284,8 +280,8 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
     }
 
-    private Ray rayTo(final double x, final double y) {
-        return new Ray(
+    private LightRay rayTo(final double x, final double y) {
+        return new LightRay(
                 getLocation(),
                 // Thx to ChatGPT:
                 getDirection().transformToNewCoordinates(
@@ -295,16 +291,16 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
 
     /*
-     ** Ray Tracing:
+     ** LightRay Tracing:
      */
 
     /**
      * @return The average color of each ray to measure based on
      * {@link #raysPerPixel}.
      */
-    private Color calculatePixelColor(final Ray startRay,
-                                      final RayTraceableList objectsInField) {
-        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
+    private Color calculatePixelColor(final LightRay startLightRay,
+                                      final RayIntersectableList objectsInField) {
+        RayTraceable firstCollision = startLightRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -316,45 +312,13 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         Vector3D averageColor = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
-                    getColorFromBounces(
-                            startRay.getReflected(firstCollision, 1),
-                            objectsInField,
-                            firstCollision.colorVector()));
+                    RayPathTracer.getColor(
+                            startLightRay.getReflected(firstCollision, 1),
+                            maxBounces,
+                            objectsInField));
         }
 
         return averageColor.scalarDivide(raysPerPixel).toColor();
-    }
-
-    /**
-     * Finds the color of a single {@link Ray} over the course of all it's
-     * reflections.
-     *
-     * @param currentRay The initial {@link Ray} who's path to trace.
-     * @param color A {@link Vector3D} representing the color of the
-     *              {@link Ray} that came before {@code currentRay}.
-     * @return The color of {@code currentRay} after all of its reflections.
-     */
-    public Vector3D getColorFromBounces(final Ray currentRay,
-                                        final RayTraceableList objectsInField,
-                                        final Vector3D color) {
-        RayTraceable collision;
-
-        for (int bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollision(objectsInField);
-
-            if (collision == null) {
-                return BLACK;
-            }
-
-//            color.addMutable(collision.colorVector().scalarDivide(bounces));
-            currentRay.reflect(collision, bounces);
-
-            if (collision.getTexture().isLightSource()) {
-                return currentRay.getColor();
-            }
-        }
-
-        return BLACK;
     }
 
 

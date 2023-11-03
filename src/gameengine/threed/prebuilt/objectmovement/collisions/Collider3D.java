@@ -112,7 +112,7 @@ public abstract class Collider3D<ColliderType extends Collider3D<ColliderType>> 
 //     * @return -1 if never enters range or if collision is behind start.
 //     * Otherwise, the distance to first hit
 //     */
-//    public abstract double distanceToCollide(Ray ray, double curSmallestDist);
+//    public abstract double distanceToCollide(LightRay ray, double curSmallestDist);
 
     public abstract boolean isColliding(ColliderType coll);
 

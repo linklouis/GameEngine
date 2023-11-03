@@ -1,5 +1,6 @@
 package gameengine.threed.graphics.raytraceing;
 
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
@@ -11,10 +12,10 @@ public final class PixelRayStatic {
 
     }
 
-//    public Color getFinalColor(final Ray startRay,
+//    public Color getFinalColor(final LightRay startRay,
 //                               final int maxBounces,
 //                               final int numIterations,
-//                               final RayTraceableList objectsInField) {
+//                               final RayIntersectableList objectsInField) {
 //        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
 //
 //        if (firstCollision == null) {
@@ -28,11 +29,11 @@ public final class PixelRayStatic {
 //                numIterations, objectsInField);
 //    }
 //
-//    private Color getAllCollisions(final Ray startRay,
+//    private Color getAllCollisions(final LightRay startRay,
 //                                   final RayTraceable firstCollision,
 //                                   final int maxBounces,
 //                                   final int numIterations,
-//                                   final RayTraceableList objectsInField) {
+//                                   final RayIntersectableList objectsInField) {
 //        Vector3D startColor = new Vector3D(
 //                firstCollision.getColor());
 //
@@ -41,7 +42,7 @@ public final class PixelRayStatic {
 //        for (int i = 0; i < numIterations; i++) {
 //            averageColor.addMutable(
 //                    getColorFromBounces(
-//                            new Ray(startRay.getPosition(),
+//                            new LightRay(startRay.getPosition(),
 //                                    firstCollision.reflection(startRay)),
 //                            maxBounces,
 //                            objectsInField,
@@ -51,11 +52,11 @@ public final class PixelRayStatic {
 //        return averageColor.scalarDivide(numIterations).toColor();
 //    }
 
-    public static Color getFinalColor(final Ray startRay,
+    public static Color getFinalColor(final LightRay startLightRay,
                                       final int maxBounces,
                                       final int numIterations,
-                                      final RayTraceableList objectsInField) {
-        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
+                                      final RayIntersectableList objectsInField) {
+        RayTraceable firstCollision = startLightRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -67,8 +68,8 @@ public final class PixelRayStatic {
         Vector3D averageColor = new Vector3D(0);
         for (int i = 0; i < numIterations; i++) {
             averageColor.addMutable(getColorFromBounces(
-                    new Ray(startRay.getPosition(),
-                            firstCollision.reflection(startRay).getDirection()),
+                    new LightRay(startLightRay.getPosition(),
+                            firstCollision.reflection(startLightRay).direction()),
                     maxBounces,
                     objectsInField,
                     firstCollision.getColor()));
@@ -78,23 +79,23 @@ public final class PixelRayStatic {
     }
 
     /**
-     * Finds the color of a single {@link Ray} over the course of all it's
+     * Finds the color of a single {@link LightRay} over the course of all it's
      * reflections.
      *
-     * @param currentRay The initial {@link Ray} who's path to trace.
-     * @param col The color of any {@link Ray}s that came before
-     *              {@code currentRay}.
-     * @return The color of {@code currentRay} after all of its reflections.
+     * @param currentLightRay The initial {@link LightRay} who's path to trace.
+     * @param col The color of any {@link LightRay}s that came before
+     *              {@code currentLightRay}.
+     * @return The color of {@code currentLightRay} after all of its reflections.
      */
-    public static Vector3D getColorFromBounces(final Ray currentRay,
+    public static Vector3D getColorFromBounces(final LightRay currentLightRay,
                                                final int maxBounces,
-                                               final RayTraceableList objectsInField,
+                                               final RayIntersectableList objectsInField,
                                                final Color col) {
         RayTraceable collision;
         Vector3D color = new Vector3D(col);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollision(objectsInField);
+            collision = currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
@@ -107,7 +108,7 @@ public final class PixelRayStatic {
                 return color;
             }
 
-            currentRay.reflect(collision, (int) bounces);
+            currentLightRay.reflect(collision, (int) bounces);
         }
 
         return BLACK;

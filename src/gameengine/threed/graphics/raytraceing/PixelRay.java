@@ -1,11 +1,12 @@
 package gameengine.threed.graphics.raytraceing;
 
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 /**
- * A manager for all {@link Ray}s tested for a single pixel in a
+ * A manager for all {@link LightRay}s tested for a single pixel in a
  * {@link RayTracedCamera}'s image.
  *
  * @author Louis Link
@@ -18,11 +19,11 @@ public class PixelRay {
     private static final Vector3D BLACK = new Vector3D(0);
 
     /**
-     * The initial {@link Ray} shot from the {@link RayTracedCamera}.
+     * The initial {@link LightRay} shot from the {@link RayTracedCamera}.
      */
-    private final Ray startRay;
+    private final LightRay startLightRay;
     /**
-     * The maximum number of times each {@code Ray} can bounce before declaring
+     * The maximum number of times each {@code LightRay} can bounce before declaring
      * that they never hit a light.
      */
     private final int maxBounces;
@@ -32,20 +33,20 @@ public class PixelRay {
     private final int numIterations;
 
     /**
-     * A {@link RayTraceableList} of the {@link RayTraceable}s to consider for the
+     * A {@link RayIntersectableList} of the {@link RayTraceable}s to consider for the
      * scene.
      */
-    private final RayTraceableList objectsInField;
+    private final RayIntersectableList objectsInField;
 
 
     /*
      * Construction:
      */
 
-    public PixelRay(final Ray startRay, final int maxBounces,
+    public PixelRay(final LightRay startLightRay, final int maxBounces,
                     final int numIterations,
-                    final RayTraceableList objectsInField) {
-        this.startRay = startRay;
+                    final RayIntersectableList objectsInField) {
+        this.startLightRay = startLightRay;
         this.maxBounces = maxBounces;
         this.numIterations = numIterations;
         this.objectsInField = objectsInField;
@@ -61,7 +62,7 @@ public class PixelRay {
      * {@link #numIterations}.
      */
     public Color getFinalColor() {
-        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = startLightRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -74,7 +75,7 @@ public class PixelRay {
         for (int i = 0; i < numIterations; i++) {
             averageColor.addMutable(
                     getColorFromBounces(
-                            startRay.getReflected(firstCollision, 1),
+                            startLightRay.getReflected(firstCollision, 1),
                             firstCollision.getColor()));
         }
 
@@ -82,21 +83,21 @@ public class PixelRay {
     }
 
     /**
-     * Finds the color of a single {@link Ray} over the course of all it's
+     * Finds the color of a single {@link LightRay} over the course of all it's
      * reflections.
      *
-     * @param currentRay The initial {@link Ray} who's path to trace.
-     * @param col The color of any {@link Ray}s that came before
-     *              {@code currentRay}.
-     * @return The color of {@code currentRay} after all of its reflections.
+     * @param currentLightRay The initial {@link LightRay} who's path to trace.
+     * @param col The color of any {@link LightRay}s that came before
+     *              {@code currentLightRay}.
+     * @return The color of {@code currentLightRay} after all of its reflections.
      */
-    public Vector3D getColorFromBounces(final Ray currentRay,
+    public Vector3D getColorFromBounces(final LightRay currentLightRay,
                                         final Color col) {
         RayTraceable collision;
         Vector3D color = new Vector3D(col);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollision(objectsInField);
+            collision = currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
@@ -109,7 +110,7 @@ public class PixelRay {
                 return color;
             }
 
-            currentRay.reflect(collision, (int) bounces);
+            currentLightRay.reflect(collision, (int) bounces);
         }
 
         return BLACK;

@@ -1,6 +1,7 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
-import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -18,9 +19,9 @@ public class SubsurfaceTexture extends RayTracingTexture {
     }
 
     @Override
-    public Ray reflection(final Ray ray, Vector3D surfaceNormal) {
-        if (ray.getDirection().angleInDegreesWith(surfaceNormal.scalarMultiply(-1)) / 90 > 1
-            || ray.getDirection().angleInDegreesWith(surfaceNormal.scalarMultiply(-1)) / 90 < 0) {
+    public Reflection reflection(final LightRay lightRay, Vector3D surfaceNormal) {
+        if (lightRay.getDirection().angleInDegreesWith(surfaceNormal.scalarMultiply(-1)) / 90 > 1
+            || lightRay.getDirection().angleInDegreesWith(surfaceNormal.scalarMultiply(-1)) / 90 < 0) {
             surfaceNormal = surfaceNormal.scalarMultiply(-1);
 //            System.out.println("IT HURTSSSS");
         }
@@ -29,7 +30,7 @@ public class SubsurfaceTexture extends RayTracingTexture {
 //        }
         if (
                 generateSkewedValue(
-                        ray.getDirection().angleInDegreesWith(surfaceNormal.scalarMultiply(-1)) / 90,
+                        lightRay.getDirection().angleInDegreesWith(surfaceNormal.scalarMultiply(-1)) / 90,
                         0, 90)
 //                ThreadLocalRandom.current()
 //                .nextGaussian(
@@ -37,20 +38,18 @@ public class SubsurfaceTexture extends RayTracingTexture {
 //                                surfaceNormal.scalarMultiply(-1)),
 //                        90)
                 >= minimumReflectionAngle) {
-            return new Ray(
-                    ray.getPosition(),
-                    reflectRay(ray.getDirection(), surfaceNormal),
-                    ray.getColor().add(colorVector())
+            return new Reflection(
+                    reflectRay(lightRay.getDirection(), surfaceNormal),
+                    lightRay.getColor().add(colorVector())
             );
         }
         Vector3D reflection = Vector3D.random(surfaceNormal, 1 - minimumReflectionAngle / 90 + 0.1);
         while (reflection.angleInDegreesWith(surfaceNormal) > minimumReflectionAngle) {
             reflection = Vector3D.random(surfaceNormal, 1 - minimumReflectionAngle / 90 + 0.1);
         }
-        return new Ray(
-                ray.getPosition(),
+        return new Reflection(
                 reflection,
-                ray.getColor().add(colorVector()));
+                lightRay.getColor().add(colorVector()));
     }
 
 //@Override

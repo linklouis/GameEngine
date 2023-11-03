@@ -1,6 +1,7 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
-import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -23,20 +24,19 @@ public class BaseTexture extends RayTracingTexture {
     }
 
     /**
-     * Scatters the incoming {@code Ray} and ensures that it is facing in a
+     * Scatters the incoming {@code LightRay} and ensures that it is facing in a
      * valid direction.
      *
-     * @param rayDirection The direction of the incoming {@code Ray}.
+     * @param rayDirection The direction of the incoming {@code LightRay}.
      * @param surfaceNormal The normal vector of the surface. Magnitude is not
      *                      variable.
-     * @return The new direction for the {@code Ray} to move in.
+     * @return The new direction for the {@code LightRay} to move in.
      */
     @Override
-    public Ray reflection(final Ray ray,
-                               final Vector3D surfaceNormal) {
-        return new Ray(
-                ray.getPosition(),
+    public Reflection reflection(final LightRay lightRay,
+                                 final Vector3D surfaceNormal) {
+        return new Reflection(
                 scatterRay(surfaceNormal),
-                ray.getColor().add(colorVector()));
+                lightRay.getColor().add(colorVector()));
     }
 }

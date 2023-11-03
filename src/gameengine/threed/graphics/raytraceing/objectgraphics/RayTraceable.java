@@ -3,15 +3,17 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.Visual3D;
-import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.utilities.RayIntersectable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RayTraceable extends GraphicsObject3D {
+public abstract class RayTraceable extends GraphicsObject3D implements RayIntersectable {
     private RayTracingTexture texture = null;
 
 
@@ -39,24 +41,9 @@ public abstract class RayTraceable extends GraphicsObject3D {
      * Functionality:
      */
 
-    public Ray reflection(Ray ray) {
-        return texture.reflection(ray, surfaceNormal(ray));
+    public Reflection reflection(LightRay lightRay) {
+        return texture.reflection(lightRay, surfaceNormal(lightRay));
     }
-
-    /**
-     * Finds the first intersection a ray will have with the
-     * {@code Collider3D}.
-     *
-     * @param ray The ray to find a collision with.
-     * @param curSmallestDist The largest distance the output is looking for.
-     *                        Can be used for optimization by counting out a
-     *                        {@code Collider3D} early.
-     * @return -1 if never enters range or if collision is behind start.
-     * Otherwise, the distance to first hit
-     */
-    public abstract double distanceToCollide(Ray ray, double curSmallestDist);
-
-    public abstract Vector3D surfaceNormal(Ray ray);
 
 
     /*

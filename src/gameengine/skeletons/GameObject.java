@@ -1,7 +1,5 @@
 package gameengine.skeletons;
 
-import gameengine.skeletons.Modifier;
-
 import java.util.ArrayList;
 import java.util.List;
 
