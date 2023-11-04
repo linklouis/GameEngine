@@ -38,6 +38,11 @@ public class SphereGraphics extends RayTraceable {
     }
 
     @Override
+    public Vector3D[] getVertices() {
+        return new Vector3D[0];
+    }
+
+    @Override
     public ArgumentContext[] getArgumentContexts() {
         return new ArgumentContext[] {
                 new ArgumentContext(

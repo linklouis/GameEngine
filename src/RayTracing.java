@@ -9,7 +9,7 @@ import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.RectPlane;
-import gameengine.threed.prebuilt.gameobjects.Rectangle;
+import gameengine.threed.prebuilt.gameobjects.TriRectangle;
 import gameengine.threed.prebuilt.gameobjects.Tri;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
@@ -28,7 +28,7 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 100;
+    private final int NUM_TO_TEST = 5;
     private RayTracedCamera mainCam;
 
 
@@ -39,8 +39,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("LightRay Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        new Vector2D(2000, 2000/*700, 700*//*1280, 720*//*1920.0, 1080.0*/),
-                        10, 100, true, 70)),
+                        new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
+                        10, 10, true, 70)),
                 new PhysicsEngine3D());
     }
 
@@ -72,9 +72,10 @@ public class RayTracing extends GameDriver3D {
 //        TextureHelper.setMinimumReflectingAngle(45);
 //        TextureHelper.setRandomness(0.01);
         TextureHelper.setReflectivity(0.7);
+        TextureHelper.setAbsorption(0.2);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
-        new Rectangle(-1, -2, -3, new Vector3D(2,2, 2),
+        new TriRectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 TextureHelper.newReflecting(Color.AZURE)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
@@ -188,7 +189,7 @@ public class RayTracing extends GameDriver3D {
 
         newObject(new Sphere(0, 0, 18, 7, new ReflectingTexture(Color.WHITE, true, 0)));
 
-        new Rectangle(0, 0, 0, new Vector3D(2, 3, 4), new ReflectingTexture(Color.RED, false, reflectivity)).initiate(this);
+        new TriRectangle(0, 0, 0, new Vector3D(2, 3, 4), new ReflectingTexture(Color.RED, false, reflectivity)).initiate(this);
 
 //        for (Visual3D collider : getGraphicsDriver().getVisualObjects()) {
 //            System.out.println(collider.getFromParent(Collider3D.class).getAppearance());
@@ -351,7 +352,7 @@ public class RayTracing extends GameDriver3D {
     private void setupRandRect(final double range,
                                final Function<Color, RayTracingTexture>
                                        textureSupplier) {
-        new Rectangle(
+        new TriRectangle(
                 randomInRange(range), randomInRange(range), randomInRange(range),
                 Vector3D.random(-range, range),
                 textureSupplier.apply(Vector3D.random(0, 1).toColor())
@@ -392,13 +393,14 @@ public class RayTracing extends GameDriver3D {
         private static double randomness = 0;
 
         private static double reflectivity = 0;
+        private static double absorption = 0.9;
 
         public static SubsurfaceTexture newSubsurface(final Color color) {
             return new SubsurfaceTexture(color, false, minimumReflectingAngle, randomness);
         }
 
         public static ReflectingTexture newReflecting(final Color color) {
-            return new ReflectingTexture(color, false, reflectivity);
+            return new ReflectingTexture(color, false, reflectivity, absorption);
         }
 
         public static Function<Color, RayTracingTexture>
@@ -427,6 +429,10 @@ public class RayTracing extends GameDriver3D {
 
         public static void setReflectivity(double reflectivity) {
             TextureHelper.reflectivity = reflectivity;
+        }
+
+        public static void setAbsorption(double absorption) {
+            TextureHelper.absorption = absorption;
         }
     }
 

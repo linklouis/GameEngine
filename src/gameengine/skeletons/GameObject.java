@@ -1,6 +1,7 @@
 package gameengine.skeletons;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class GameObject {
@@ -17,6 +18,10 @@ public abstract class GameObject {
 
     public GameObject(Modifier... modifiers) {
         this.modifiers = modifiers;
+    }
+
+    public GameObject(Collection<Modifier> modifiers) {
+        this.modifiers = modifiers.toArray(new Modifier[0]);
     }
 
     public Modifier[] getModifiers() {

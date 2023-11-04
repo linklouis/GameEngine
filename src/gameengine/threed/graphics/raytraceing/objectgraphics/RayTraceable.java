@@ -50,6 +50,8 @@ public abstract class RayTraceable extends GraphicsObject3D implements RayInters
      * Utilities:
      */
 
+    public abstract Vector3D[] getVertices();
+
     public RayTracingTexture getTexture() {
         return texture;
     }

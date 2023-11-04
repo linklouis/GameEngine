@@ -6,25 +6,24 @@ import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 
 import java.util.List;
 
-public class TriGraphics extends RayTraceable {
+public class QuadGraphics extends RayTraceable {
     private Vector3D vertex1;
     private Vector3D vertex2;
     private Vector3D vertex3;
+    private Vector3D vertex4;
 
     // Precomputed values for collision checks
-    private Vector3D v0;
-    private Vector3D v1;
-    private double dot00;
-    private double dot01;
-    private double dot11;
-    private double invDenom;
-
-    private Vector3D dirTo2;
-    private Vector3D dirTo3;
+    private Vector3D planeXaxis;
+    private Vector3D planeYaxis;
+    private double minPlaneX;
+    private double minPlaneY;
+    private double maxPlaneX;
+    private double maxPlaneY;
     private Vector3D normal;
     private Vector3D center;
 
@@ -53,6 +52,9 @@ public class TriGraphics extends RayTraceable {
                                 "vertex3", Vector3D.class,
                                 this::setVertex3NoCompute),
                         new ModifierInstantiateParameter<>(
+                                "vertex4", Vector3D.class,
+                                this::setVertex4),
+                        new ModifierInstantiateParameter<>(
                                 "texture", RayTracingTexture.class,
                                 this::setTexture)
                 )
@@ -77,22 +79,25 @@ public class TriGraphics extends RayTraceable {
      * Precomputes values for collision checks
      */
     private void computeValues() {
-        v0 = vertex2.subtract(vertex1);
-        v1 = vertex3.subtract(vertex1);
+        planeXaxis = vertex2.subtract(vertex1);
+        planeYaxis = vertex3.subtract(vertex1);
 
-        dot00 = v0.dotProduct(v0);
-        dot01 = v0.dotProduct(v1);
-        dot11 = v1.dotProduct(v1);
-
-        invDenom = (dot00 * dot11 - dot01 * dot01);
-
-        dirTo2 = vertex2.subtract(vertex1);
-        dirTo3 = vertex3.subtract(vertex1);
-
-        normal = dirTo2.crossProduct(dirTo3);
+        normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
+
+        minPlaneX = Math.min(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
+        maxPlaneX = Math.max(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+        maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
     }
 
+    /**
+     * Returns the normal vector of the intersectable object facing towards the
+     * {@code VectorLine}.
+     *
+     * @param perspective
+     * @return
+     */
     @Override
     public Vector3D surfaceNormal(Ray perspective) {
         if (normal.dotProduct(perspective.getDirection()) > 0) {
@@ -102,18 +107,19 @@ public class TriGraphics extends RayTraceable {
     }
 
     /**
-     * Finds the first intersection a ray will have with the
-     * {@code TriGraphics}.
+     * Finds the first intersection a lightRay will have with the
+     * {@code Collider3D}.
      *
-     * @param ray The ray to find a collision with.
+     * @param ray             The lightRay to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
-     *                        Can be used to count out {@code TriColliders}
-     *                        before having to check if it's in the triangle.
+     *                        Can be used for optimization by counting out a
+     *                        {@code Collider3D} early.
      * @return -1 if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
+    public double distanceToCollide(final Ray ray,
+                                    final double curSmallestDist) {
         double distance = normal.dotWithSubtracted(vertex1, ray.getPosition())
                 / normal.dotWithUnitOf(ray.getDirection());
 
@@ -133,17 +139,14 @@ public class TriGraphics extends RayTraceable {
      *
      * @return True if the point is within the vertices, otherwise false.
      */
-    public boolean inRange(Vector3D point) {
-        // ChatGPT
-        double dot02 = v0.dotWithSubtracted(point, vertex1);
-        double dot12 = v1.dotWithSubtracted(point, vertex1);
+    public boolean inRange(final Vector3D point) {
+        Vector2D planeCoordinates = onPlane(point);
+        return  minPlaneX <= planeCoordinates.getX() && maxPlaneX >= planeCoordinates.getX()
+                && minPlaneY <= planeCoordinates.getY() && maxPlaneY >= planeCoordinates.getY();
+    }
 
-        // Compute barycentric coordinates
-        double u = (dot11 * dot02 - dot01 * dot12);
-        double v = (dot00 * dot12 - dot01 * dot02);
-
-        // Check if the point is inside the triangle
-        return (u >= 0) && (v >= 0) && ((u + v) <= invDenom);
+    public Vector2D onPlane(Vector3D other) {
+        return other.projectToPlane(planeXaxis, planeYaxis);
     }
 
 
@@ -153,7 +156,7 @@ public class TriGraphics extends RayTraceable {
 
     @Override
     public Vector3D[] getVertices() {
-        return new Vector3D[] { vertex1, vertex2, vertex3 };
+        return new Vector3D[] { vertex1, vertex2, vertex3, vertex4 };
     }
 
     public double minX() {
@@ -210,6 +213,10 @@ public class TriGraphics extends RayTraceable {
         return vertex3;
     }
 
+    public Vector3D getVertex4() {
+        return vertex4;
+    }
+
     private void setVertex1NoCompute(Vector3D vertex1) {
         this.vertex1 = vertex1;
     }
@@ -229,36 +236,26 @@ public class TriGraphics extends RayTraceable {
 
     public void setVertex2(Vector3D vertex2) {
         this.vertex2 = vertex2;
-        v0 = vertex2.subtract(vertex1);
+        planeXaxis = vertex2.subtract(vertex1);
 
-        dot00 = v0.dotProduct(v0);
-        dot01 = v0.dotProduct(v1);
-
-        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-
-        dirTo2 = vertex2.subtract(vertex1);
-
-        normal = dirTo2.crossProduct(dirTo3);
+        normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
     }
 
     public void setVertex3(Vector3D vertex3) {
         this.vertex3 = vertex3;
-        v1 = vertex3.subtract(vertex1);
+        planeYaxis = vertex3.subtract(vertex1);
 
-        dot01 = v0.dotProduct(v1);
-        dot11 = v1.dotProduct(v1);
-
-        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-
-        dirTo3 = vertex3.subtract(vertex1);
-
-        normal = dirTo2.crossProduct(dirTo3);
+        normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
+    }
+
+    public void setVertex4(Vector3D vertex) {
+        this.vertex4 = vertex;
     }
 
     @Override
     public String toString() {
-        return "TriGraphics: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getTexture();
+        return "QuadGraphics: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getVertex4() + ", " + getTexture();
     }
 }

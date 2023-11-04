@@ -21,7 +21,7 @@ public class Vector3D implements Vector<Vector3D> {
     private double x;
     private double y;
     private double z;
-    private double magnitude = Double.MAX_VALUE;
+    private double magnitude = Double.NaN;
 
 
     /*
@@ -77,7 +77,7 @@ public class Vector3D implements Vector<Vector3D> {
         x += other.x;
         y += other.y;
         z += other.z;
-        magnitude = Double.MAX_VALUE;
+        magnitude = Double.NaN;
         return this;
     }
 
@@ -155,7 +155,7 @@ public class Vector3D implements Vector<Vector3D> {
 
     @Override
     public double magnitude() {
-        if (magnitude == Double.MAX_VALUE) {
+        if (Double.isNaN(magnitude)) {
             magnitude = Math.sqrt(
                     x * x
                             + y * y
@@ -165,7 +165,7 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public void computeMagnitude() {
-        if (magnitude == Double.MAX_VALUE) {
+        if (Double.isNaN(magnitude)) {
             magnitude = Math.sqrt(
                     x * x
                             + y * y
@@ -264,19 +264,6 @@ public class Vector3D implements Vector<Vector3D> {
                 y * z * multiplier);
     }
 
-    public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY, final double scaleZ) {
-//        return new Vector3D(
-//                x * scaleZ - z * scaleY + y * x * scaleX,
-//                y * scaleZ              - (z * z + x * x) * scaleX,
-//                z * scaleZ + x * scaleY + y * z * scaleX
-//        );
-        return new Vector3D(
-                x * (scaleZ + y * scaleX) - z * scaleY,
-                y * scaleZ - (z * z + x * x) * scaleX,
-                z * (scaleZ + y * scaleX) + x * scaleY
-        );
-    }
-
     public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY) {
         return new Vector3D(
                 x * (1 + y * scaleX) - z * scaleY,
@@ -285,27 +272,28 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
-    public Vector3D transformToNewCoordinates1(double scaleX, final double scaleY) {
-        scaleX = (1 + y * scaleX);
-        return new Vector3D(
-                x * scaleX - z * scaleY,
-                y - (z * z + x * x) * (scaleX - 1) / y,
-                z * scaleX + x * scaleY
+    /**
+     * Project this 3D vector onto a 2D plane defined by its orthogonal unit
+     * vectors, planeX and planeY.
+     *
+     * @param planeX The unit vector representing one axis of the plane.
+     * @param planeY The unit vector representing another axis of the plane
+     *               (orthogonal to planeX).
+     * @return A 2D vector representing the projection of this vector onto the
+     * specified plane.
+     */
+    public Vector2D projectToPlane(Vector3D planeX, Vector3D planeY) {
+        // Ensure that planeX and planeY are orthogonal unit vectors
+        planeX = planeX.unitVector();
+        planeY = planeY.unitVector();
+
+        // Project the 3D vector onto the 2D plane
+        return new Vector2D(
+                dotProduct(planeX),
+                dotProduct(planeY)
         );
     }
 
-//    public Vector3D transformToNewCoordinates(final double scaleX, final double scaleY, final double scaleZ) {
-////        return new Vector3D(
-////                x * scaleZ - z * scaleY + y * x * scaleX,
-////                y * scaleZ              - z * z * scaleX,
-////                z * scaleZ + x * scaleY + y * z * scaleX
-////        );
-//        return new Vector3D(
-//                x * (scaleZ + y * scaleX) - z * scaleY,
-//                y * scaleZ  - z * z * scaleX,
-//                z * (scaleZ + y * scaleX) + x * scaleY
-//        );
-//    }
 
     public static Vector3D random() {
         return new Vector3D(
@@ -327,11 +315,6 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public static Vector3D random(Vector3D model, double range) {
-//        return new Vector3D(
-//                ThreadLocalRandom.current().nextGaussian(model.x, range),
-//                ThreadLocalRandom.current().nextGaussian(model.y, range),
-//                ThreadLocalRandom.current().nextGaussian(model.z, range)
-//        );
         return new Vector3D(
                 ThreadLocalRandom.current().nextGaussian(model.x, range),
                 ThreadLocalRandom.current().nextGaussian(model.y, range),

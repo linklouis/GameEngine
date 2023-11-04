@@ -1,11 +1,11 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
-import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -17,7 +17,7 @@ public class RectPlane extends PolyObject {
     public RectPlane(Vector3D position, Vector3D displacement,
                      RayTracingTexture texture) {
         super(generateVertices(position, displacement),
-                new Mesh(), new InPlane3D());
+                new Mesh<>(new Tri[0]), new InPlane3D());
         get(InPlane3D.class).instantiate(this,
                 position.getX(), position.getY(), position.getZ());
 
@@ -27,7 +27,7 @@ public class RectPlane extends PolyObject {
     public RectPlane(double x, double y, double z,
                      Vector3D displacement, RayTracingTexture texture) {
         super(generateVertices(new Vector3D(x, y, z), displacement),
-                new Mesh(), new InPlane3D());
+                new Mesh<>(new Tri[0]), new InPlane3D());
         get(InPlane3D.class).instantiate(this, x, y, z);
 
         setTexture(texture);
@@ -88,8 +88,8 @@ public class RectPlane extends PolyObject {
 
     public void setTexture(RayTracingTexture texture) {
         this.texture = texture;
-        for (Tri poly : get(Mesh.class).getPolygons()) {
-            poly.get(TriGraphics.class).setTexture(texture);
+        for (Polygon poly : get(Mesh.class).getPolygons()) {
+            poly.get(RayTraceable.class).setTexture(texture);
         }
     }
 }

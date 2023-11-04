@@ -10,8 +10,8 @@ public class Vector2D implements Vector<Vector2D> {
     /*
      * Unit Vectors:
      */
-    private static final Vector2D i = new Vector2D(1, 0);
-    private static final Vector2D j = new Vector2D(0, 1);
+    public static final Vector2D I = new Vector2D(1, 0);
+    public static final Vector2D J = new Vector2D(0, 1);
 
     private double x;
     private double y;

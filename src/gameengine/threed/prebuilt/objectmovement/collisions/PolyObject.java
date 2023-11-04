@@ -4,6 +4,7 @@ import gameengine.drivers.GameDriver3D;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.prebuilt.gameobjects.Mesh;
+import gameengine.threed.prebuilt.gameobjects.Polygon;
 import gameengine.threed.prebuilt.gameobjects.Tri;
 import gameengine.vectormath.Vector3D;
 
@@ -28,7 +29,7 @@ public abstract class PolyObject extends GameObject {
     }
 
     public void initiate(GameDriver3D driver) {
-        for (Tri poly : get(Mesh.class).getPolygons()) {
+        for (Polygon poly : get(Mesh.class).getPolygons()) {
             driver.newObject(poly);
         }
     }

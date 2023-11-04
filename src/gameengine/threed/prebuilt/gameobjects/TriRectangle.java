@@ -1,18 +1,18 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
-import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rectangle extends PolyObject {
+public class TriRectangle extends PolyObject {
     private RayTracingTexture texture;
 
 
@@ -20,16 +20,16 @@ public class Rectangle extends PolyObject {
      * Construction:
      */
 
-    public Rectangle(double x, double y, double z, Vector3D space,
-                     RayTracingTexture texture) {
-        super(generateVertices(x, y, z, space), new Mesh(), new InPlane3D());
+    public TriRectangle(double x, double y, double z, Vector3D space,
+                        RayTracingTexture texture) {
+        super(generateVertices(x, y, z, space), new Mesh<>(new Tri[0]), new InPlane3D());
         get(InPlane3D.class).instantiate(this, x, y, z);
         setTexture(texture);
     }
 
-    public Rectangle(double x, double y, double z, Vector3D space, Color color,
-                     boolean isLightSource) {
-        super(generateVertices(x, y, z, space), new Mesh(), new InPlane3D());
+    public TriRectangle(double x, double y, double z, Vector3D space, Color color,
+                        boolean isLightSource) {
+        super(generateVertices(x, y, z, space), new Mesh<>(new Tri[0]), new InPlane3D());
         setTexture(new ReflectingTexture(color, isLightSource, 0));
         get(InPlane3D.class).instantiate(this, x, y, z);
     }
@@ -126,9 +126,9 @@ public class Rectangle extends PolyObject {
     public void setTexture(RayTracingTexture texture) {
         this.texture = texture;
 //        int num = 1;
-        for (Tri poly : get(Mesh.class).getPolygons()) {
+        for (Polygon poly : get(Mesh.class).getPolygons()) {
 //            double col = (double) num / get(Mesh.class).getPolygons().length;
-            poly.get(TriGraphics.class).setTexture(texture);//new ReflectingTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
+            poly.get(RayTraceable.class).setTexture(texture);//new ReflectingTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
 //            num++;
         }
     }
