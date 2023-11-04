@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TriRectangle extends PolyObject<Tri> {
+public class QuadRectangle extends PolyObject<Quad> {
     private RayTracingTexture texture;
 
 
@@ -20,16 +20,16 @@ public class TriRectangle extends PolyObject<Tri> {
      * Construction:
      */
 
-    public TriRectangle(double x, double y, double z, Vector3D space,
+    public QuadRectangle(double x, double y, double z, Vector3D space,
                         RayTracingTexture texture) {
-        super(generateVertices(x, y, z, space), new Mesh<>(new Tri[0]), new InPlane3D());
+        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]), new InPlane3D());
         get(InPlane3D.class).instantiate(this, x, y, z);
         setTexture(texture);
     }
 
-    public TriRectangle(double x, double y, double z, Vector3D space, Color color,
+    public QuadRectangle(double x, double y, double z, Vector3D space, Color color,
                         boolean isLightSource) {
-        super(generateVertices(x, y, z, space), new Mesh<>(new Tri[0]), new InPlane3D());
+        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]), new InPlane3D());
         setTexture(new ReflectingTexture(color, isLightSource, 0));
         get(InPlane3D.class).instantiate(this, x, y, z);
     }
@@ -74,39 +74,32 @@ public class TriRectangle extends PolyObject<Tri> {
         return new ArrayList<>() {
             {
                 add(InPlane3D.class);
-//                add(Visual2D.class);
             }
         };
     }
 
     @Override
-    protected Tri[] createMesh(Vector3D[] vertices) {
+    protected Quad[] createMesh(Vector3D[] vertices) {
         RayTracingTexture texture = new ReflectingTexture(Color.WHITE, true, 0);
 
-        return new Tri[]{
-                // Front face triangles
-                new Tri(vertices[0], vertices[1], vertices[2], texture),
-                new Tri(vertices[0], vertices[2], vertices[3], texture),
+        return new Quad[] {
+                // Front face
+                new Quad(vertices[0], vertices[1], vertices[2], vertices[3], texture),
 
-                // Right face triangles
-                new Tri(vertices[1], vertices[5], vertices[6], texture),
-                new Tri(vertices[1], vertices[6], vertices[2], texture),
+                // Right face
+                new Quad(vertices[1], vertices[5], vertices[6], vertices[2], texture),
 
-                // Back face triangles
-                new Tri(vertices[5], vertices[4], vertices[7], texture),
-                new Tri(vertices[5], vertices[7], vertices[6], texture),
+                // Back face
+                new Quad(vertices[5], vertices[4], vertices[7], vertices[6], texture),
 
-                // Left face triangles
-                new Tri(vertices[4], vertices[0], vertices[3], texture),
-                new Tri(vertices[4], vertices[3], vertices[7], texture),
+                // Left face
+                new Quad(vertices[4], vertices[0], vertices[3], vertices[7], texture),
 
-                // Top face triangles
-                new Tri(vertices[3], vertices[2], vertices[6], texture),
-                new Tri(vertices[3], vertices[6], vertices[7], texture),
+                // Top face
+                new Quad(vertices[3], vertices[2], vertices[6], vertices[7], texture),
 
-                // Bottom face triangles
-                new Tri(vertices[0], vertices[4], vertices[5], texture),
-                new Tri(vertices[0], vertices[5], vertices[1], texture),
+                // Bottom face
+                new Quad(vertices[0], vertices[4], vertices[5], vertices[1], texture),
         };
     }
 

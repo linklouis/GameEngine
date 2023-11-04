@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RectPlane extends PolyObject {
+public class RectPlane extends PolyObject<Tri> {
     private RayTracingTexture texture;
     public RectPlane(Vector3D position, Vector3D displacement,
                      RayTracingTexture texture) {

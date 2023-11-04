@@ -96,10 +96,16 @@ public class Vector3D implements Vector<Vector3D> {
                 + z * (v1.z - v2.z);
     }
 
-    public double dotWithUnitOf(final Vector3D other) {
-        return x * (other.x / other.magnitude())
-                + y * (other.y / other.magnitude())
-                + z * (other.z / other.magnitude());
+    public double distToCollidePlane(final Vector3D vertex, final Vector3D position, final Vector3D direction) {
+//        normal.dotWithSubtracted(vertex1, ray.getPosition())
+//                / normal.dotWithUnitOf(ray.getDirection())
+        return (x * (vertex.x - position.x)
+                + y * (vertex.y - position.y)
+                + z * (vertex.z - position.z))
+                /
+                (x * (direction.x)
+                        + y * (direction.y)
+                        + z * (direction.z));
     }
 
     public Vector3D addAtMagnitude(final Vector3D other, final double newMagnitude) {
@@ -107,6 +113,13 @@ public class Vector3D implements Vector<Vector3D> {
                 x + other.x * newMagnitude / other.magnitude(),
                 y + other.y * newMagnitude / other.magnitude(),
                 z + other.z * newMagnitude / other.magnitude());
+    }
+
+    public Vector3D addMultiplied(final Vector3D other, final double newMagnitude) {
+        return new Vector3D(
+                x + other.x * newMagnitude,
+                y + other.y * newMagnitude,
+                z + other.z * newMagnitude);
     }
 
     @Override
@@ -283,14 +296,24 @@ public class Vector3D implements Vector<Vector3D> {
      * specified plane.
      */
     public Vector2D projectToPlane(Vector3D planeX, Vector3D planeY) {
-        // Ensure that planeX and planeY are orthogonal unit vectors
-        planeX = planeX.unitVector();
-        planeY = planeY.unitVector();
-
-        // Project the 3D vector onto the 2D plane
+//        return new Vector2D(
+//                dotProduct(planeX),
+//                dotProduct(planeY)
+//        );
         return new Vector2D(
-                dotProduct(planeX),
-                dotProduct(planeY)
+                x * planeX.x + y * planeX.y + z * planeX.z,
+                x * planeY.x + y * planeY.y + z * planeY.z
+        );
+    }
+
+    public Vector2D projectToPlane(Vector3D planeX, Vector3D planeY, Vector3D direction, double distance) {
+        return new Vector2D(
+                (x + direction.x * distance) * planeX.x
+                        + (y + direction.y * distance) * planeX.y
+                        + (z + direction.z * distance) * planeX.z,
+                (x + direction.x * distance) * planeY.x
+                        + (y + direction.y * distance) * planeY.y
+                        + (z + direction.z * distance) * planeY.z
         );
     }
 

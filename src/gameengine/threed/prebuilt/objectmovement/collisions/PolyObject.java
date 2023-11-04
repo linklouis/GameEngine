@@ -5,12 +5,11 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.prebuilt.gameobjects.Mesh;
 import gameengine.threed.prebuilt.gameobjects.Polygon;
-import gameengine.threed.prebuilt.gameobjects.Tri;
 import gameengine.vectormath.Vector3D;
 
-public abstract class PolyObject extends GameObject {
+public abstract class PolyObject<PolyType extends Polygon> extends GameObject {
 
-    public PolyObject(Mesh mesh, Modifier... modifiers) {
+    public PolyObject(Mesh<PolyType> mesh, Modifier... modifiers) {
         super(modifiers);
         try {
             get(Mesh.class).instantiate(this, mesh.getPolygons(), mesh.getVertices());
@@ -34,5 +33,5 @@ public abstract class PolyObject extends GameObject {
         }
     }
 
-    protected abstract Tri[] createMesh(Vector3D[] vertices);
+    protected abstract PolyType[] createMesh(Vector3D[] vertices);
 }

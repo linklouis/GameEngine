@@ -15,7 +15,7 @@ public class VectorLine3D {
     protected Vector3D position;
 
     public VectorLine3D(final Vector3D startPosition, final Vector3D direction) {
-        this.direction = direction;
+        this.direction = direction.unitVector();
         this.position = startPosition;
     }
 
@@ -24,7 +24,9 @@ public class VectorLine3D {
      * Functionality:
      */
 
-
+    public Vector3D pointAtDistance(double distance) {
+        return position.addMultiplied(direction, distance);
+    }
 
 
     /*

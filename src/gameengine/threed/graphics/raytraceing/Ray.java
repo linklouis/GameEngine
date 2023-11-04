@@ -72,7 +72,7 @@ public class Ray extends VectorLine3D {
      * @param collider The {@link RayTraceable} to reflect off of.
      */
     public void reflect(RayTraceable collider, int numBounces) {
-        direction = collider.reflection((LightRay) this).direction();
+        direction = collider.reflection((LightRay) this).direction().unitVector();
     }
 
     /**
@@ -85,6 +85,6 @@ public class Ray extends VectorLine3D {
      * reflecting off of {@code collider}.
      */
     public Ray getReflected(RayTraceable collider, int numBounces) {
-        return new Ray(position, collider.reflection((LightRay) this).direction());
+        return new Ray(position, collider.reflection((LightRay) this).direction().unitVector());
     }
 }

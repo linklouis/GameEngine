@@ -4,6 +4,7 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.utilities.VectorLine3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
@@ -114,18 +115,13 @@ public class TriGraphics extends RayTraceable {
      */
     @Override
     public double distanceToCollide(Ray ray, double curSmallestDist) {
-        double distance = normal.dotWithSubtracted(vertex1, ray.getPosition())
-                / normal.dotWithUnitOf(ray.getDirection());
-
-        if (distance <= 0 || distance >= curSmallestDist) {
-            return -1; // No collision with the plane
+//                normal.dotWithSubtracted(vertex1, ray.getPosition())
+//                / normal.dotWithUnitOf(ray.getDirection());
+        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
+        if (distance <= 0 || distance >= curSmallestDist || !inRange(ray.pointAtDistance(distance))) {
+            return -1;
         }
-
-        if (inRange(ray.getPosition()
-                .addAtMagnitude(ray.getDirection(), distance))) {
-            return distance;
-        }
-        return -1;
+        return distance;
     }
 
     /**

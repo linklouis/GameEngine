@@ -4,6 +4,7 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.utilities.VectorLine3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
@@ -57,6 +58,15 @@ public class QuadGraphics extends RayTraceable {
                         new ModifierInstantiateParameter<>(
                                 "texture", RayTracingTexture.class,
                                 this::setTexture)
+                ),
+                new ArgumentContext(
+                        this::computeValues,
+                        new ModifierInstantiateParameter<>(
+                                "vertices", Vector3D[].class,
+                                this::setVertices),
+                        new ModifierInstantiateParameter<>(
+                                "texture", RayTracingTexture.class,
+                                this::setTexture)
                 )
         };
     }
@@ -79,15 +89,15 @@ public class QuadGraphics extends RayTraceable {
      * Precomputes values for collision checks
      */
     private void computeValues() {
-        planeXaxis = vertex2.subtract(vertex1);
-        planeYaxis = vertex3.subtract(vertex1);
+        calculatePlaneXaxis();
+        calculatePlaneYaxis();
 
         normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
 
         minPlaneX = Math.min(onPlane(vertex1).getX(), onPlane(vertex2).getX());
-        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
         maxPlaneX = Math.max(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
         maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
     }
 
@@ -118,20 +128,14 @@ public class QuadGraphics extends RayTraceable {
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(final Ray ray,
-                                    final double curSmallestDist) {
-        double distance = normal.dotWithSubtracted(vertex1, ray.getPosition())
-                / normal.dotWithUnitOf(ray.getDirection());
+    public double distanceToCollide(final Ray ray, final double curSmallestDist) {
+        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
 
-        if (distance <= 0 || distance >= curSmallestDist) {
-            return -1; // No collision with the plane
+        if (distance <= 0 || distance >= curSmallestDist || !inRange(ray, distance)) {
+            return -1;
         }
 
-        if (inRange(ray.getPosition()
-                .addAtMagnitude(ray.getDirection(), distance))) {
-            return distance;
-        }
-        return -1;
+        return distance;
     }
 
     /**
@@ -139,14 +143,18 @@ public class QuadGraphics extends RayTraceable {
      *
      * @return True if the point is within the vertices, otherwise false.
      */
-    public boolean inRange(final Vector3D point) {
-        Vector2D planeCoordinates = onPlane(point);
+    public boolean inRange(final VectorLine3D line, double distance) {
+        Vector2D planeCoordinates = onPlane(line, distance);
         return  minPlaneX <= planeCoordinates.getX() && maxPlaneX >= planeCoordinates.getX()
                 && minPlaneY <= planeCoordinates.getY() && maxPlaneY >= planeCoordinates.getY();
     }
 
     public Vector2D onPlane(Vector3D other) {
         return other.projectToPlane(planeXaxis, planeYaxis);
+    }
+
+    public Vector2D onPlane(final VectorLine3D line, double distance) {
+        return line.getPosition().projectToPlane(planeXaxis, planeYaxis, line.getDirection(), distance);
     }
 
 
@@ -229,6 +237,13 @@ public class QuadGraphics extends RayTraceable {
         this.vertex3 = vertex3;
     }
 
+    private void setVertices(Vector3D[] vertices) {
+        vertex1 = vertices[0];
+        vertex2 = vertices[1];
+        vertex3 = vertices[2];
+        vertex4 = vertices[3];
+    }
+
     public void setVertex1(Vector3D vertex1) {
         this.vertex1 = vertex1;
         computeValues();
@@ -236,7 +251,7 @@ public class QuadGraphics extends RayTraceable {
 
     public void setVertex2(Vector3D vertex2) {
         this.vertex2 = vertex2;
-        planeXaxis = vertex2.subtract(vertex1);
+        updateXVars();
 
         normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
@@ -244,10 +259,30 @@ public class QuadGraphics extends RayTraceable {
 
     public void setVertex3(Vector3D vertex3) {
         this.vertex3 = vertex3;
-        planeYaxis = vertex3.subtract(vertex1);
+        updateYVars();
 
         normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
+    }
+
+    public void updateYVars() {
+        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
+        maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
+        calculatePlaneYaxis();
+    }
+
+    public void updateXVars() {
+        minPlaneX = Math.min(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+        maxPlaneX = Math.max(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+        calculatePlaneXaxis();
+    }
+
+    public void calculatePlaneYaxis() {
+        planeYaxis = vertex4.subtract(vertex1);
+    }
+
+    public void calculatePlaneXaxis() {
+        planeXaxis = vertex2.subtract(vertex1);
     }
 
     public void setVertex4(Vector3D vertex) {

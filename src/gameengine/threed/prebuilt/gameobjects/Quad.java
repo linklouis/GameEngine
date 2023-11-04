@@ -15,6 +15,11 @@ public class Quad extends Polygon  {
         get(QuadGraphics.class).instantiate(this, point1, point2, point3, point4, texture);
     }
 
+    public Quad(Vector3D position, Vector3D displacement, RayTracingTexture texture) {
+        super(new QuadGraphics());
+        get(QuadGraphics.class).instantiate(this, generateVertices(position, displacement), texture);
+    }
+
 
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
@@ -23,6 +28,31 @@ public class Quad extends Polygon  {
                 add(QuadGraphics.class);
                 add(Visual3D.class);
             }
+        };
+    }
+
+    private static Vector3D[] generateVertices(Vector3D position,
+                                               Vector3D displacement) {
+        return new Vector3D[] {
+                position,
+                new Vector3D(
+                        position.getX() + displacement.getX(),
+                        position.getY()
+                                + (displacement.getZ() != 0 ?
+                                displacement.getY()
+                                : 0),
+                        position.getZ()),
+                new Vector3D(
+                        position.getX() + displacement.getX(),
+                        position.getY() + displacement.getY(),
+                        position.getZ() + displacement.getZ()),
+                new Vector3D(
+                        position.getX(),
+                        position.getY()
+                                + (displacement.getZ() == 0 ?
+                                displacement.getY()
+                                : 0),
+                        position.getZ() + displacement.getZ()),
         };
     }
 

@@ -8,13 +8,10 @@ import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
-import gameengine.threed.prebuilt.gameobjects.RectPlane;
-import gameengine.threed.prebuilt.gameobjects.TriRectangle;
-import gameengine.threed.prebuilt.gameobjects.Tri;
+import gameengine.threed.prebuilt.gameobjects.*;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
-import gameengine.threed.prebuilt.gameobjects.Sphere;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
@@ -28,7 +25,7 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 5;
+    private final int NUM_TO_TEST = 20;
     private RayTracedCamera mainCam;
 
 
@@ -60,6 +57,10 @@ public class RayTracing extends GameDriver3D {
 //        }
 //        System.exit(0);
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
+//        mainCam.setDirection(Vector3D.I);
+//        mainCam.setLocation(new Vector3D(-3, 0, 0));
+////        new RectPlane(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.RED, true)).initiate(this);
+//        newObject(new Quad(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.AQUA, true)));
         setupScene1();
     }
 
@@ -75,7 +76,7 @@ public class RayTracing extends GameDriver3D {
         TextureHelper.setAbsorption(0.2);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
-        new TriRectangle(-1, -2, -3, new Vector3D(2,2, 2),
+        new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 TextureHelper.newReflecting(Color.AZURE)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
