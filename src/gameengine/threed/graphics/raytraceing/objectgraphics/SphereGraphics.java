@@ -11,6 +11,7 @@ import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SphereGraphics extends RayTraceable {
     private double radius;
@@ -83,59 +84,112 @@ public class SphereGraphics extends RayTraceable {
      * @param lightRay The lightRay to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
      *                        not used for optimization for Spheres.
-     * @return -1 if never enters range or if collision is behind start.
+     * @return {@code NaN} if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
     public double distanceToCollide(Ray lightRay, double curSmallestDist) {
-//        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
-//        double a = radiusSquared - lightRay.getPosition().distanceSquared(getCenter());
-//        if (a < -b * b) {
-//            return -1;
-//        }
-//        if (b > 0) {
-//
-//        }
-//        double d = b * b + a;  // discriminant of quadratic
-//        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
-//        double d = b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter());
-//        return d >= 0 ? Math.sqrt(d) - b : -1;
-        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter()) / lightRay.getDirection().magnitude();
-        double d = b * b
-                - (lightRay.getPosition().distanceSquared(getCenter())
-                - radius * radius);  // discriminant of quadratic
-        if (d <= 0) {
-            return -1; // Solutions are complex, no intersections
-        }
-        return d - b;
+        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
 
+        return b > 0 ?
+                b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()))
+                :
+                Double.NaN;
+    }
+
+    public double distanceToCollideMoreTests(Ray lightRay, double curSmallestDist) {
+        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
+//        double a = lightRay.getPosition().distanceSquared(getCenter());
+
+        if (b > 0) {
+//            if ((!Double.isNaN(b - Math.sqrt(b * b + radiusSquared - a))) && b - Math.sqrt(b * b + radiusSquared - a) >= 0) {
+//                System.out.println("A " + (b - Math.sqrt(b * b + radiusSquared - a)));
+//            }
+//            return b - Math.sqrt(b * b + radiusSquared - a);
+            return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
+        }
+//        if (!Double.isNaN((b + Math.sqrt(b * b + radiusSquared - a))) && b + Math.sqrt(b * b + radiusSquared - a) >= 0) {
+//            System.out.println("B " + (b + Math.sqrt(b * b + radiusSquared - a)));
+//        }
+        return Double.NaN;//b + Math.sqrt(b * b + radiusSquared - a);
+//        if (a + Math.sqrt(b) > radiusSquared) {
+//            return Math.sqrt(d) + b;
+//        }
+//        return a + Math.sqrt(b) > radiusSquared ? Math.sqrt(d) + b : Double.NaN;
+    }
+
+
+    // TODO don't delete, testing.
+    public double distanceToCollideTests(Ray lightRay, double curSmallestDist) {
+//        System.out.println();
+        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter()) / lightRay.getDirection().magnitude();
+        double a = lightRay.getPosition().distanceSquared(getCenter());
+        double d = b * b - (a - radius * radius);  // discriminant of quadratic
+
+//        int path = 0;
+//
+//        if (d <= 0) {
+////            System.out.println("c");
+////            return -1; // Solutions are complex, no intersections
+//        } else {
+//
+//            d = Math.sqrt(d);
+//            double t1 = d - b;
+//            double t2 = -(d + b);
+//            if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
+////            System.out.println("a");
+//                path = 1;
+//            } else if (t2 > 0) {
+//                path = 2;
+////            System.out.println("b");
+//            }
+////        else {
+////            System.out.println("c");
+////        }
+//            d *= d;
+//        }
+
+        // Intersections exists
+        if (b < 0) {
+//            if (path != 2) {
+//                System.out.println("b");
+//                System.out.println(path);
+//                System.out.println(-Math.sqrt(d) - b);
+//            }
+            return -Math.sqrt(d) - b;
+        }
+        if (a + Math.sqrt(-b) > radiusSquared) {
+//            if (path != 1) {
+//                System.out.println("a");
+//            }
+            return Math.sqrt(d) - b;
+        }
+//        if (path != 0) {
+//            System.out.println("c");
+//        }
+        return a + Math.sqrt(-b) > radiusSquared ? Math.sqrt(d) - b : Double.NaN;
+
+//        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter()) / lightRay.getDirection().magnitude();
+//        double d = b * b
+//                - (lightRay.getPosition().distanceSquared(getCenter())
+//                - radius * radius);  // discriminant of quadratic
+//
 //        if (d <= 0) {
 //            return -1; // Solutions are complex, no intersections
 //        }
-//
-//        // Intersections exists
+
+
+        // Intersections exists
+//        double t1 = Math.sqrt(d) - b;
+//        if (b <= 0) {
+//            return -Math.sqrt(d) - b;
+//        }
+//        return t1 >= 0 ? t1 : -1;
+
+
 //        d = Math.sqrt(d);
-//        if (d > b) {
-//            if (b > 0) {
-//                return d - b;
-//            }
-////            if (b <= -d) {
-//                return -(d + b);
-////            }
-//        }
-//        if (d > 0) {
-//            return -1;
-//        }
-//        if (d <= -b) {
-//            return -(d + b);
-//        }
-//        return -1;
-
-
-
 //        double t1 = d - b;
 //        double t2 = -(d + b);
-//
 //        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
 //            return t1;
 //        }
@@ -144,6 +198,76 @@ public class SphereGraphics extends RayTraceable {
 //        }
 //        return -1;
     }
+
+//    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
+////        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
+////        double a = radiusSquared - lightRay.getPosition().distanceSquared(getCenter());
+////        if (a < -b * b) {
+////            return -1;
+////        }
+////        if (b > 0) {
+////
+////        }
+////        double d = b * b + a;  // discriminant of quadratic
+////        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
+////        double d = b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter());
+////        return d >= 0 ? Math.sqrt(d) - b : -1;
+//        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter()) / lightRay.getDirection().magnitude();
+//        double d = b * b
+//                - (lightRay.getPosition().distanceSquared(getCenter())
+//                - radius * radius);  // discriminant of quadratic
+//        if (d <= 0) {
+//            return -1; // Solutions are complex, no intersections
+//        }
+//        d = Math.sqrt(d);
+//        double t1 = d - b;
+//        double t2 = -(d + b);
+//
+//        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
+//            return t1 / 2;
+//        }
+//        if (t2 > 0) {
+//            return t2 / 2;
+//        }
+//        return -1;
+//
+////        if (d <= 0) {
+////            return -1; // Solutions are complex, no intersections
+////        }
+////
+////        // Intersections exists
+////        d = Math.sqrt(d);
+////        if (d > b) {
+////            if (b > 0) {
+////                return d - b;
+////            }
+//////            if (b <= -d) {
+////                return -(d + b);
+//////            }
+////        }
+////        if (d > 0) {
+////            return -1;
+////        }
+////        if (d <= -b) {
+////            return -(d + b);
+////        }
+////        return -1;
+//
+//
+//
+////        double t1 = d - b;
+////        double t2 = -(d + b);
+////
+////        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
+////            return t1;
+////        }
+////        if (t2 > 0) {
+////            return t2;
+////        }
+////        return -1;
+//    }
+
+
 //    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
 //        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter()) / lightRay.getDirection().magnitude();
 //        double d = b * b
@@ -167,6 +291,7 @@ public class SphereGraphics extends RayTraceable {
 //        }
 //        return -1;
 //    }
+
 //    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
 //        if (contains(lightRay.getPosition())) {
 //            return 0;

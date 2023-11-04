@@ -119,7 +119,7 @@ public class TriGraphics extends RayTraceable {
 //                / normal.dotWithUnitOf(ray.getDirection());
         double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
         if (distance <= 0 || distance >= curSmallestDist || !inRange(ray.pointAtDistance(distance))) {
-            return -1;
+            return Double.NaN;
         }
         return distance;
     }
