@@ -16,28 +16,28 @@ public final class RayPathTracer {
     }
 
     /**
-     * Finds the color of a single {@link LightRay} over the course of all it's
+     * Finds the color of a single {@link Ray} over the course of all it's
      * reflections.
      *
-     * @param currentLightRay The initial {@link LightRay} who's path to trace.
-     * @return The color of {@code currentLightRay} after all of its reflections.
+     * @param currentRay The initial {@link Ray} who's path to trace.
+     * @return The color of {@code currentRay} after all of its reflections.
      */
-    public static Vector3D getColor(final LightRay currentLightRay,
+    public static Vector3D getColor(final Ray currentRay,
                                     final int maxBounces,
                                     final RayIntersectableList objectsInField) {
         RayTraceable collision;
 
         for (int bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
+            collision = (RayTraceable) currentRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
             }
 
-            currentLightRay.reflect(collision, bounces);
+            currentRay.reflect(collision, bounces);
 
             if (collision.getTexture().isLightSource()) {
-                return currentLightRay.getColor();
+                return currentRay.getColor();
             }
         }
 
@@ -45,8 +45,8 @@ public final class RayPathTracer {
     }
 
     public static LinkedHashMap<RayTraceable, Ray> getCollisions(final Ray currentRay,
-                                                       final int maxBounces,
-                                                       final RayIntersectableList objectsInField) {
+                                                                 final int maxBounces,
+                                                                 final RayIntersectableList objectsInField) {
         LinkedHashMap<RayTraceable, Ray> map = new LinkedHashMap<>(maxBounces);
         RayTraceable collision;
 

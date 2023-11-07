@@ -79,34 +79,34 @@ public class SphereGraphics extends RayTraceable {
     }
 
     /**
-     * Finds the first intersection a lightRay would have with the Sphere.
+     * Finds the first intersection a lightLightRay would have with the Sphere.
      *
-     * @param lightRay The lightRay to find a collision with.
+     * @param lightLightRay The lightLightRay to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
      *                        not used for optimization for Spheres.
      * @return {@code NaN} if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
-        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
+    public double distanceToCollide(Ray ray, double curSmallestDist) {
+        double b = -ray.getDirection().dotWithSubtracted(ray.getPosition(), getCenter());
 
 //        if (b > 0) {
-            return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
+            return b - Math.sqrt(b * b + radiusSquared - ray.getPosition().distanceSquared(getCenter()));
 //        }
 //        return Double.NaN;
     }
 
-    public double distanceToCollideMoreTests(Ray lightRay, double curSmallestDist) {
-        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
-//        double a = lightRay.getPosition().distanceSquared(getCenter());
+    public double distanceToCollideMoreTests(Ray ray, double curSmallestDist) {
+        double b = -ray.getDirection().dotWithSubtracted(ray.getPosition(), getCenter());
+//        double a = ray.getPosition().distanceSquared(getCenter());
 
         if (b > 0) {
 //            if ((!Double.isNaN(b - Math.sqrt(b * b + radiusSquared - a))) && b - Math.sqrt(b * b + radiusSquared - a) >= 0) {
 //                System.out.println("A " + (b - Math.sqrt(b * b + radiusSquared - a)));
 //            }
 //            return b - Math.sqrt(b * b + radiusSquared - a);
-            return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
+            return b - Math.sqrt(b * b + radiusSquared - ray.getPosition().distanceSquared(getCenter()));
         }
 //        if (!Double.isNaN((b + Math.sqrt(b * b + radiusSquared - a))) && b + Math.sqrt(b * b + radiusSquared - a) >= 0) {
 //            System.out.println("B " + (b + Math.sqrt(b * b + radiusSquared - a)));
@@ -118,9 +118,9 @@ public class SphereGraphics extends RayTraceable {
 //        return a + Math.sqrt(b) > radiusSquared ? Math.sqrt(d) + b : Double.NaN;
     }
 
-    public double distanceToCollideTests(Ray lightRay, double curSmallestDist) {
-        double b = lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter()) / lightRay.getDirection().magnitude();
-        double a = lightRay.getPosition().distanceSquared(getCenter());
+    public double distanceToCollideTests(Ray ray, double curSmallestDist) {
+        double b = ray.getDirection().dotWithSubtracted(ray.getPosition(), getCenter()) / ray.getDirection().magnitude();
+        double a = ray.getPosition().distanceSquared(getCenter());
         double d = b * b - (a - radius * radius);  // discriminant of quadratic
 
 //        System.out.println();

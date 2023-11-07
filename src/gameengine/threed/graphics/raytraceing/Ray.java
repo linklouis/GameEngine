@@ -3,28 +3,75 @@ package gameengine.threed.graphics.raytraceing;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.utilities.RayIntersectable;
-import gameengine.threed.utilities.VectorLine3D;
-import gameengine.threed.utilities.VectorLineIntersectable;
 import gameengine.vectormath.Vector3D;
+import javafx.scene.paint.Color;
 
-public class Ray extends VectorLine3D {
+/**
+ * A single ray of light which starts at a point and moves in a direction until
+ * it hits a {@link RayTraceable}.
+ *
+ * @author Louis Link
+ * @since 1.0
+ */
+public class Ray {
+    /**
+     * The direction the {@code Line} moves.
+     */
+    protected Vector3D direction;
+    /**
+     * The current position of the {@code Line}.
+     */
+    protected Vector3D position;
+    private final Vector3D color;
 
-
+    /**
+     * Creates a new {@code Ray}.
+     *
+     * @param startPosition The initial position of the {@code Ray}.
+     * @param direction The direction the {@code Ray} will move in.
+     */
     public Ray(final Vector3D startPosition, final Vector3D direction) {
-        super(startPosition, direction);
+        this.direction = direction.unitVector();
+        this.position = startPosition;
+        color = new Vector3D(0);
     }
 
-    public Ray(Ray parent) {
-        super(parent.getPosition(), parent.getDirection());
+    public Ray(final Vector3D startPosition, final Vector3D direction, final Vector3D color) {
+        this.direction = direction.unitVector();
+        this.position = startPosition;
+        this.color = color;
     }
+
+    public Ray(final Vector3D startPosition, final Vector3D direction, final Color color) {
+        this.direction = direction.unitVector();
+        this.position = startPosition;
+        this.color = new Vector3D(color);
+    }
+
+    public Ray(final Vector3D startPosition, final Reflection reflection) {
+        this.direction = reflection.direction();
+        this.position = startPosition;
+        this.color = new Vector3D(reflection.color());
+    }
+
+    public Ray(final Ray parent) {
+        direction = parent.getDirection();
+        position = parent.getPosition();
+        color = parent.getColor();
+    }
+
+
+    /*
+     * Functionality:
+     */
 
     /**
      * Finds the first {@link RayTraceable} in {@code objectsInField} that the
-     * {@code LightRay} will hit.
+     * {@code Ray} will hit.
      *
-     * @param objectsInField The {@link RayTraceable}s that the {@code LightRay} can
+     * @param objectsInField The {@link RayTraceable}s that the {@code Ray} can
      *                       potentially collide with.
-     * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
+     * @return The closest {@link RayTraceable} the {@code Ray} can collide with.
      */
     public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
         double closestDist = Double.MAX_VALUE;
@@ -50,15 +97,15 @@ public class Ray extends VectorLine3D {
     }
 
     /**
-     * Finds whether {@code collider} is possible for the {@code LightRay} ray to
+     * Finds whether {@code collider} is possible for the {@code Ray} ray to
      * hit.
      *
-     * @param collider The {@link RayTraceable} to check if the {@code LightRay}'s
+     * @param collider The {@link RayTraceable} to check if the {@code Ray}'s
      *                 direction lines up with.
      * @return Whether {@code collider} is within 90 degrees of the direction of
-     * the {@code LightRay} from the {@code LightRay}'s initial position.
+     * the {@code Ray} from the {@code Ray}'s initial position.
      */
-    public boolean objectIsInDirection(final VectorLineIntersectable collider) {
+    public boolean objectIsInDirection(final RayIntersectable collider) {
         Vector3D toCenter = position.subtract(collider.getCenter());
         return !(getDirection().dotProduct(toCenter) > 0 && toCenter.magnitudeSquared() < 1);
 
@@ -73,7 +120,9 @@ public class Ray extends VectorLine3D {
      * @param collider The {@link RayTraceable} to reflect off of.
      */
     public void reflect(RayTraceable collider, int numBounces) {
-        direction = collider.reflection((LightRay) this).direction().unitVector();
+        Reflection reflectionDetails = collider.reflection(this);
+        direction = reflectionDetails.direction();
+        color.addMutable(reflectionDetails.color().scalarDivide(numBounces));
     }
 
     /**
@@ -86,6 +135,28 @@ public class Ray extends VectorLine3D {
      * reflecting off of {@code collider}.
      */
     public Ray getReflected(RayTraceable collider, int numBounces) {
-        return new Ray(position, collider.reflection((LightRay) this).direction().unitVector());
+        Reflection reflectionDetails = collider.reflection(this);
+        return new Ray(position, reflectionDetails.direction(), color.add(reflectionDetails.color().scalarDivide(numBounces)));
+    }
+
+    public Vector3D pointAtDistance(double distance) {
+        return position.add(direction.scalarMultiply(distance));
+    }
+
+
+    /*
+     * Utilities:
+     */
+
+    public Vector3D getDirection() {
+        return direction;
+    }
+
+    public Vector3D getPosition() {
+        return position;
+    }
+
+    public Vector3D getColor() {
+        return color;
     }
 }

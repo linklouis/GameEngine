@@ -275,8 +275,8 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
     }
 
-    private LightRay rayTo(final double x, final double y) {
-        return new LightRay(
+    private Ray rayTo(final double x, final double y) {
+        return new Ray(
                 getLocation(),
                 // Thx to ChatGPT:
                 getDirection().transformToNewCoordinates(
@@ -286,16 +286,16 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
 
     /*
-     ** LightRay Tracing:
+     ** Ray Tracing:
      */
 
     /**
      * @return The average color of each ray to measure based on
      * {@link #raysPerPixel}.
      */
-    private Color calculatePixelColor(final LightRay startLightRay,
+    private Color calculatePixelColor(final Ray startRay,
                                       final RayIntersectableList objectsInField) {
-        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -308,7 +308,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
                     RayPathTracer.getColor(
-                            startLightRay.getReflected(firstCollision, 1),
+                            startRay.getReflected(firstCollision, 1),
                             maxBounces,
                             objectsInField));
         }

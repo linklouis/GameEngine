@@ -2,7 +2,7 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
-import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.utilities.RayIntersectable;
@@ -39,8 +39,8 @@ public abstract class RayTraceable extends GraphicsObject3D implements RayInters
      * Functionality:
      */
 
-    public Reflection reflection(LightRay lightRay) {
-        return texture.reflection(lightRay, surfaceNormal(lightRay));
+    public Reflection reflection(Ray ray) {
+        return texture.reflection(ray, surfaceNormal(ray));
     }
 
 

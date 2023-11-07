@@ -3,7 +3,7 @@ package gameengine.threed.utilities;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 
-public interface RayIntersectable extends VectorLineIntersectable {
+public interface RayIntersectable {
     /**
      * Finds the first intersection a lightRay will have with the
      * {@code Collider3D}.
@@ -26,7 +26,9 @@ public interface RayIntersectable extends VectorLineIntersectable {
      */
     Vector3D surfaceNormal(Ray perspective);
 
-    default boolean willCollide(VectorLine3D line) {
-        return distanceToCollide((Ray) line, Double.MAX_VALUE) > 0;
+    default boolean willCollide(Ray ray) {
+        return distanceToCollide((Ray) ray, Double.MAX_VALUE) > 0;
     }
+
+    Vector3D getCenter();
 }

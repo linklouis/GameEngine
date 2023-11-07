@@ -1,6 +1,6 @@
 package gameengine.threed.graphics.raytraceing.textures;
 
-import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
@@ -23,7 +23,7 @@ public class ReflectingTexture extends RayTracingTexture {
     private static final double DEFAULT_ABSORPTION = 0.9;
 
     /**
-     * The likelihood for a {@code LightRay} to reflect.
+     * The likelihood for a {@code Ray} to reflect.
      * <p></p>
      * Range: [0, 1]<p>
      * 2: All {@code Rays} scatter.</p>
@@ -31,7 +31,7 @@ public class ReflectingTexture extends RayTracingTexture {
      */
     private final double reflectivity;
     /**
-     * The likelihood for a reflected {@code LightRay}'s color to be affected by the
+     * The likelihood for a reflected {@code Ray}'s color to be affected by the
      * reflection.
      * <p></p>
      * Range: [0, 1]<p>
@@ -79,17 +79,17 @@ public class ReflectingTexture extends RayTracingTexture {
     }
 
     /**
-     * Calculates how a light lightRay hitting the surface with a given angle should
+     * Calculates how a light ray hitting the surface with a given angle should
      * bounce given that the surface has the given normal vector.
      *
-     * @param lightRay The {@code LightRay} incident on the surface
-     * @param surfaceNormal The normal vector to the surface where the lightRay is
+     * @param ray The {@code Ray} incident on the surface
+     * @param surfaceNormal The normal vector to the surface where the ray is
      *                      hitting.
-     * @return The direction that the light lightRay should bounce as a
+     * @return The direction that the light ray should bounce as a
      *          {@link Vector3D}.
      */
     @Override
-    public Reflection reflection(final LightRay lightRay,
+    public Reflection reflection(final Ray ray,
                                  final Vector3D surfaceNormal) {
         if (ThreadLocalRandom.current().nextDouble() > reflectivity) {
             return new Reflection(
@@ -99,11 +99,11 @@ public class ReflectingTexture extends RayTracingTexture {
 
         if (ThreadLocalRandom.current().nextDouble() > absorption) {
             return new Reflection(
-                    reflectRay(lightRay.getDirection(), surfaceNormal),
+                    reflectRay(ray.getDirection(), surfaceNormal),
                     colorVector());
         }
         return new Reflection(
-                reflectRay(lightRay.getDirection(), surfaceNormal),
+                reflectRay(ray.getDirection(), surfaceNormal),
                 new Vector3D(0));
     }
 

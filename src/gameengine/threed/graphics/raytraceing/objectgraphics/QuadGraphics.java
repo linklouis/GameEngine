@@ -4,7 +4,6 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.utilities.VectorLine3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
@@ -143,7 +142,7 @@ public class QuadGraphics extends RayTraceable {
      *
      * @return True if the point is within the vertices, otherwise false.
      */
-    public boolean inRange(final VectorLine3D line, double distance) {
+    public boolean inRange(final Ray line, double distance) {
         Vector2D planeCoordinates = onPlane(line, distance);
         return  minPlaneX <= planeCoordinates.getX() && maxPlaneX >= planeCoordinates.getX()
                 && minPlaneY <= planeCoordinates.getY() && maxPlaneY >= planeCoordinates.getY();
@@ -153,7 +152,7 @@ public class QuadGraphics extends RayTraceable {
         return other.projectToPlane(planeXaxis, planeYaxis);
     }
 
-    public Vector2D onPlane(final VectorLine3D line, double distance) {
+    public Vector2D onPlane(final Ray line, double distance) {
         return line.getPosition().projectToPlane(planeXaxis, planeYaxis, line.getDirection(), distance);
     }
 
