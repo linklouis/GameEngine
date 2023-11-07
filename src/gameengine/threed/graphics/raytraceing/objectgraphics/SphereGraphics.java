@@ -4,18 +4,18 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class SphereGraphics extends RayTraceable {
     private double radius;
     private double radiusSquared;
-    InPlane3D position = null;
+    Supplier<Vector3D> positionSupplier = null;
 
 
     /*
@@ -33,7 +33,6 @@ public class SphereGraphics extends RayTraceable {
     public List<Class<? extends Modifier>> getDependencies() {
         return new ArrayList<>() {
             {
-                add(InPlane3D.class);
             }
         };
     }
@@ -52,7 +51,10 @@ public class SphereGraphics extends RayTraceable {
                                 this::setRadius),
                         new ModifierInstantiateParameter<>(
                                 "texture", RayTracingTexture.class,
-                                this::setTexture)
+                                this::setTexture),
+                        new ModifierInstantiateParameter<>(
+                                "positionSupplier", Supplier.class,
+                                this::setPositionSupplier)
                 )
         };
     }
@@ -64,7 +66,6 @@ public class SphereGraphics extends RayTraceable {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        position = getFromParent(InPlane3D.class);
     }
 
 
@@ -198,7 +199,7 @@ public class SphereGraphics extends RayTraceable {
 
     @Override
     public Vector3D getCenter() {
-        return position.getLocation();
+        return positionSupplier.get();
     }
 
     public boolean contains(Vector3D point) {
@@ -217,5 +218,9 @@ public class SphereGraphics extends RayTraceable {
     public void setRadius(double radius) {
         this.radius = radius;
         radiusSquared = radius * radius;
+    }
+
+    public void setPositionSupplier(Supplier<Vector3D> supplier) {
+        positionSupplier = supplier;
     }
 }

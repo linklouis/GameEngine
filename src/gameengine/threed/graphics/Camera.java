@@ -2,7 +2,6 @@ package gameengine.threed.graphics;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.embed.swing.SwingFXUtils;
@@ -22,6 +21,7 @@ import java.util.*;
  * @since 1.0
  */
 public abstract class Camera<VisualType extends GraphicsObject3D> extends GameObject {
+    private Vector3D position;
     /**
      * a {@link Vector3D} representing the amount the {@code Camera} is facing
      * in each direction.
@@ -55,10 +55,9 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     public Camera(Vector3D position, Vector3D direction,
                   final Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
-        super(new InPlane3D());
+        super();
         this.visualType = visualType;
-        get(InPlane3D.class).instantiate(this, position);
-
+        this.position = position;
         this.direction = direction.unitVector();
         image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
         setFieldOfViewDegrees(fieldOfViewDegrees);
@@ -66,10 +65,9 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     public Camera(double x, double y, double z, Vector3D direction,
                   Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
-        super(new InPlane3D());
+        super();
         this.visualType = visualType;
-        get(InPlane3D.class).instantiate(this, x, y, z);
-
+        this.position = new Vector3D(x, y, z);
         this.direction = direction.unitVector();
         image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
         setFieldOfViewDegrees(fieldOfViewDegrees);
@@ -77,10 +75,9 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     public Camera(double x, double y, double z, Vector3D direction,
                   int imageWidth, int imageHeight, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
-        super(new InPlane3D());
+        super();
         this.visualType = visualType;
-        get(InPlane3D.class).instantiate(this, x, y, z);
-
+        this.position = new Vector3D(x, y, z);
         this.direction = direction.unitVector();
         image = new WritableImage(imageWidth, imageHeight);
         setFieldOfViewDegrees(fieldOfViewDegrees);
@@ -88,11 +85,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>() {
-            {
-                add(InPlane3D.class);
-            }
-        };
+        return new ArrayList<>();
     }
 
 
@@ -110,8 +103,8 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      */
     public boolean update(Collection<VisualType> renderableObjects) {
         if (updateNeeded) {
-//            renderImage(renderableObjects);
-            renderWithProcessing(renderableObjects);
+            renderImage(renderableObjects);
+//            renderWithProcessing(renderableObjects);
             updateNeeded = false;
             return true;
         }
@@ -218,11 +211,11 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     }
 
     public Vector3D getLocation() {
-        return get(InPlane3D.class).getLocation();
+        return position;
     }
 
     public void setLocation(Vector3D newLocation) {
-        get(InPlane3D.class).setLocation(newLocation);
+        position = newLocation;
     }
 
     public WritableImage getImage() {

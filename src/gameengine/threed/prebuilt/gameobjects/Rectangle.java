@@ -4,7 +4,6 @@ import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -21,16 +20,16 @@ public class Rectangle extends PolyObject<Quad> {
 
     public Rectangle(double x, double y, double z, Vector3D space,
                      RayTracingTexture texture) {
-        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]), new InPlane3D());
-        get(InPlane3D.class).instantiate(this, x, y, z);
+        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]));
+
         setTexture(texture);
     }
 
     public Rectangle(double x, double y, double z, Vector3D space, Color color,
                      boolean isLightSource) {
-        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]), new InPlane3D());
+        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]));
+
         setTexture(new ReflectingTexture(color, isLightSource, 0));
-        get(InPlane3D.class).instantiate(this, x, y, z);
     }
 
     private static Vector3D[] generateVertices(double x, double y, double z,
@@ -70,11 +69,7 @@ public class Rectangle extends PolyObject<Quad> {
 
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>() {
-            {
-                add(InPlane3D.class);
-            }
-        };
+        return new ArrayList<>();
     }
 
     @Override

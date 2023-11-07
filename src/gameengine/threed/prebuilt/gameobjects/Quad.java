@@ -19,6 +19,11 @@ public class Quad extends Polygon  {
         get(QuadGraphics.class).instantiate(this, generateVertices(position, displacement), texture);
     }
 
+    public Quad(double x, double y, double z, Vector3D displacement, RayTracingTexture texture) {
+        super(new QuadGraphics());
+        get(QuadGraphics.class).instantiate(this, generateVertices(new Vector3D(x, y, z), displacement), texture);
+    }
+
 
     @Override
     public List<Class<? extends Modifier>> getDependencies() {

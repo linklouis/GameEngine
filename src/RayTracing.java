@@ -55,7 +55,7 @@ public class RayTracing extends GameDriver3D {
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
 //        mainCam.setDirection(Vector3D.I);
 //        mainCam.setLocation(new Vector3D(-3, 0, 0));
-////        new RectPlane(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.RED, true)).initiate(this);
+////        new Quad(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.RED, true)).initiate(this);
 //        newObject(new Quad(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.AQUA, true)));
 //        testSphere();
 
@@ -119,25 +119,25 @@ public class RayTracing extends GameDriver3D {
         double wallSize = 10;
         double hWallSize = wallSize / 2;
         // Back
-        new RectPlane(hWallSize, -hWallSize, -hWallSize,
+        newObject(new Quad(hWallSize, -hWallSize, -hWallSize,
                 new Vector3D(0, wallSize, wallSize),
-                TextureHelper.newReflecting(Color.RED)).initiate(this);
+                TextureHelper.newReflecting(Color.RED)));
         // Left
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize,
+        newObject(new Quad(-hWallSize, -hWallSize, -hWallSize,
                 new Vector3D(wallSize, 0, wallSize),
-                TextureHelper.newReflecting(Color.BLUE)).initiate(this);
+                TextureHelper.newReflecting(Color.BLUE)));
         // Right
-        new RectPlane(-hWallSize, hWallSize, -hWallSize,
+        newObject(new Quad(-hWallSize, hWallSize, -hWallSize,
                 new Vector3D(wallSize, 0, wallSize),
-                TextureHelper.newReflecting(Color.BLUE)).initiate(this);
+                TextureHelper.newReflecting(Color.BLUE)));
         // Bottom
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize,
+        newObject(new Quad(-hWallSize, -hWallSize, -hWallSize,
                 new Vector3D(wallSize, wallSize, 0),
-                TextureHelper.newReflecting(Color.GREEN)).initiate(this);
+                TextureHelper.newReflecting(Color.GREEN)));
         // Top
-        new RectPlane(-hWallSize, -hWallSize, hWallSize,
+        newObject(new Quad(-hWallSize, -hWallSize, hWallSize,
                 new Vector3D(wallSize, wallSize, 0),
-                TextureHelper.newReflecting(Color.GREEN)).initiate(this);
+                TextureHelper.newReflecting(Color.GREEN)));
 
         // Backlight
         newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
@@ -157,17 +157,17 @@ public class RayTracing extends GameDriver3D {
         setupBoundingBox(size * 2, TextureHelper.newReflecting(Color.BLUE));
 
         // Grass
-        new RectPlane(0, -size, 0,
+        newObject(new Quad(0, -size, 0,
                 new Vector3D(size, size - pathWidth/2, 0),
-                TextureHelper.newReflecting(Color.GREEN)).initiate(this);
-        new RectPlane(0, size, 0,
+                TextureHelper.newReflecting(Color.GREEN)));
+        newObject(new Quad(0, size, 0,
                 new Vector3D(size, -size + pathWidth/2, 0),
-                TextureHelper.newReflecting(Color.GREEN)).initiate(this);
+                TextureHelper.newReflecting(Color.GREEN)));
 
         // Path
-        new RectPlane(0, -pathWidth/2, 0,
+        newObject(new Quad(0, -pathWidth/2, 0,
                 new Vector3D(size, pathWidth, 0),
-                TextureHelper.newReflecting(Color.SANDYBROWN)).initiate(this);
+                TextureHelper.newReflecting(Color.SANDYBROWN)));
 
         // Sun
         newObject(new Sphere(10, 0, 80, 30, Color.YELLOW, true));
@@ -289,10 +289,10 @@ public class RayTracing extends GameDriver3D {
         TextureHelper.setRandomness(20);
         TextureHelper.setReflectivity(0.1);
 
-        new RectPlane(
+        newObject(new Quad(
                 0, -5, 0, new Vector3D(5, 10, 0),
                 TextureHelper.newSubsurface(Color.BLUE)
-        ).initiate(this);
+        ));
 
         newObject(light);
     }
@@ -309,12 +309,12 @@ public class RayTracing extends GameDriver3D {
 
     private void setupBoundingBox(double wallSize, RayTracingTexture texture) {
         double hWallSize = wallSize / 2;
-        new RectPlane(hWallSize, -hWallSize, -hWallSize, new Vector3D(0, wallSize, wallSize), texture).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(0, wallSize, wallSize), texture).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), texture).initiate(this);
-        new RectPlane(-hWallSize, hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), texture).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, wallSize, 0), texture).initiate(this);
-        new RectPlane(-hWallSize, -hWallSize, hWallSize, new Vector3D(wallSize, wallSize, 0), texture).initiate(this);
+        newObject(new Quad(hWallSize, -hWallSize, -hWallSize, new Vector3D(0, wallSize, wallSize), texture));
+        newObject(new Quad(-hWallSize, -hWallSize, -hWallSize, new Vector3D(0, wallSize, wallSize), texture));
+        newObject(new Quad(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), texture));
+        newObject(new Quad(-hWallSize, hWallSize, -hWallSize, new Vector3D(wallSize, 0, wallSize), texture));
+        newObject(new Quad(-hWallSize, -hWallSize, -hWallSize, new Vector3D(wallSize, wallSize, 0), texture));
+        newObject(new Quad(-hWallSize, -hWallSize, hWallSize, new Vector3D(wallSize, wallSize, 0), texture));
     }
 
     private void initDebugVisuals() {
