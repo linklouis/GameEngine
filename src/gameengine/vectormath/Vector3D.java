@@ -91,7 +91,7 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public double dotWithSubtracted(final Vector3D v1, final Vector3D v2) {
-        return x * (v1.x - v2.x)
+        return    x * (v1.x - v2.x)
                 + y * (v1.y - v2.y)
                 + z * (v1.z - v2.z);
     }
@@ -99,13 +99,13 @@ public class Vector3D implements Vector<Vector3D> {
     public double distToCollidePlane(final Vector3D vertex, final Vector3D position, final Vector3D direction) {
 //        normal.dotWithSubtracted(vertex1, ray.getPosition())
 //                / normal.dotWithUnitOf(ray.getDirection())
-        return (x * (vertex.x - position.x)
+        return (  x * (vertex.x - position.x)
                 + y * (vertex.y - position.y)
                 + z * (vertex.z - position.z))
                 /
-                (x * (direction.x)
-                        + y * (direction.y)
-                        + z * (direction.z));
+                (  x * direction.x
+                 + y * direction.y
+                 + z * direction.z);
     }
 
     public Vector3D addAtMagnitude(final Vector3D other, final double newMagnitude) {
@@ -177,6 +177,12 @@ public class Vector3D implements Vector<Vector3D> {
         return magnitude;
     }
 
+    public double magnitudeSquared() {
+        return x * x
+                + y * y
+                + z * z;
+    }
+
     public void computeMagnitude() {
         if (Double.isNaN(magnitude)) {
             magnitude = Math.sqrt(
@@ -193,6 +199,13 @@ public class Vector3D implements Vector<Vector3D> {
                 y / magnitude(),
                 z / magnitude()
         );
+    }
+
+    public Vector3D unitVectorMutable() {
+        x /= magnitude();
+        y /= magnitude();
+        z /= magnitude();
+        return this;
     }
 
     @Override

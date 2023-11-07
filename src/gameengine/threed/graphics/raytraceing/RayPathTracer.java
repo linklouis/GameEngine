@@ -28,7 +28,7 @@ public final class RayPathTracer {
         RayTraceable collision;
 
         for (int bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentLightRay.firstCollision(objectsInField);
+            collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;
@@ -51,7 +51,7 @@ public final class RayPathTracer {
         RayTraceable collision;
 
         for (int bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentRay.firstCollision(objectsInField);
+            collision = (RayTraceable) currentRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return null;

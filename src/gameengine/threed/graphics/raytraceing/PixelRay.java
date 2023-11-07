@@ -62,7 +62,7 @@ public class PixelRay {
      * {@link #numIterations}.
      */
     public Color getFinalColor() {
-        RayTraceable firstCollision = startLightRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -97,7 +97,7 @@ public class PixelRay {
         Vector3D color = new Vector3D(col);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentLightRay.firstCollision(objectsInField);
+            collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;

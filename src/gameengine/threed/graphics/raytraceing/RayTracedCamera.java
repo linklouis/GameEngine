@@ -300,7 +300,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      */
     private Color calculatePixelColor(final LightRay startLightRay,
                                       final RayIntersectableList objectsInField) {
-        RayTraceable firstCollision = startLightRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;

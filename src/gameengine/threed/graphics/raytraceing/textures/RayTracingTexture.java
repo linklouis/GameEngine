@@ -7,14 +7,15 @@ import javafx.scene.paint.Color;
 
 public abstract class RayTracingTexture {
     private Color color;
-    private boolean lightSource = false;
+    private boolean lightSource;
 
     public RayTracingTexture(Color color, boolean isLightSource) {
         this.color = color;
         this.lightSource = isLightSource;
     }
 
-    public abstract Reflection reflection(LightRay lightRayDirection, Vector3D surfaceNormal);
+    public abstract Reflection reflection(final LightRay lightRayDirection,
+                                          final Vector3D surfaceNormal);
 
     protected Vector3D scatterRay(Vector3D surfaceNormal) {
         Vector3D reflection = Vector3D.random(-1, 1);
@@ -24,12 +25,12 @@ public abstract class RayTracingTexture {
         return reflection;
     }
 
-    protected Vector3D reflectRay(Vector3D rayDirection, Vector3D surfaceNormal) {
-        surfaceNormal = surfaceNormal.unitVector();
+    protected Vector3D reflectRay(final Vector3D rayDirection,
+                                  final Vector3D surfaceNormal) {
         return rayDirection.subtract(
-                surfaceNormal
-                        .scalarMultiply(2
-                                * rayDirection.dotProduct(surfaceNormal)));
+                surfaceNormal.scalarMultiply(
+                        2 * rayDirection.dotProduct(surfaceNormal)
+                                / Math.pow(surfaceNormal.magnitude(), 2)));
     }
 
 

@@ -25,7 +25,7 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 20;
+    private final int NUM_TO_TEST = 100;
     private RayTracedCamera mainCam;
 
 
@@ -37,7 +37,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                         new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                        10, 10, false, 70)),
+                        10, 10, true, 70/*160*/)),
                 new PhysicsEngine3D());
     }
 
@@ -61,6 +61,8 @@ public class RayTracing extends GameDriver3D {
 //        mainCam.setLocation(new Vector3D(-3, 0, 0));
 ////        new RectPlane(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.RED, true)).initiate(this);
 //        newObject(new Quad(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.AQUA, true)));
+//        testSphere();
+
         setupScene1();
     }
 
@@ -68,6 +70,22 @@ public class RayTracing extends GameDriver3D {
     /*
      * Scene Setup:
      */
+
+    private void testSphere() {
+//        newObject(new Sphere(0,0,0, 2, new BaseTexture(Color.RED, false)));
+//        newObject(new Sphere(new Vector3D(-5, -5, -5), /*new Vector3D(-10, -10, 10)*/5, new BaseTexture(Color.WHITE, true)));
+
+//        mainCam.setLocation(spiral(Math.TAU, angle).scalarMultiply(5));//new Vector3D(Math.cos(angle), Math.sin(angle), Math.cos(angle) * Math.sin(angle)).scalarMultiply(10));
+//        mainCam.setDirection(mainCam.getLocation().atMagnitude(-1));
+//        mainCam.setLocation(new Vector3D(0, -10, 10));
+        newObject(new Sphere(0,0,0,2, new BaseTexture(Color.WHITE, true)));
+        mainCam.setLocation(new Vector3D(0));
+        mainCam.setDirection(new Vector3D(0.1, 0, 0));//mainCam.getLocation().atMagnitude(-1)));
+        for (double angle = 0; angle < Math.TAU * Math.TAU * 2; angle += 0.07) {
+            newObject(new Sphere(spiral(Math.TAU, angle).scalarMultiply(5), 0.2, new BaseTexture(spiral(Math.TAU, angle).toColor(), true)));
+//            newObject(new Sphere(spiral(Math.TAU, angle).scalarMultiply(5), 0.2, new BaseTexture(spiral(Math.TAU, angle).toColor(), false)));
+        }
+    }
 
     private void setupScene1() {
 //        TextureHelper.setMinimumReflectingAngle(45);
@@ -481,10 +499,29 @@ public class RayTracing extends GameDriver3D {
         }
     }
 
+    double angle = 0;
+
+    private Vector3D spiral(double length, double distance) {
+        double sin = Math.sin(Math.PI - distance / length);
+        return new Vector3D(
+                sin * Math.cos(Math.PI * distance),
+                sin * Math.sin(Math.PI * distance),
+                Math.cos(Math.PI - distance/length)
+        );
+    }
     @Override
     public void updateGame() {
-        InPlane3D lightLoc = light.get(InPlane3D.class);
-        lightLoc.updateLocation(new Vector3D(0, 0, 0.3));
+//        if (mainCam.getFieldOfViewDegrees() < 180) {
+//            mainCam.setFieldOfViewDegrees(mainCam.getFieldOfViewDegrees() + 2);
+//        }
+//        InPlane3D lightLoc = light.get(InPlane3D.class);
+//        lightLoc.updateLocation(new Vector3D(0, 0, 0.3));
+//        mainCam.setLocation(spiral(Math.TAU, angle).scalarMultiply(5));//new Vector3D(Math.cos(angle), Math.sin(angle), Math.cos(angle) * Math.sin(angle)).scalarMultiply(10));
+//        mainCam.setDirection(mainCam.getLocation().atMagnitude(-1));
+
+//        mainCam.setDirection(spiral(Math.TAU, angle));
+//        angle += 0.1;
+
 //        mainCam.setLocation(mainCam.getLocation().add(new Vector3D(0, 0.15, 0)));
 //        mainCam.setDirection(mainCam.getDirection().add(new Vector3D(0, -0.01, 0)));
 //        for (GraphicsObject3D object : getGraphicsDriver().getCameraObjects()) {

@@ -56,7 +56,7 @@ public final class PixelRayStatic {
                                       final int maxBounces,
                                       final int numIterations,
                                       final RayIntersectableList objectsInField) {
-        RayTraceable firstCollision = startLightRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -95,7 +95,7 @@ public final class PixelRayStatic {
         Vector3D color = new Vector3D(col);
 
         for (double bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = currentLightRay.firstCollision(objectsInField);
+            collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
                 return BLACK;

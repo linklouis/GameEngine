@@ -35,6 +35,11 @@ public class LightRay extends Ray {
         this.color = new Vector3D(color);
     }
 
+    public LightRay(final Vector3D startPosition, final Reflection reflection) {
+        super(startPosition, reflection.direction());
+        this.color = new Vector3D(reflection.color());
+    }
+
 
     /*
      * Functionality:
@@ -49,7 +54,7 @@ public class LightRay extends Ray {
     @Override
     public void reflect(RayTraceable collider, int numBounces) {
         Reflection reflectionDetails = collider.reflection(this);
-        direction = reflectionDetails.direction().unitVector();
+        direction = reflectionDetails.direction().unitVectorMutable();
         color.addMutable(reflectionDetails.color().scalarDivide(numBounces));
     }
 
@@ -64,9 +69,10 @@ public class LightRay extends Ray {
      */
     @Override
     public LightRay getReflected(RayTraceable collider, int numBounces) {
-        Reflection reflectionDetails = collider.reflection(this);
-        return new LightRay(position, reflectionDetails.direction(),
-                reflectionDetails.color().scalarDivide(numBounces));
+        return new LightRay(position, collider.reflection(this));
+//        Reflection reflectionDetails = collider.reflection(this);
+//        return new LightRay(position, reflectionDetails.direction(),
+//                reflectionDetails.color().scalarDivide(numBounces));
     }
 
 

@@ -2,11 +2,14 @@ package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.utilities.RayIntersectable;
 import gameengine.threed.utilities.VectorLine3D;
 import gameengine.threed.utilities.VectorLineIntersectable;
 import gameengine.vectormath.Vector3D;
 
 public class Ray extends VectorLine3D {
+
+
     public Ray(final Vector3D startPosition, final Vector3D direction) {
         super(startPosition, direction);
     }
@@ -23,18 +26,15 @@ public class Ray extends VectorLine3D {
      *                       potentially collide with.
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
-    public RayTraceable firstCollision(final RayIntersectableList objectsInField) {
+    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
         double closestDist = Double.MAX_VALUE;
-        VectorLineIntersectable closest = null;
+        RayIntersectable closest = null;
         double newDistance;
 
         for (RayIntersectableList.Element element = objectsInField.getHead();
              element != null; element = element.next()) {
-
             if (objectIsInDirection(element.value())) {
-                newDistance = element.value()
-                        .distanceToCollide(this, closestDist);
-
+                newDistance = element.value().distanceToCollide(this, closestDist);
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.value();
@@ -43,10 +43,10 @@ public class Ray extends VectorLine3D {
         }
 
         if (closest != null) {
-            position = position.add(direction.atMagnitude(closestDist - 0.01));
+            position = position.addMultiplied(direction,closestDist - 0.01);
         }
 
-        return (RayTraceable) closest;
+        return closest;
     }
 
     /**
@@ -59,10 +59,11 @@ public class Ray extends VectorLine3D {
      * the {@code LightRay} from the {@code LightRay}'s initial position.
      */
     public boolean objectIsInDirection(final VectorLineIntersectable collider) {
-//        Vector3D toCenter = position.subtract(collider.getCenter());
+        Vector3D toCenter = position.subtract(collider.getCenter());
+        return !(getDirection().dotProduct(toCenter) > 0 && toCenter.magnitudeSquared() < 1);
 
-        return !(getDirection().dotWithSubtracted(position, collider.getCenter()) > 0
-                && Math.abs(position.distance(collider.getCenter())/*toCenter.magnitude()*/) < 1);
+//        return !(getDirection().dotWithSubtracted(position, collider.getCenter()) > 0
+//                && Math.abs(position.distance(collider.getCenter())/*toCenter.magnitude()*/) < 1);
     }
 
     /**
