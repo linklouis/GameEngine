@@ -270,10 +270,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                               final RayIntersectableList objects) {
         for (int x = startX; x < startX + width; x++) {
             for (int y = startY; y < startY + height; y++) {
-//                writer.setColor(x, y, new PixelRay(
-//                        new LightRay(getLocation(), getRayPath(x, y)),
-//                        maxBounces, raysPerPixel, objects).getFinalColor()
-//                );
                 writer.setColor(x, y, calculatePixelColor(rayTo(x, y), objects));
             }
         }

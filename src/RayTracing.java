@@ -90,7 +90,7 @@ public class RayTracing extends GameDriver3D {
         TextureHelper.setAbsorption(0.2);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
-        new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
+        new Rectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 TextureHelper.newReflecting(Color.AZURE)).initiate(this);
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
@@ -204,7 +204,7 @@ public class RayTracing extends GameDriver3D {
 
         newObject(new Sphere(0, 0, 18, 7, new ReflectingTexture(Color.WHITE, true, 0)));
 
-        new TriRectangle(0, 0, 0, new Vector3D(2, 3, 4), new ReflectingTexture(Color.RED, false, reflectivity)).initiate(this);
+        new Rectangle(0, 0, 0, new Vector3D(2, 3, 4), new ReflectingTexture(Color.RED, false, reflectivity)).initiate(this);
 
 //        for (RayTraceable collider : getGraphicsDriver().getVisualObjects()) {
 //            System.out.println(collider.getFromParent(Collider3D.class).getAppearance());
@@ -367,7 +367,7 @@ public class RayTracing extends GameDriver3D {
     private void setupRandRect(final double range,
                                final Function<Color, RayTracingTexture>
                                        textureSupplier) {
-        new TriRectangle(
+        new Rectangle(
                 randomInRange(range), randomInRange(range), randomInRange(range),
                 Vector3D.random(-range, range),
                 textureSupplier.apply(Vector3D.random(0, 1).toColor())

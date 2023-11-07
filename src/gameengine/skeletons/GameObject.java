@@ -11,11 +11,6 @@ public abstract class GameObject {
         modifiers = new Modifier[0];
     }
 
-
-//    public gameengine.skeletons.GameObject(gameengine.skeletons.Modifier[] modifiers) {
-//        this.modifiers = modifiers;
-//    }
-
     public GameObject(Modifier... modifiers) {
         this.modifiers = modifiers;
     }
@@ -49,9 +44,6 @@ public abstract class GameObject {
 
         List<Class<? extends Modifier>> noRepeats = new ArrayList<>();
         for (Class<? extends Modifier> modifierClass : dependantClasses) {
-//            if (!noRepeats.contains(modifierClass)) {
-//                noRepeats.add(modifierClass);
-//            }
             boolean contains = false;
             for (Class<? extends Modifier> modifierClass1 : noRepeats) {
                 if (modifierClass.equals(modifierClass1)) {
