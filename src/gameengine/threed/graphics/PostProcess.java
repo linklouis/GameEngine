@@ -1,4 +1,4 @@
-package gameengine.experimental;
+package gameengine.threed.graphics;
 
 import javafx.scene.image.WritableImage;
 

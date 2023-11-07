@@ -3,7 +3,7 @@ package gameengine.threed.graphics;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.skeletons.Visual;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
+import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 

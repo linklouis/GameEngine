@@ -9,8 +9,6 @@ import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.*;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
-import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
@@ -37,8 +35,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D(SIZE, SIZE,
                 new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                         new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                        10, 10, true, 70/*160*/)),
-                new PhysicsEngine3D());
+                        10, 10, true, 70/*160*/)));
     }
 
     public static void main(String[] args) {

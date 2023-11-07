@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver, PhysicsEngineType extends PhysicsEngine> extends Application {
+public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver> extends Application {
     private final List<GameObject> objects = new ArrayList<>();
     private final GraphicsDriverType graphicsDriver;
-    private final PhysicsEngineType physicsEngine;
     private AnimationTimer animationTimer;
     private final String name;
 
@@ -25,17 +24,13 @@ public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver, Phys
      * Construction:
      */
 
-    public GameDriver(GraphicsDriverType graphicsDriver, PhysicsEngineType physicsEngine) {
+    public GameDriver(GraphicsDriverType graphicsDriver) {
         this.graphicsDriver = graphicsDriver;
-        this.physicsEngine = physicsEngine;
-        physicsEngine.setFrameRateSupplier(getFrameRateSupplier());
         name = "New Game";
     }
 
-    public GameDriver(String name, GraphicsDriverType graphicsDriver, PhysicsEngineType physicsEngine) {
+    public GameDriver(String name, GraphicsDriverType graphicsDriver) {
         this.graphicsDriver = graphicsDriver;
-        this.physicsEngine = physicsEngine;
-        physicsEngine.setFrameRateSupplier(getFrameRateSupplier());
         this.name = name;
     }
 
@@ -65,7 +60,6 @@ public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver, Phys
                 updateFrameRateCounter(now);
 
                 updateGame();
-                physicsEngine.updateObjects();
                 graphicsDriver.updateGraphics();
             }
         };
@@ -101,10 +95,6 @@ public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver, Phys
 
     public GraphicsDriverType getGraphicsDriver() {
         return graphicsDriver;
-    }
-
-    public PhysicsEngineType getPhysicsEngine() {
-        return physicsEngine;
     }
 
     public String getName() {

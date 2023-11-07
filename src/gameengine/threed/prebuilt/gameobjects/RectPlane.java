@@ -4,8 +4,7 @@ import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
-import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
+import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

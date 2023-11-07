@@ -4,14 +4,13 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
+import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SphereGraphics extends RayTraceable {
     private double radius;

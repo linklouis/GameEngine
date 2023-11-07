@@ -1,4 +1,4 @@
-package gameengine.threed.prebuilt.objectmovement.collisions;
+package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.drivers.GameDriver3D;
 import gameengine.skeletons.GameObject;

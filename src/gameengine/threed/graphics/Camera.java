@@ -1,10 +1,8 @@
 package gameengine.threed.graphics;
 
-import gameengine.experimental.PostProcess;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
-import gameengine.twod.graphics.Visual2D;
+import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.embed.swing.SwingFXUtils;
@@ -57,7 +55,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     public Camera(Vector3D position, Vector3D direction,
                   final Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
-        super(new InPlane3D(), new Visual2D());
+        super(new InPlane3D());
         this.visualType = visualType;
         get(InPlane3D.class).instantiate(this, position);
 
@@ -68,7 +66,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     public Camera(double x, double y, double z, Vector3D direction,
                   Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
-        super(new InPlane3D(), new Visual2D());
+        super(new InPlane3D());
         this.visualType = visualType;
         get(InPlane3D.class).instantiate(this, x, y, z);
 
@@ -79,7 +77,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
 
     public Camera(double x, double y, double z, Vector3D direction,
                   int imageWidth, int imageHeight, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
-        super(new InPlane3D(), new Visual2D());
+        super(new InPlane3D());
         this.visualType = visualType;
         get(InPlane3D.class).instantiate(this, x, y, z);
 

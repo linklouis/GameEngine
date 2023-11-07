@@ -1,4 +1,4 @@
-package gameengine.threed.prebuilt.objectmovement;
+package gameengine.threed.prebuilt;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
