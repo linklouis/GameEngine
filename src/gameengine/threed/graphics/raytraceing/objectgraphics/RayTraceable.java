@@ -2,7 +2,6 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
@@ -32,7 +31,6 @@ public abstract class RayTraceable extends GraphicsObject3D implements RayInters
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
         List<Class<? extends Modifier>> modifiers = new ArrayList<>();
-        modifiers.add(Visual3D.class);
         return modifiers;
     }
 

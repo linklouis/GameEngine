@@ -1,10 +1,8 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.drivers.GameDriver3D;
+import gameengine.threed.GameDriver3D;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.prebuilt.gameobjects.Mesh;
-import gameengine.threed.prebuilt.gameobjects.Polygon;
 import gameengine.vectormath.Vector3D;
 
 public abstract class PolyObject<PolyType extends Polygon> extends GameObject {

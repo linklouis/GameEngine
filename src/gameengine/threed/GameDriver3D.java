@@ -1,5 +1,8 @@
-package gameengine.skeletons;
+package gameengine.threed;
 
+import gameengine.skeletons.GameObject;
+import gameengine.threed.graphics.GraphicsDriver3D;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -9,34 +12,36 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver> extends Application {
+public abstract class GameDriver3D extends Application {
     private final List<GameObject> objects = new ArrayList<>();
-    private final GraphicsDriverType graphicsDriver;
+    private final GraphicsDriver3D graphicsDriver;
     private AnimationTimer animationTimer;
     private final String name;
 
     private final long[] frameTimes = new long[100];
     private int frameTimeIndex = 0 ;
     private double frameRate = 60;
-
-
     /*
      * Construction:
      */
 
-    public GameDriver(GraphicsDriverType graphicsDriver) {
+    public GameDriver3D(GraphicsDriver3D graphicsDriver) {
         this.graphicsDriver = graphicsDriver;
         name = "New Game";
     }
 
-    public GameDriver(String name, GraphicsDriverType graphicsDriver) {
+    public GameDriver3D(String name, GraphicsDriver3D graphicsDriver) {
         this.graphicsDriver = graphicsDriver;
         this.name = name;
     }
 
+
+    /*
+     * Functionality:
+     */
+
     public abstract void initialize();
 
-    @Override
     public void start(Stage stage) {
         stage.setTitle(name);
         initialize();
@@ -46,12 +51,11 @@ public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver> exte
         animationTimer.start();
     }
 
-
-    /*
-     * Functionality:
-     */
-
     public abstract void updateGame();
+
+    public void forEach(Consumer<GameObject> function) {
+        objects.forEach(function);
+    }
 
     protected AnimationTimer setupAnimationTimer() {
         return new AnimationTimer() {
@@ -75,13 +79,6 @@ public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver> exte
         if (frameRate < 1 || frameRate > 500) {
             frameRate = 1_000_000_000.0 / (now - frameTimes[(frameTimeIndex == 0 ? frameTimes.length : frameTimeIndex) - 1]);
         }
-//        System.out.println(frameRate);
-    }
-
-    public abstract void newObject(GameObject object);
-
-    public void forEach(Consumer<GameObject> function) {
-        objects.forEach(function);
     }
 
 
@@ -89,11 +86,19 @@ public abstract class GameDriver<GraphicsDriverType extends GraphicsDriver> exte
      * Utilities:
      */
 
+    public void newObject(GameObject object) {
+        if (object.containsModifier(RayTraceable.class)) {
+            getGraphicsDriver().add(object.get(RayTraceable.class));
+        }
+
+        getObjects().add(object);
+    }
+
     public List<GameObject> getObjects() {
         return objects;
     }
 
-    public GraphicsDriverType getGraphicsDriver() {
+    public GraphicsDriver3D getGraphicsDriver() {
         return graphicsDriver;
     }
 

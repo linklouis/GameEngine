@@ -1,7 +1,8 @@
 package gameengine.threed.graphics;
 
-import gameengine.skeletons.GraphicsDriver;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -10,8 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
-    private final List<Visual3D> visualObjects = new ArrayList<>();
+public class GraphicsDriver3D {
+    public final int WIDTH, HEIGHT;
+    public Color background = Color.BLACK;
+    private Pane root;
+    private Scene scene;
+    private final List<RayTraceable> visualObjects = new ArrayList<>();
     private List<GraphicsObject3D> cameraObjects = new ArrayList<>();
     private Camera camera;
 
@@ -21,16 +26,18 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
      */
 
     public GraphicsDriver3D(int width, int height, Camera camera) {
-        super(width, height);
+        WIDTH = width;
+        HEIGHT = height;
         this.camera = camera;
     }
 
     public GraphicsDriver3D(int width, int height, Color bgColor, Camera camera) {
-        super(width, height, bgColor);
+        WIDTH = width;
+        HEIGHT = height;
+        background = bgColor;
         this.camera = camera;
     }
 
-    @Override
     public void initialize(Stage stage) {
         setRoot(new VBox());
         getRoot().setPrefSize(camera.getWidth(), camera.getHeight());
@@ -45,7 +52,6 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
      * Functionality:
      */
 
-    @Override
     public void updateGraphics() {
         camera.update(cameraObjects);
         camera.displayOn(getRoot());
@@ -56,16 +62,16 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
      * Utilities:
      */
 
-    public void add(Visual3D newObject) {
+    public void add(RayTraceable newObject) {
         visualObjects.add(newObject);
         cameraObjects = camera.getValidObjects(visualObjects);
     }
 
-    public Visual3D get(int index) {
+    public RayTraceable get(int index) {
         return visualObjects.get(index);
     }
 
-    public void forEach(Consumer<Visual3D> function) {
+    public void forEach(Consumer<RayTraceable> function) {
         visualObjects.forEach(function);
     }
 
@@ -77,11 +83,43 @@ public class GraphicsDriver3D extends GraphicsDriver<Visual3D> {
         this.camera = camera;
     }
 
-    public List<Visual3D> getVisualObjects() {
+    public List<RayTraceable> getVisualObjects() {
         return visualObjects;
     }
 
     public List<? extends GraphicsObject3D> getCameraObjects() {
         return cameraObjects;
+    }
+
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    public int getHeight() {
+        return HEIGHT;
+    }
+
+    public Color getBackground() {
+        return background;
+    }
+
+    public void setBackground(Color background) {
+        this.background = background;
+    }
+
+    public Pane getRoot() {
+        return root;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    protected void setRoot(Pane root) {
+        this.root = root;
+    }
+
+    protected void setScene(Scene scene) {
+        this.scene = scene;
     }
 }

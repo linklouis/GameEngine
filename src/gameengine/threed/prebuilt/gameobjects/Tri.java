@@ -1,7 +1,6 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
@@ -22,7 +21,6 @@ public class Tri extends Polygon {
         return new ArrayList<>() {
             {
                 add(TriGraphics.class);
-                add(Visual3D.class);
             }
         };
     }

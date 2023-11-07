@@ -1,7 +1,6 @@
 package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.Camera;
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.timeformatting.TimeConversionFactor;

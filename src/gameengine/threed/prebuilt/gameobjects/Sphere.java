@@ -4,7 +4,6 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.InPlane3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.vectormath.Vector3D;
@@ -15,24 +14,21 @@ import java.util.List;
 
 public class Sphere extends GameObject {
     public Sphere(double x, double y, double z, double r, RayTracingTexture texture) {
-        super(new InPlane3D(), new SphereGraphics(), new Visual3D());
+        super(new InPlane3D(), new SphereGraphics());
         get(InPlane3D.class).instantiate(this, x, y, z);
         get(SphereGraphics.class).instantiate(this, r, texture);
-        get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 
     public Sphere(Vector3D position, double r, RayTracingTexture texture) {
-        super(new InPlane3D(), new SphereGraphics(), new Visual3D());
+        super(new InPlane3D(), new SphereGraphics());
         get(InPlane3D.class).instantiate(this, position);
         get(SphereGraphics.class).instantiate(this, r, texture);
-        get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 
     public Sphere(double x, double y, double z, double r, Color color, boolean isLightSource) {
-        super(new InPlane3D(), new SphereGraphics(), new Visual3D());
+        super(new InPlane3D(), new SphereGraphics());
         get(InPlane3D.class).instantiate(this, x, y, z);
         get(SphereGraphics.class).instantiate(this, r, new ReflectingTexture(color, isLightSource, 0));
-        get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 
     @Override
@@ -41,7 +37,6 @@ public class Sphere extends GameObject {
             {
                 add(InPlane3D.class);
                 add(SphereGraphics.class);
-                add(Visual3D.class);
             }
         };
     }

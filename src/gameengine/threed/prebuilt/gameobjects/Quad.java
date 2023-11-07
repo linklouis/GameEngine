@@ -1,7 +1,6 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.QuadGraphics;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
@@ -26,7 +25,6 @@ public class Quad extends Polygon  {
         return new ArrayList<>() {
             {
                 add(QuadGraphics.class);
-                add(Visual3D.class);
             }
         };
     }

@@ -1,6 +1,6 @@
-import gameengine.drivers.GameDriver3D;
-import gameengine.threed.graphics.Visual3D;
-import gameengine.threed.graphics.raytraceing.*;
+import gameengine.threed.GameDriver3D;
+import gameengine.threed.graphics.GraphicsDriver3D;
+import gameengine.threed.graphics.raytraceing.RayTracedCamera;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
@@ -9,7 +9,6 @@ import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.*;
-import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
@@ -207,7 +206,7 @@ public class RayTracing extends GameDriver3D {
 
         new TriRectangle(0, 0, 0, new Vector3D(2, 3, 4), new ReflectingTexture(Color.RED, false, reflectivity)).initiate(this);
 
-//        for (Visual3D collider : getGraphicsDriver().getVisualObjects()) {
+//        for (RayTraceable collider : getGraphicsDriver().getVisualObjects()) {
 //            System.out.println(collider.getFromParent(Collider3D.class).getAppearance());
 //        }
 
@@ -343,10 +342,10 @@ public class RayTracing extends GameDriver3D {
         int numTris = 0;
         int numSpheres = 0;
 
-        for (Visual3D visual : getGraphicsDriver().getVisualObjects()) {
-            if (visual.getAppearance() instanceof TriGraphics) {
+        for (RayTraceable visual : getGraphicsDriver().getVisualObjects()) {
+            if (visual instanceof TriGraphics) {
                 numTris++;
-            } else if (visual.getAppearance() instanceof SphereGraphics) {
+            } else if (visual instanceof SphereGraphics) {
                 numSpheres++;
             }
         }

@@ -1,10 +1,9 @@
 package gameengine.threed.graphics;
 
-import gameengine.skeletons.GraphicsObject;
 import gameengine.skeletons.Modifier;
 import gameengine.vectormath.Vector3D;
 
-public abstract class GraphicsObject3D extends GraphicsObject {
+public abstract class GraphicsObject3D extends Modifier {
     public GraphicsObject3D() {
         super();
     }

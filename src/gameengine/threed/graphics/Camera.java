@@ -104,7 +104,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      * Renders a new frame if it has been requested and applies
      * post-processing, otherwise returns.
      *
-     * @param renderableObjects The {@link Visual3D} objects to be rendered in
+     * @param renderableObjects The {@link GraphicsObject3D} objects to be rendered in
      *                          the scene.
      * @return True if a new frame has been rendered, otherwise false.
      */
@@ -172,7 +172,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         return currentImage;
     }
 
-    protected List<? extends VisualType> getValidObjects(final Collection<Visual3D> visuals) {
+    protected List<? extends VisualType> getValidObjects(final Collection<GraphicsObject3D> visuals) {
         return visuals.stream()
                 .filter(object ->
                         object.getParent().containsModifier(visualType))
