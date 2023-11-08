@@ -1,8 +1,7 @@
-package gameengine.drivers;
+package gameengine.twod.drivers;
 
 import gameengine.skeletons.GameDriver;
 import gameengine.skeletons.GameObject;
-import gameengine.twod.graphics.GraphicsDriver2D;
 import gameengine.twod.graphics.Visual2D;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsEngine2D;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;

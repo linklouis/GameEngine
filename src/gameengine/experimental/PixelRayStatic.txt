@@ -1,5 +1,6 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.experimental;
 
+import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;

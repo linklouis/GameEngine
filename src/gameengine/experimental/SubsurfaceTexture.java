@@ -1,7 +1,8 @@
-package gameengine.threed.graphics.raytraceing.textures;
+package gameengine.experimental;
 
 import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.Reflection;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

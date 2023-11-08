@@ -1,6 +1,6 @@
-import gameengine.twod.graphics.GraphicsDriver2D;
+import gameengine.twod.drivers.GraphicsDriver2D;
 import gameengine.twod.graphics.Visual2D;
-import gameengine.drivers.GameDriver2D;
+import gameengine.twod.drivers.GameDriver2D;
 import gameengine.twod.prebuilt.gameobjects.Ball;
 import gameengine.twod.prebuilt.objectmovement.InPlane;
 import gameengine.twod.prebuilt.objectmovement.collisions.LayerCollider2D;

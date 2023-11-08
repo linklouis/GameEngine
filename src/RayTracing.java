@@ -1,4 +1,4 @@
-import gameengine.drivers.GameDriver3D;
+import gameengine.threed.drivers.GameDriver3D;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.*;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
@@ -7,17 +7,17 @@ import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
 import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
-import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
+import gameengine.experimental.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.*;
-import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
-import gameengine.threed.graphics.GraphicsDriver3D;
+import gameengine.threed.drivers.GraphicsDriver3D;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -34,10 +34,10 @@ public class RayTracing extends GameDriver3D {
      */
 
     public RayTracing() {
-        super("LightRay Tracing", new GraphicsDriver3D(SIZE, SIZE,
-                new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                        new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                        10, 10, true, 70/*160*/)),
+        super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
+                        new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
+                                new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
+                                10, 10, true, 70/*160*/)),
                 new PhysicsEngine3D());
     }
 
@@ -47,21 +47,8 @@ public class RayTracing extends GameDriver3D {
 
     @Override
     public void initialize() {
-//        System.out.println(java.time.LocalDateTime.now());
-//        Vector3D.FastGaussian rand = new Vector3D.FastGaussian(1L, 0, 1/*new Vector3D(2324, 545, 1)*/);
-//        for (int i = 0; i < 300; i++) {
-//            System.out.print(
-////                    SubsurfaceTexture.generateSkewedValue(0.7, 0, 90)
-//                    rand.nextGaussian()
-//                            + "\t");
-//        }
-//        System.exit(0);
+        System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-//        mainCam.setDirection(Vector3D.I);
-//        mainCam.setLocation(new Vector3D(-3, 0, 0));
-////        new RectPlane(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.RED, true)).initiate(this);
-//        newObject(new Quad(new Vector3D(0, -1, -1), new Vector3D(0, 2, 2), new BaseTexture(Color.AQUA, true)));
-//        testSphere();
 
         setupScene1();
     }
@@ -71,19 +58,16 @@ public class RayTracing extends GameDriver3D {
      * Scene Setup:
      */
 
-    private void testSphere() {
-//        newObject(new Sphere(0,0,0, 2, new BaseTexture(Color.RED, false)));
-//        newObject(new Sphere(new Vector3D(-5, -5, -5), /*new Vector3D(-10, -10, 10)*/5, new BaseTexture(Color.WHITE, true)));
-
-//        mainCam.setLocation(spiral(Math.TAU, angle).scalarMultiply(5));//new Vector3D(Math.cos(angle), Math.sin(angle), Math.cos(angle) * Math.sin(angle)).scalarMultiply(10));
-//        mainCam.setDirection(mainCam.getLocation().atMagnitude(-1));
-//        mainCam.setLocation(new Vector3D(0, -10, 10));
+    private void colorSpace() {
         newObject(new Sphere(0,0,0,2, new BaseTexture(Color.WHITE, true)));
         mainCam.setLocation(new Vector3D(0));
-        mainCam.setDirection(new Vector3D(0.1, 0, 0));//mainCam.getLocation().atMagnitude(-1)));
+        mainCam.setDirection(new Vector3D(0.1, 0, 0));
+        mainCam.setFieldOfViewDegrees(140);
         for (double angle = 0; angle < Math.TAU * Math.TAU * 2; angle += 0.07) {
-            newObject(new Sphere(spiral(Math.TAU, angle).scalarMultiply(5), 0.2, new BaseTexture(spiral(Math.TAU, angle).toColor(), true)));
-//            newObject(new Sphere(spiral(Math.TAU, angle).scalarMultiply(5), 0.2, new BaseTexture(spiral(Math.TAU, angle).toColor(), false)));
+            newObject(new Sphere(spiral(Math.TAU, angle).scalarMultiply(5),
+                    0.2,
+                    new BaseTexture(spiral(Math.TAU, angle).toColor(),
+                    true)));
         }
     }
 
@@ -342,11 +326,13 @@ public class RayTracing extends GameDriver3D {
                 new Color(0.5, 0.5, 1, 1), true));
     }
 
+    @SuppressWarnings("unchecked")
     private void evenSpheresAndTris(double reflectivity) {
         int numTris = 0;
         int numSpheres = 0;
 
-        for (Visual3D visual : getGraphicsDriver().getVisualObjects()) {
+        // TODO Ask why not Visual3D
+        for (Visual3D visual : (List<Visual3D>) getGraphicsDriver().getVisualObjects()) {
             if (visual.getAppearance() instanceof TriGraphics) {
                 numTris++;
             } else if (visual.getAppearance() instanceof SphereGraphics) {

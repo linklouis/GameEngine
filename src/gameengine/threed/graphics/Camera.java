@@ -120,9 +120,8 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         return false;
     }
 
-    public void displayOn(Pane root) {
-        root.getChildren().clear();
-        root.getChildren().setAll(new ImageView(image));
+    public void displayOn(ImageView view) {
+        view.setImage(getImage());
     }
 
     public void renderWithProcessing(Collection<VisualType> renderableObjects) {
@@ -181,6 +180,17 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
                 .map(object -> object.getFromParent(visualType))
                 .sorted(Comparator.comparingDouble(obj ->
                     -getLocation().distance(obj.getCenter()))).toList();
+    }
+
+    public boolean canRender(final Visual3D visual) {
+        return visual.getParent().containsModifier(visualType);
+    }
+
+    public Optional<VisualType> getRenderableFrom(final Visual3D visual) {
+        if (canRender(visual)) {
+            return Optional.of(visual.getFromParent(visualType));
+        }
+        return Optional.empty();
     }
 
     /*

@@ -1,6 +1,7 @@
-package gameengine.twod.graphics;
+package gameengine.twod.drivers;
 
 import gameengine.skeletons.GraphicsDriver;
+import gameengine.twod.graphics.Visual2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
