@@ -4,6 +4,7 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.prebuilt.gameobjects.Polygon;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
@@ -11,7 +12,7 @@ import gameengine.vectormath.Vector3D;
 
 import java.util.List;
 
-public class QuadGraphics extends RayTraceable {
+public class Quad extends Polygon {
     private Vector3D vertex1;
     private Vector3D vertex2;
     private Vector3D vertex3;
@@ -32,51 +33,20 @@ public class QuadGraphics extends RayTraceable {
      * Construction:
      */
 
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        return null;
+    public Quad(Vector3D v1, Vector3D v2, Vector3D v3, Vector3D v4, RayTracingTexture texture) {
+        vertex1 = v1;
+        vertex2 = v2;
+        vertex3 = v3;
+        vertex4 = v4;
+        setTexture(texture);
     }
 
-    @Override
-    public ArgumentContext[] getArgumentContexts() {
-        return new ArgumentContext[] {
-                new ArgumentContext(
-                        this::computeValues,
-                        new ModifierInstantiateParameter<>(
-                                "vertex1", Vector3D.class,
-                                this::setVertex1NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex2", Vector3D.class,
-                                this::setVertex2NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex3", Vector3D.class,
-                                this::setVertex3NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex4", Vector3D.class,
-                                this::setVertex4),
-                        new ModifierInstantiateParameter<>(
-                                "texture", RayTracingTexture.class,
-                                this::setTexture)
-                ),
-                new ArgumentContext(
-                        this::computeValues,
-                        new ModifierInstantiateParameter<>(
-                                "vertices", Vector3D[].class,
-                                this::setVertices),
-                        new ModifierInstantiateParameter<>(
-                                "texture", RayTracingTexture.class,
-                                this::setTexture)
-                )
-        };
-    }
-
-    @Override
-    public void instantiate(GameObject parent, Object... args) {
-        try {
-            super.instantiate(parent, args);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public Quad(Vector3D[] vertices, RayTracingTexture texture) {
+        vertex1 = vertices[0];
+        vertex2 = vertices[1];
+        vertex3 = vertices[2];
+        vertex4 = vertices[3];
+        setTexture(texture);
     }
 
 
@@ -290,6 +260,6 @@ public class QuadGraphics extends RayTraceable {
 
     @Override
     public String toString() {
-        return "QuadGraphics: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getVertex4() + ", " + getTexture();
+        return "Quad: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getVertex4() + ", " + getTexture();
     }
 }

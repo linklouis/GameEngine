@@ -86,7 +86,15 @@ public abstract class GameDriver3D extends Application {
      * Utilities:
      */
 
-    public void newObject(GameObject object) {
+//    public void newObject(GameObject object) {
+//        if (object.containsModifier(RayTraceable.class)) {
+//            getGraphicsDriver().add(object.get(RayTraceable.class));
+//        }
+//
+//        getObjects().add(object);
+//    }
+
+    public void newObject(RayTraceable object) {
         if (object.containsModifier(RayTraceable.class)) {
             getGraphicsDriver().add(object.get(RayTraceable.class));
         }

@@ -1,6 +1,5 @@
 package gameengine.threed.graphics.raytraceing.objectgraphics;
 
-import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.GraphicsObject3D;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.Reflection;
@@ -9,30 +8,8 @@ import gameengine.threed.utilities.RayIntersectable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class RayTraceable extends GraphicsObject3D implements RayIntersectable {
     private RayTracingTexture texture = null;
-
-
-    /*
-     * Construction:
-     */
-
-    public RayTraceable() {
-        super();
-    }
-
-    public RayTraceable(final Modifier[] modifiers) {
-        super(modifiers);
-    }
-
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        List<Class<? extends Modifier>> modifiers = new ArrayList<>();
-        return modifiers;
-    }
 
 
     /*

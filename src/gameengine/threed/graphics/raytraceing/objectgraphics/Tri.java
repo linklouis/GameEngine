@@ -1,16 +1,11 @@
 package gameengine.threed.graphics.raytraceing.objectgraphics;
 
-import gameengine.skeletons.GameObject;
-import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.utilities.ArgumentContext;
-import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.threed.prebuilt.gameobjects.Polygon;
 import gameengine.vectormath.Vector3D;
 
-import java.util.List;
-
-public class TriGraphics extends RayTraceable {
+public class Tri extends Polygon {
     private Vector3D vertex1;
     private Vector3D vertex2;
     private Vector3D vertex3;
@@ -33,39 +28,11 @@ public class TriGraphics extends RayTraceable {
      * Construction:
      */
 
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        return null;
-    }
-
-    @Override
-    public ArgumentContext[] getArgumentContexts() {
-        return new ArgumentContext[] {
-                new ArgumentContext(
-                        this::computeValues,
-                        new ModifierInstantiateParameter<>(
-                                "vertex1", Vector3D.class,
-                                this::setVertex1NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex2", Vector3D.class,
-                                this::setVertex2NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex3", Vector3D.class,
-                                this::setVertex3NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "texture", RayTracingTexture.class,
-                                this::setTexture)
-                )
-        };
-    }
-
-    @Override
-    public void instantiate(GameObject parent, Object... args) {
-        try {
-            super.instantiate(parent, args);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public Tri(Vector3D v1, Vector3D v2, Vector3D v3, RayTracingTexture texture) {
+        vertex1 = v1;
+        vertex2 = v2;
+        vertex3 = v3;
+        setTexture(texture);
     }
 
 
@@ -103,7 +70,7 @@ public class TriGraphics extends RayTraceable {
 
     /**
      * Finds the first intersection a ray will have with the
-     * {@code TriGraphics}.
+     * {@code Tri}.
      *
      * @param ray The ray to find a collision with.
      * @param curSmallestDist The largest distance the output is looking for.
@@ -254,6 +221,6 @@ public class TriGraphics extends RayTraceable {
 
     @Override
     public String toString() {
-        return "TriGraphics: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getTexture();
+        return "Tri: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getTexture();
     }
 }

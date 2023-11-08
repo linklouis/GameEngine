@@ -1,15 +1,11 @@
 package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.GameObject;
-import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.utilities.ArgumentContext;
-import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector3D;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class SphereGraphics extends RayTraceable {
@@ -22,50 +18,16 @@ public class SphereGraphics extends RayTraceable {
      * Construction:
      */
 
-    public SphereGraphics() {
+    public SphereGraphics(double radius, RayTracingTexture texture, Supplier<Vector3D> positionSupplier) {
         super();
-    }
-
-    public SphereGraphics(Modifier... modifiers) {
-        super(modifiers);
-    }
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>() {
-            {
-            }
-        };
+        this.radius = radius;
+        setTexture(texture);
+        this.positionSupplier = positionSupplier;
     }
 
     @Override
     public Vector3D[] getVertices() {
         return new Vector3D[0];
-    }
-
-    @Override
-    public ArgumentContext[] getArgumentContexts() {
-        return new ArgumentContext[] {
-                new ArgumentContext(
-                        new ModifierInstantiateParameter<>(
-                                "radius", Double.class,
-                                this::setRadius),
-                        new ModifierInstantiateParameter<>(
-                                "texture", RayTracingTexture.class,
-                                this::setTexture),
-                        new ModifierInstantiateParameter<>(
-                                "positionSupplier", Supplier.class,
-                                this::setPositionSupplier)
-                )
-        };
-    }
-
-    @Override
-    public void instantiate(GameObject parent, Object... args) {
-        try {
-            super.instantiate(parent, args);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 

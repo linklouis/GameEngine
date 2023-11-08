@@ -3,7 +3,7 @@ import gameengine.threed.graphics.GraphicsDriver3D;
 import gameengine.threed.graphics.raytraceing.RayTracedCamera;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
-import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
+import gameengine.threed.graphics.raytraceing.objectgraphics.Tri;
 import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
@@ -343,7 +343,7 @@ public class RayTracing extends GameDriver3D {
         int numSpheres = 0;
 
         for (RayTraceable visual : getGraphicsDriver().getVisualObjects()) {
-            if (visual instanceof TriGraphics) {
+            if (visual instanceof Tri) {
                 numTris++;
             } else if (visual instanceof SphereGraphics) {
                 numSpheres++;

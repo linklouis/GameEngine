@@ -2,6 +2,7 @@ package gameengine.threed.graphics;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.embed.swing.SwingFXUtils;
@@ -165,11 +166,10 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         return currentImage;
     }
 
-    protected List<? extends VisualType> getValidObjects(final Collection<GraphicsObject3D> visuals) {
+    protected List<RayTraceable> getValidObjects(final Collection<GraphicsObject3D> visuals) {
         return visuals.stream()
-                .filter(object ->
-                        object.getParent().containsModifier(visualType))
-                .map(object -> object.getFromParent(visualType))
+                .filter(obj -> obj instanceof RayTraceable)
+                .map(obj -> (RayTraceable) obj)
                 .sorted(Comparator.comparingDouble(obj ->
                     -getLocation().distance(obj.getCenter()))).toList();
     }
