@@ -1,14 +1,10 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Rectangle extends PolyObject<Quad> {
     private RayTracingTexture texture;
@@ -20,15 +16,13 @@ public class Rectangle extends PolyObject<Quad> {
 
     public Rectangle(double x, double y, double z, Vector3D space,
                      RayTracingTexture texture) {
-        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]));
-
+        super(generateVertices(x, y, z, space));
         setTexture(texture);
     }
 
     public Rectangle(double x, double y, double z, Vector3D space, Color color,
                      boolean isLightSource) {
-        super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]));
-
+        super(generateVertices(x, y, z, space));
         setTexture(new ReflectingTexture(color, isLightSource, 0));
     }
 
@@ -65,11 +59,6 @@ public class Rectangle extends PolyObject<Quad> {
                         y + space.getY(),
                         z + space.getZ())
         };
-    }
-
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>();
     }
 
     @Override
@@ -113,7 +102,7 @@ public class Rectangle extends PolyObject<Quad> {
     public void setTexture(RayTracingTexture texture) {
         this.texture = texture;
 //        int num = 1;
-        for (Polygon poly : get(Mesh.class).getPolygons()) {
+        for (Polygon poly : getMesh().getPolygons()) {
 //            double col = (double) num / get(Mesh.class).getPolygons().length;
             poly.get(RayTraceable.class).setTexture(texture);//new ReflectingTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
 //            num++;

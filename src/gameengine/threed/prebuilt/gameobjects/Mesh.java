@@ -9,38 +9,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Mesh<PolyType extends  Polygon> extends Modifier {
+public class Mesh<PolyType extends  Polygon> {
     private PolyType[] polygons;
     private Vector3D[] vertices;
-    private final PolyType[] validPolyArray;
 
 
     /*
      * Construction:
      */
 
-    public Mesh(PolyType[] validPolyArray) {
-        super();
-        this.validPolyArray = validPolyArray;
-    }
-
-    @Override
-    public List<Class<? extends Modifier>> getDependencies() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public ArgumentContext[] getArgumentContexts() {
-        return new ArgumentContext[] {
-                new ArgumentContext(
-                        new ModifierInstantiateParameter<>(
-                                "Polygons", Polygon[].class,
-                                this::setPolygons),
-                        new ModifierInstantiateParameter<>(
-                                "Vertices", Vector3D[].class,
-                                this::setVertices)
-                )
-        };
+    public Mesh(PolyType[] polygons, Vector3D[] vertices) {
+        this.polygons = polygons;
+        this.vertices = vertices;
     }
 
 
@@ -82,7 +62,7 @@ public class Mesh<PolyType extends  Polygon> extends Modifier {
         // TODO test
         ArrayList<Polygon> newPolys = new ArrayList<>();
         Collections.addAll(newPolys, polygons);
-        this.polygons = newPolys.toArray(validPolyArray);
+        this.polygons = newPolys.toArray(this.polygons);
         vertices = getVertices(polygons);
     }
 

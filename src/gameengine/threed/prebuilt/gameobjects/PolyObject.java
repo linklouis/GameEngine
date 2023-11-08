@@ -1,35 +1,33 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.threed.GameDriver3D;
-import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
+import gameengine.threed.GameDriver3D;
 import gameengine.vectormath.Vector3D;
 
-public abstract class PolyObject<PolyType extends Polygon> extends GameObject {
+public abstract class PolyObject<PolyType extends Polygon> {
+    private Mesh<PolyType> mesh;
 
-    public PolyObject(Mesh<PolyType> mesh, Modifier... modifiers) {
-        super(modifiers);
-        try {
-            get(Mesh.class).instantiate(this, mesh.getPolygons(), mesh.getVertices());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public PolyObject(Mesh<PolyType> mesh) {
+        this.mesh = mesh;
     }
 
-    public PolyObject(Vector3D[] vertices, Modifier... modifiers) {
-        super(modifiers);
-        try {
-            get(Mesh.class).instantiate(this, createMesh(vertices), vertices);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public PolyObject(Vector3D[] vertices) {
+        mesh = new Mesh<>(createMesh(vertices), vertices);
     }
 
     public void initiate(GameDriver3D driver) {
-        for (Polygon poly : get(Mesh.class).getPolygons()) {
+        for (Polygon poly : mesh.getPolygons()) {
             driver.newObject(poly);
         }
     }
 
     protected abstract PolyType[] createMesh(Vector3D[] vertices);
+
+    public Mesh<PolyType> getMesh() {
+        return mesh;
+    }
+
+    public void setMesh(Mesh<PolyType> mesh) {
+        this.mesh = mesh;
+    }
 }
