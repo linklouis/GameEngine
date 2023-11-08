@@ -167,6 +167,8 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     }
 
     protected List<RayTraceable> getValidObjects(final Collection<GraphicsObject3D> visuals) {
+        System.out.println(visuals.stream()
+                .filter(obj -> obj instanceof RayTraceable).count());
         return visuals.stream()
                 .filter(obj -> obj instanceof RayTraceable)
                 .map(obj -> (RayTraceable) obj)
@@ -246,7 +248,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         getPostProcesses().add(process);
     }
 
-    public Class<? extends Modifier> getVisualType() {
-        return visualType;
+    public Class<? extends GraphicsObject3D> getVisualType() {
+        return RayTraceable.class;
     }
 }

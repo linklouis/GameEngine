@@ -1,16 +1,9 @@
 package gameengine.threed.graphics.raytraceing.objectgraphics;
 
-import gameengine.skeletons.GameObject;
-import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.prebuilt.gameobjects.Polygon;
-import gameengine.utilities.ArgumentContext;
-import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
-
-import java.util.List;
 
 public class Quad extends Polygon {
     private Vector3D vertex1;
@@ -39,6 +32,7 @@ public class Quad extends Polygon {
         vertex3 = v3;
         vertex4 = v4;
         setTexture(texture);
+        calculateCenter();
     }
 
     public Quad(Vector3D[] vertices, RayTracingTexture texture) {
@@ -47,12 +41,18 @@ public class Quad extends Polygon {
         vertex3 = vertices[2];
         vertex4 = vertices[3];
         setTexture(texture);
+        calculateCenter();
     }
 
-
-    /*
-     * Functionality:
-     */
+    public Quad(double x, double y, double z, Vector3D displacement, RayTracingTexture texture) {
+        Vector3D[] vertices = generateVertices(new Vector3D(x, y, z), displacement);
+        vertex1 = vertices[0];
+        vertex2 = vertices[1];
+        vertex3 = vertices[2];
+        vertex4 = vertices[3];
+        setTexture(texture);
+        calculateCenter();
+    }
 
     /**
      * Precomputes values for collision checks
@@ -69,6 +69,11 @@ public class Quad extends Polygon {
         minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
         maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
     }
+
+
+    /*
+     * Functionality:
+     */
 
     /**
      * Returns the normal vector of the intersectable object facing towards the
@@ -124,6 +129,31 @@ public class Quad extends Polygon {
 
     public Vector2D onPlane(final Ray line, double distance) {
         return line.getPosition().projectToPlane(planeXaxis, planeYaxis, line.getDirection(), distance);
+    }
+
+    private static Vector3D[] generateVertices(Vector3D position,
+                                               Vector3D displacement) {
+        return new Vector3D[] {
+                position,
+                new Vector3D(
+                        position.getX() + displacement.getX(),
+                        position.getY()
+                                + (displacement.getZ() != 0 ?
+                                displacement.getY()
+                                : 0),
+                        position.getZ()),
+                new Vector3D(
+                        position.getX() + displacement.getX(),
+                        position.getY() + displacement.getY(),
+                        position.getZ() + displacement.getZ()),
+                new Vector3D(
+                        position.getX(),
+                        position.getY()
+                                + (displacement.getZ() == 0 ?
+                                displacement.getY()
+                                : 0),
+                        position.getZ() + displacement.getZ()),
+        };
     }
 
 

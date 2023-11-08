@@ -2,7 +2,6 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.prebuilt.gameobjects.Polygon;
 import gameengine.vectormath.Vector3D;
 
 public class Tri extends Polygon {

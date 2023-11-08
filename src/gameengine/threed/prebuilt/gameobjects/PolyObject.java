@@ -1,33 +1,27 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.skeletons.Modifier;
 import gameengine.threed.GameDriver3D;
+import gameengine.threed.graphics.raytraceing.objectgraphics.Polygon;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 
-public abstract class PolyObject<PolyType extends Polygon> {
-    private Mesh<PolyType> mesh;
-
+public abstract class PolyObject<PolyType extends Polygon> extends Mesh<PolyType> {
     public PolyObject(Mesh<PolyType> mesh) {
-        this.mesh = mesh;
+        super(mesh);
     }
 
     public PolyObject(Vector3D[] vertices) {
-        mesh = new Mesh<>(createMesh(vertices), vertices);
+        super(vertices);
+        setPolygons(createMesh(vertices));
     }
 
     public void initiate(GameDriver3D driver) {
-        for (Polygon poly : mesh.getPolygons()) {
-            driver.newObject(poly);
-        }
+        forEachPoly(driver::newObject);
+    }
+
+    public void setTexture(RayTracingTexture texture) {
+        forEachPoly(poly -> poly.setTexture(texture));
     }
 
     protected abstract PolyType[] createMesh(Vector3D[] vertices);
-
-    public Mesh<PolyType> getMesh() {
-        return mesh;
-    }
-
-    public void setMesh(Mesh<PolyType> mesh) {
-        this.mesh = mesh;
-    }
 }

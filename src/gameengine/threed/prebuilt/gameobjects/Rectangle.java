@@ -1,15 +1,12 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.raytraceing.objectgraphics.Quad;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
 public class Rectangle extends PolyObject<Quad> {
-    private RayTracingTexture texture;
-
-
     /*
      * Construction:
      */
@@ -93,19 +90,5 @@ public class Rectangle extends PolyObject<Quad> {
 
     private Color randomColor() {
         return new Color(Math.random(), Math.random(), Math.random(), 1);
-    }
-
-    public RayTracingTexture getTexture() {
-        return texture;
-    }
-
-    public void setTexture(RayTracingTexture texture) {
-        this.texture = texture;
-//        int num = 1;
-        for (Polygon poly : getMesh().getPolygons()) {
-//            double col = (double) num / get(Mesh.class).getPolygons().length;
-            poly.get(RayTraceable.class).setTexture(texture);//new ReflectingTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
-//            num++;
-        }
     }
 }

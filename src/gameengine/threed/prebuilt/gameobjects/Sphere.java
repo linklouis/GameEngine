@@ -11,30 +11,23 @@ public class Sphere extends RayTraceable {
     private double radius;
     private double radiusSquared;
     private Vector3D position;
-//    private final SphereGraphics graphics;
 
     public Sphere(double x, double y, double z, double r, RayTracingTexture texture) {
         position = new Vector3D(x, y, z);
-        radius = r;
+        setRadius(r);
         setTexture(texture);
-//        graphics = new SphereGraphics(r, texture, this::getPosition);
     }
 
     public Sphere(Vector3D position, double r, RayTracingTexture texture) {
         this.position = position;
-        radius = r;
+        setRadius(r);
         setTexture(texture);
-//        graphics = new SphereGraphics(r, texture, this::getPosition);
     }
 
     public Sphere(double x, double y, double z, double r, Color color, boolean isLightSource) {
         position = new Vector3D(x, y, z);
-        radius = r;
+        setRadius(r);
         setTexture(new ReflectingTexture(color, isLightSource, 0));
-//        graphics = new SphereGraphics(
-//                r,
-//                new ReflectingTexture(color, isLightSource, 0),
-//                this::getPosition);
     }
 
 
@@ -75,6 +68,15 @@ public class Sphere extends RayTraceable {
     @Override
     public Vector3D getCenter() {
         return position;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+        radiusSquared = radius * radius;
     }
 
     public boolean contains(Vector3D point) {
