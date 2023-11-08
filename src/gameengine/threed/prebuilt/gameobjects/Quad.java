@@ -12,7 +12,7 @@ import java.util.List;
 public class Quad extends Polygon  {
     public Quad(Vector3D point1, Vector3D point2, Vector3D point3, Vector3D point4, RayTracingTexture texture) {
         super(new QuadGraphics());
-        get(QuadGraphics.class).instantiate(this, point1, point2, point3, point4, texture);
+        get(QuadGraphics.class).instantiate(this, new Vector3D[] { point1, point2, point3, point4 }, texture);
     }
 
     public Quad(Vector3D position, Vector3D displacement, RayTracingTexture texture) {

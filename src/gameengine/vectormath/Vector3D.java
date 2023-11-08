@@ -1,5 +1,6 @@
 package gameengine.vectormath;
 
+import gameengine.utilities.ExtraMath;
 import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
@@ -263,9 +264,9 @@ public class Vector3D implements Vector<Vector3D> {
 
     public Color toColor() {
         return new Color(
-                Vector.clamp(x, 0, 1),
-                Vector.clamp(y, 0, 1),
-                Vector.clamp(z, 0, 1),
+                ExtraMath.clamp(x, 0, 1),
+                ExtraMath.clamp(y, 0, 1),
+                ExtraMath.clamp(z, 0, 1),
                 1);
     }
 
