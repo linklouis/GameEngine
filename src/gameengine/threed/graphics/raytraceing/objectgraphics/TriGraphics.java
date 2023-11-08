@@ -13,12 +13,7 @@ import java.util.List;
 
 public class TriGraphics extends RayTraceable {
     private Triangle3D triData;
-
-    // Precomputed values for collision checks
-//    private Vector3D dirTo2;
-//    private Vector3D dirTo3;
     private Vector3D normal;
-    private Vector3D center;
 
 
     /*
@@ -34,19 +29,9 @@ public class TriGraphics extends RayTraceable {
     public ArgumentContext[] getArgumentContexts() {
         return new ArgumentContext[] {
                 new ArgumentContext(
-                        this::computeValues,
                         new ModifierInstantiateParameter<>(
                                 "vertices", Vector3D[].class,
                                 this::setVertices),
-//                        new ModifierInstantiateParameter<>(
-//                                "vertex1", Vector3D.class,
-//                                this::setVertex1NoCompute),
-//                        new ModifierInstantiateParameter<>(
-//                                "vertex2", Vector3D.class,
-//                                this::setVertex2NoCompute),
-//                        new ModifierInstantiateParameter<>(
-//                                "vertex3", Vector3D.class,
-//                                this::setVertex3NoCompute),
                         new ModifierInstantiateParameter<>(
                                 "texture", RayTracingTexture.class,
                                 this::setTexture)
@@ -67,17 +52,6 @@ public class TriGraphics extends RayTraceable {
     /*
      * Functionality:
      */
-
-    /**
-     * Precomputes values for collision checks
-     */
-    private void computeValues() {
-//        dirTo2 = triData.vertex2().subtract(triData.vertex1());
-//        dirTo3 = triData.vertex3().subtract(triData.vertex1());
-
-        normal = triData.normal();//triData.vertex2().subtract(triData.vertex1()).crossProduct(triData.vertex3().subtract(triData.vertex1()));
-        calculateCenter();
-    }
 
     @Override
     public Vector3D surfaceNormal(Ray perspective) {
@@ -137,46 +111,9 @@ public class TriGraphics extends RayTraceable {
         return new Vector3D[] { triData.vertex1(), triData.vertex2(), triData.vertex3() };
     }
 
-    public double minX() {
-        return Math.min(Math.min(triData.vertex1().getX(), triData.vertex2().getX()), triData.vertex3().getX());
-    }
-    public double minY() {
-        return Math.min(Math.min(triData.vertex1().getY(), triData.vertex2().getY()), triData.vertex3().getY());
-    }
-
-    public double minZ() {
-        return Math.min(Math.min(triData.vertex1().getZ(), triData.vertex2().getZ()), triData.vertex3().getZ());
-    }
-
-    public double maxX() {
-        return max(triData.vertex1().getX(), getVertex2().getX(), triData.vertex3().getX())/*Math.vertex3(Math.vertex3(triData.vertex1().getX(), triData.vertex2().getX()), triData.vertex3().getX())*/;
-    }
-
-    public double maxY() {
-        return Math.max(Math.max(triData.vertex1().getY(), triData.vertex2().getY()), triData.vertex3().getY());
-    }
-
-    public double maxZ() {
-        return Math.max(Math.max(triData.vertex1().getZ(), triData.vertex2().getZ()), triData.vertex3().getZ());
-    }
-
-    private double max(double a, double b, double c) {
-        if (a > b) {
-            return Math.max(a, c);
-        }
-        return Math.max(b, c);
-    }
-
     @Override
     public Vector3D getCenter() {
-        return center;
-    }
-
-    public void calculateCenter() {
-        center = new Vector3D(
-                (maxX() + minX()) / 2,
-                (maxY() + minY()) / 2,
-                (maxZ() + minZ()) / 2 );
+        return triData.calculateCenter();
     }
 
     public Vector3D getVertex1() {
@@ -193,57 +130,12 @@ public class TriGraphics extends RayTraceable {
 
     protected void setVertices(Vector3D[] vertices) {
         triData = Triangle3D.computeValues(vertices[0], vertices[1], vertices[2]);
+        normal = triData.normal();
     }
-
-//    private void setVertex1NoCompute(Vector3D triData.vertex1()) {
-//        this.vertex1 = triData.vertex1();
-//    }
-//
-//    private void setVertex2NoCompute(Vector3D triData.vertex2()) {
-//        this.vertex2 = triData.vertex2();
-//    }
-//
-//    private void setVertex3NoCompute(Vector3D triData.vertex3()) {
-//        this.vertex3 = triData.vertex3();
-//    }
-
-//    public void setVertex1(Vector3D triData.vertex1()) {
-//        this.vertex1 = triData.vertex1();
-//        computeValues();
-//    }
-//
-//    public void setVertex2(Vector3D triData.vertex2()) {
-//        this.vertex2 = triData.vertex2();
-//        v0 = triData.vertex2().subtract(triData.vertex1());
-//
-//        dot00 = v0.dotProduct(v0);
-//        dot01 = v0.dotProduct(v1);
-//
-//        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-//
-//        dirTo2 = triData.vertex2().subtract(triData.vertex1());
-//
-//        normal = dirTo2.crossProduct(dirTo3);
-//        calculateCenter();
-//    }
-//
-//    public void setVertex3(Vector3D triData.vertex3()) {
-//        this.vertex3 = triData.vertex3();
-//        v1 = triData.vertex3().subtract(triData.vertex1());
-//
-//        dot01 = v0.dotProduct(v1);
-//        dot11 = v1.dotProduct(v1);
-//
-//        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-//
-//        dirTo3 = triData.vertex3().subtract(triData.vertex1());
-//
-//        normal = dirTo2.crossProduct(dirTo3);
-//        calculateCenter();
-//    }
 
     @Override
     public String toString() {
-        return "TriGraphics: " + getVertex1() + ", " + getVertex2() + ", " + getVertex3() + ", " + getTexture();
+        return "TriGraphics: " + getVertex1() + ", " + getVertex2() + ", "
+                + getVertex3() + ", " + getTexture();
     }
 }

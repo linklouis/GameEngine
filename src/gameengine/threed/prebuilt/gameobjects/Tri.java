@@ -16,7 +16,6 @@ public class Tri extends Polygon {
         get(TriGraphics.class).instantiate(this, new Vector3D[] { point1, point2, point3 }, texture);
     }
 
-
     @Override
     public List<Class<? extends Modifier>> getDependencies() {
         return new ArrayList<>() {
