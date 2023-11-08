@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @author Louis Link
  * @since 1.0
  */
-public class RayTracedCamera extends Camera<RayTraceable> {
+public class RayTracedCamera extends Camera {
     /**
      * The number of rays averaged to find each pixel's color.
      */
@@ -196,16 +196,14 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      */
     @Override
     public WritableImage renderImage(final Collection<RayTraceable> renderableObjects) {
-        RayTraceable[] objects = renderableObjects.toArray(new RayTraceable[0]);
-
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
             renderThreaded(getImage().getPixelWriter(),
-                    new RayIntersectableList(objects));
+                    new RayIntersectableList(renderableObjects));
         } else {
             renderUnthreaded(getImage().getPixelWriter(),
-                    new RayIntersectableList(objects));
+                    new RayIntersectableList(renderableObjects));
         }
 
 

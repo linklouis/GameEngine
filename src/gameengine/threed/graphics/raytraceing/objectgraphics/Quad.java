@@ -32,7 +32,7 @@ public class Quad extends Polygon {
         vertex3 = v3;
         vertex4 = v4;
         setTexture(texture);
-        calculateCenter();
+        computeValues();
     }
 
     public Quad(Vector3D[] vertices, RayTracingTexture texture) {
@@ -41,7 +41,7 @@ public class Quad extends Polygon {
         vertex3 = vertices[2];
         vertex4 = vertices[3];
         setTexture(texture);
-        calculateCenter();
+        computeValues();
     }
 
     public Quad(double x, double y, double z, Vector3D displacement, RayTracingTexture texture) {
@@ -51,7 +51,7 @@ public class Quad extends Polygon {
         vertex3 = vertices[2];
         vertex4 = vertices[3];
         setTexture(texture);
-        calculateCenter();
+        computeValues();
     }
 
     /**

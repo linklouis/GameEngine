@@ -90,6 +90,7 @@ public class RayTracing extends GameDriver3D {
 
         new Rectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 TextureHelper.newReflecting(Color.AZURE)).initiate(this);
+
 //        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2,
@@ -462,7 +463,7 @@ public class RayTracing extends GameDriver3D {
 
     private void measureRender() {
         mainCam.requestUpdate();
-        mainCam.update((Collection<RayTraceable>) getGraphicsDriver().getCameraObjects());
+        mainCam.update(getGraphicsDriver().getVisualObjects());
         if (renders < NUM_TO_TEST) {
             getGraphicsDriver().getCamera().requestUpdate();
             avTime += mainCam.getRenderTime();

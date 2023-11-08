@@ -13,7 +13,10 @@ import javafx.scene.layout.Pane;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * A skeleton for a Camera that renders a 3D scene from a certain perspective.
@@ -21,7 +24,7 @@ import java.util.*;
  * @author Louis Link
  * @since 1.0
  */
-public abstract class Camera<VisualType extends GraphicsObject3D> extends GameObject {
+public abstract class Camera extends GameObject {
     private Vector3D position;
     /**
      * a {@link Vector3D} representing the amount the {@code Camera} is facing
@@ -47,7 +50,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      */
     private List<PostProcess> postProcesses = new ArrayList<>();
 
-    private final Class<? extends VisualType> visualType;
+    private final Class<? extends RayTraceable> visualType;
 
 
     /*
@@ -55,7 +58,8 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      */
 
     public Camera(Vector3D position, Vector3D direction,
-                  final Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
+                  final Vector2D imageDimensions, double fieldOfViewDegrees,
+                  Class<? extends RayTraceable> visualType) {
         super();
         this.visualType = visualType;
         this.position = position;
@@ -65,7 +69,8 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     }
 
     public Camera(double x, double y, double z, Vector3D direction,
-                  Vector2D imageDimensions, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
+                  Vector2D imageDimensions, double fieldOfViewDegrees,
+                  Class<? extends RayTraceable> visualType) {
         super();
         this.visualType = visualType;
         this.position = new Vector3D(x, y, z);
@@ -75,7 +80,8 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     }
 
     public Camera(double x, double y, double z, Vector3D direction,
-                  int imageWidth, int imageHeight, double fieldOfViewDegrees, Class<? extends VisualType> visualType) {
+                  int imageWidth, int imageHeight, double fieldOfViewDegrees,
+                  Class<? extends RayTraceable> visualType) {
         super();
         this.visualType = visualType;
         this.position = new Vector3D(x, y, z);
@@ -102,7 +108,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      *                          the scene.
      * @return True if a new frame has been rendered, otherwise false.
      */
-    public boolean update(Collection<VisualType> renderableObjects) {
+    public boolean update(Collection<RayTraceable> renderableObjects) {
         if (updateNeeded) {
             renderImage(renderableObjects);
 //            renderWithProcessing(renderableObjects);
@@ -112,16 +118,15 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         return false;
     }
 
-    public void displayOn(Pane root) {
-        root.getChildren().clear();
-        root.getChildren().setAll(new ImageView(image));
+    public void displayOn(ImageView view) {
+        view.setImage(image);
     }
 
-    public void renderWithProcessing(Collection<VisualType> renderableObjects) {
+    public void renderWithProcessing(Collection<RayTraceable> renderableObjects) {
         image = applyPostProcessing(renderImage(renderableObjects));
     }
 
-    public abstract WritableImage renderImage(Collection<VisualType> renderableObjects);
+    public abstract WritableImage renderImage(Collection<RayTraceable> renderableObjects);
 
     public void requestUpdate() {
         updateNeeded = true;
@@ -248,7 +253,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         getPostProcesses().add(process);
     }
 
-    public Class<? extends GraphicsObject3D> getVisualType() {
+    public Class<? extends GraphicsObject3D> getRayTraceable() {
         return RayTraceable.class;
     }
 }

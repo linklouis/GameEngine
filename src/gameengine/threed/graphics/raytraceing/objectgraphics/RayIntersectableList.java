@@ -3,6 +3,8 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.threed.utilities.RayIntersectable;
 
+import java.util.Collection;
+
 /**
  * A very lightweight and specific use-case singly linked list implementation
  * to optimize referencing RayIntersectables when ray tracing. Objects can only be
@@ -38,6 +40,10 @@ public final class RayIntersectableList {
         for (int i = items.length - 1; i >=0; i--) {
             add(items[i]);
         }
+    }
+
+    public RayIntersectableList(final Collection<? extends RayIntersectable> items) {
+        items.forEach(this::add);
     }
 
     public record Element(RayIntersectable value, RayIntersectableList.Element next) { }

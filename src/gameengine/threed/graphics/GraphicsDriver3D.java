@@ -1,7 +1,9 @@
 package gameengine.threed.graphics;
 
+import gameengine.threed.graphics.raytraceing.objectgraphics.Polygon;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -15,9 +17,9 @@ public class GraphicsDriver3D {
     public final int WIDTH, HEIGHT;
     public Color background = Color.BLACK;
     private Pane root;
+    private final ImageView view;
     private Scene scene;
     private final List<RayTraceable> visualObjects = new ArrayList<>();
-    private List<GraphicsObject3D> cameraObjects = new ArrayList<>();
     private Camera camera;
 
 
@@ -29,6 +31,7 @@ public class GraphicsDriver3D {
         WIDTH = width;
         HEIGHT = height;
         this.camera = camera;
+        view = new ImageView(camera.getImage());
     }
 
     public GraphicsDriver3D(int width, int height, Color bgColor, Camera camera) {
@@ -36,12 +39,14 @@ public class GraphicsDriver3D {
         HEIGHT = height;
         background = bgColor;
         this.camera = camera;
+        view = new ImageView(camera.getImage());
     }
 
     public void initialize(Stage stage) {
         setRoot(new VBox());
         getRoot().setPrefSize(camera.getWidth(), camera.getHeight());
         setScene(new Scene(getRoot(), Color.BLACK));
+        root.getChildren().add(view);
 
         stage.setScene(getScene());
         stage.show();
@@ -53,8 +58,7 @@ public class GraphicsDriver3D {
      */
 
     public void updateGraphics() {
-        camera.update(cameraObjects);
-        camera.displayOn(getRoot());
+        camera.update(visualObjects);
     }
 
 
@@ -64,7 +68,6 @@ public class GraphicsDriver3D {
 
     public void add(RayTraceable newObject) {
         visualObjects.add(newObject);
-        cameraObjects = camera.getValidObjects(visualObjects);
     }
 
     public RayTraceable get(int index) {
@@ -85,10 +88,6 @@ public class GraphicsDriver3D {
 
     public List<RayTraceable> getVisualObjects() {
         return visualObjects;
-    }
-
-    public List<? extends GraphicsObject3D> getCameraObjects() {
-        return cameraObjects;
     }
 
     public int getWidth() {
