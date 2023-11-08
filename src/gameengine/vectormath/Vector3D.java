@@ -167,6 +167,10 @@ public class Vector3D implements Vector<Vector3D> {
         return x * other.x + y * other.y + z * other.z;
     }
 
+    public double dotSelf() {
+        return x * x + y * y + z * z;
+    }
+
     @Override
     public double magnitude() {
         if (Double.isNaN(magnitude)) {
@@ -275,6 +279,13 @@ public class Vector3D implements Vector<Vector3D> {
                 this.y * other.z - this.z * other.y,
                 this.z * other.x - this.x * other.z,
                 this.x * other.y - this.y * other.x);
+    }
+
+    public Vector3D normal(final Vector3D v1, Vector3D v2) {
+        return new Vector3D(
+                (y - v1.y) * (z - v2.z) - (z - v1.z) * (y - v2.y),
+                (z - v1.z) * (x - v2.x) - (x - v1.x) * (z - v2.z),
+                (x - v1.x) * (y - v2.y) - (y - v1.y) * (x - v2.x));
     }
 
     public Vector3D crossWithJ(final double multiplier) {

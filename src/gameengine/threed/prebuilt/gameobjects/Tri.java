@@ -13,7 +13,7 @@ public class Tri extends Polygon {
 
     public Tri(Vector3D point1, Vector3D point2, Vector3D point3, RayTracingTexture texture) {
         super(new TriGraphics());
-        get(TriGraphics.class).instantiate(this, point1, point2, point3, texture);
+        get(TriGraphics.class).instantiate(this, new Vector3D[] { point1, point2, point3 }, texture);
     }
 
 

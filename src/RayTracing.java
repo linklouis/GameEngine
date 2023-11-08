@@ -51,6 +51,10 @@ public class RayTracing extends GameDriver3D {
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
 
         setupScene1();
+//        newObject(light);
+//        setupRandTri(5, (color) -> new BaseTexture(color, false), 3);
+//        mainCam.setFieldOfViewDegrees(100);
+
     }
 
 
@@ -373,6 +377,14 @@ public class RayTracing extends GameDriver3D {
                 Vector3D.random(-range, range),
                 textureSupplier.apply(Vector3D.random(0, 1).toColor())
         ));
+    }
+
+    private void setupRandTri(final double range,
+                              final Function<Color, RayTracingTexture>
+                                      textureSupplier, int num) {
+        for (int i = 0; i < num; i++) {
+            setupRandTri(range, textureSupplier);
+        }
     }
 
     private void setupRandSphere(final double range,

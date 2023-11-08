@@ -3,6 +3,7 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.geometry.Ray;
+import gameengine.threed.geometry.Triangle3D;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
@@ -11,20 +12,11 @@ import gameengine.vectormath.Vector3D;
 import java.util.List;
 
 public class TriGraphics extends RayTraceable {
-    private Vector3D vertex1;
-    private Vector3D vertex2;
-    private Vector3D vertex3;
+    private Triangle3D triData;
 
     // Precomputed values for collision checks
-    private Vector3D v0;
-    private Vector3D v1;
-    private double dot00;
-    private double dot01;
-    private double dot11;
-    private double invDenom;
-
-    private Vector3D dirTo2;
-    private Vector3D dirTo3;
+//    private Vector3D dirTo2;
+//    private Vector3D dirTo3;
     private Vector3D normal;
     private Vector3D center;
 
@@ -44,14 +36,17 @@ public class TriGraphics extends RayTraceable {
                 new ArgumentContext(
                         this::computeValues,
                         new ModifierInstantiateParameter<>(
-                                "vertex1", Vector3D.class,
-                                this::setVertex1NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex2", Vector3D.class,
-                                this::setVertex2NoCompute),
-                        new ModifierInstantiateParameter<>(
-                                "vertex3", Vector3D.class,
-                                this::setVertex3NoCompute),
+                                "vertices", Vector3D[].class,
+                                this::setVertices),
+//                        new ModifierInstantiateParameter<>(
+//                                "vertex1", Vector3D.class,
+//                                this::setVertex1NoCompute),
+//                        new ModifierInstantiateParameter<>(
+//                                "vertex2", Vector3D.class,
+//                                this::setVertex2NoCompute),
+//                        new ModifierInstantiateParameter<>(
+//                                "vertex3", Vector3D.class,
+//                                this::setVertex3NoCompute),
                         new ModifierInstantiateParameter<>(
                                 "texture", RayTracingTexture.class,
                                 this::setTexture)
@@ -77,19 +72,10 @@ public class TriGraphics extends RayTraceable {
      * Precomputes values for collision checks
      */
     private void computeValues() {
-        v0 = vertex2.subtract(vertex1);
-        v1 = vertex3.subtract(vertex1);
+//        dirTo2 = triData.vertex2().subtract(triData.vertex1());
+//        dirTo3 = triData.vertex3().subtract(triData.vertex1());
 
-        dot00 = v0.dotProduct(v0);
-        dot01 = v0.dotProduct(v1);
-        dot11 = v1.dotProduct(v1);
-
-        invDenom = (dot00 * dot11 - dot01 * dot01);
-
-        dirTo2 = vertex2.subtract(vertex1);
-        dirTo3 = vertex3.subtract(vertex1);
-
-        normal = dirTo2.crossProduct(dirTo3);
+        normal = triData.normal();//triData.vertex2().subtract(triData.vertex1()).crossProduct(triData.vertex3().subtract(triData.vertex1()));
         calculateCenter();
     }
 
@@ -114,9 +100,9 @@ public class TriGraphics extends RayTraceable {
      */
     @Override
     public double distanceToCollide(Ray ray, double curSmallestDist) {
-//                normal.dotWithSubtracted(vertex1, ray.getPosition())
+//                normal.dotWithSubtracted(triData.vertex1(), ray.getPosition())
 //                / normal.dotWithUnitOf(ray.getDirection());
-        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
+        double distance = normal.distToCollidePlane(triData.vertex1(), ray.getPosition(), ray.getDirection());
         if (distance <= 0 || distance >= curSmallestDist || !inRange(ray.pointAtDistance(distance))) {
             return Double.NaN;
         }
@@ -130,15 +116,15 @@ public class TriGraphics extends RayTraceable {
      */
     public boolean inRange(Vector3D point) {
         // ChatGPT
-        double dot02 = v0.dotWithSubtracted(point, vertex1);
-        double dot12 = v1.dotWithSubtracted(point, vertex1);
+        double dot02 = triData.v0().dotWithSubtracted(point, triData.vertex1());
+        double dot12 = triData.v1().dotWithSubtracted(point, triData.vertex1());
 
         // Compute barycentric coordinates
-        double u = (dot11 * dot02 - dot01 * dot12);
-        double v = (dot00 * dot12 - dot01 * dot02);
+        double u = (triData.dot11() * dot02 - triData.dot01() * dot12);
+        double v = (triData.dot00() * dot12 - triData.dot01() * dot02);
 
         // Check if the point is inside the triangle
-        return (u >= 0) && (v >= 0) && ((u + v) <= invDenom);
+        return (u >= 0) && (v >= 0) && ((u + v) <= triData.invDenom());
     }
 
 
@@ -148,30 +134,30 @@ public class TriGraphics extends RayTraceable {
 
     @Override
     public Vector3D[] getVertices() {
-        return new Vector3D[] { vertex1, vertex2, vertex3 };
+        return new Vector3D[] { triData.vertex1(), triData.vertex2(), triData.vertex3() };
     }
 
     public double minX() {
-        return Math.min(Math.min(vertex1.getX(), vertex2.getX()), vertex3.getX());
+        return Math.min(Math.min(triData.vertex1().getX(), triData.vertex2().getX()), triData.vertex3().getX());
     }
     public double minY() {
-        return Math.min(Math.min(vertex1.getY(), vertex2.getY()), vertex3.getY());
+        return Math.min(Math.min(triData.vertex1().getY(), triData.vertex2().getY()), triData.vertex3().getY());
     }
 
     public double minZ() {
-        return Math.min(Math.min(vertex1.getZ(), vertex2.getZ()), vertex3.getZ());
+        return Math.min(Math.min(triData.vertex1().getZ(), triData.vertex2().getZ()), triData.vertex3().getZ());
     }
 
     public double maxX() {
-        return max(vertex1.getX(), getVertex2().getX(), vertex3.getX())/*Math.vertex3(Math.vertex3(vertex1.getX(), vertex2.getX()), vertex3.getX())*/;
+        return max(triData.vertex1().getX(), getVertex2().getX(), triData.vertex3().getX())/*Math.vertex3(Math.vertex3(triData.vertex1().getX(), triData.vertex2().getX()), triData.vertex3().getX())*/;
     }
 
     public double maxY() {
-        return Math.max(Math.max(vertex1.getY(), vertex2.getY()), vertex3.getY());
+        return Math.max(Math.max(triData.vertex1().getY(), triData.vertex2().getY()), triData.vertex3().getY());
     }
 
     public double maxZ() {
-        return Math.max(Math.max(vertex1.getZ(), vertex2.getZ()), vertex3.getZ());
+        return Math.max(Math.max(triData.vertex1().getZ(), triData.vertex2().getZ()), triData.vertex3().getZ());
     }
 
     private double max(double a, double b, double c) {
@@ -194,63 +180,67 @@ public class TriGraphics extends RayTraceable {
     }
 
     public Vector3D getVertex1() {
-        return vertex1;
+        return triData.vertex1();
     }
 
     public Vector3D getVertex2() {
-        return vertex2;
+        return triData.vertex2();
     }
 
     public Vector3D getVertex3() {
-        return vertex3;
+        return triData.vertex3();
     }
 
-    private void setVertex1NoCompute(Vector3D vertex1) {
-        this.vertex1 = vertex1;
+    protected void setVertices(Vector3D[] vertices) {
+        triData = Triangle3D.computeValues(vertices[0], vertices[1], vertices[2]);
     }
 
-    private void setVertex2NoCompute(Vector3D vertex2) {
-        this.vertex2 = vertex2;
-    }
+//    private void setVertex1NoCompute(Vector3D triData.vertex1()) {
+//        this.vertex1 = triData.vertex1();
+//    }
+//
+//    private void setVertex2NoCompute(Vector3D triData.vertex2()) {
+//        this.vertex2 = triData.vertex2();
+//    }
+//
+//    private void setVertex3NoCompute(Vector3D triData.vertex3()) {
+//        this.vertex3 = triData.vertex3();
+//    }
 
-    private void setVertex3NoCompute(Vector3D vertex3) {
-        this.vertex3 = vertex3;
-    }
-
-    public void setVertex1(Vector3D vertex1) {
-        this.vertex1 = vertex1;
-        computeValues();
-    }
-
-    public void setVertex2(Vector3D vertex2) {
-        this.vertex2 = vertex2;
-        v0 = vertex2.subtract(vertex1);
-
-        dot00 = v0.dotProduct(v0);
-        dot01 = v0.dotProduct(v1);
-
-        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-
-        dirTo2 = vertex2.subtract(vertex1);
-
-        normal = dirTo2.crossProduct(dirTo3);
-        calculateCenter();
-    }
-
-    public void setVertex3(Vector3D vertex3) {
-        this.vertex3 = vertex3;
-        v1 = vertex3.subtract(vertex1);
-
-        dot01 = v0.dotProduct(v1);
-        dot11 = v1.dotProduct(v1);
-
-        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-
-        dirTo3 = vertex3.subtract(vertex1);
-
-        normal = dirTo2.crossProduct(dirTo3);
-        calculateCenter();
-    }
+//    public void setVertex1(Vector3D triData.vertex1()) {
+//        this.vertex1 = triData.vertex1();
+//        computeValues();
+//    }
+//
+//    public void setVertex2(Vector3D triData.vertex2()) {
+//        this.vertex2 = triData.vertex2();
+//        v0 = triData.vertex2().subtract(triData.vertex1());
+//
+//        dot00 = v0.dotProduct(v0);
+//        dot01 = v0.dotProduct(v1);
+//
+//        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
+//
+//        dirTo2 = triData.vertex2().subtract(triData.vertex1());
+//
+//        normal = dirTo2.crossProduct(dirTo3);
+//        calculateCenter();
+//    }
+//
+//    public void setVertex3(Vector3D triData.vertex3()) {
+//        this.vertex3 = triData.vertex3();
+//        v1 = triData.vertex3().subtract(triData.vertex1());
+//
+//        dot01 = v0.dotProduct(v1);
+//        dot11 = v1.dotProduct(v1);
+//
+//        invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
+//
+//        dirTo3 = triData.vertex3().subtract(triData.vertex1());
+//
+//        normal = dirTo2.crossProduct(dirTo3);
+//        calculateCenter();
+//    }
 
     @Override
     public String toString() {
