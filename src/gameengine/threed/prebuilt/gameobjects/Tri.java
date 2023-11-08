@@ -1,8 +1,8 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.threed.graphics.objectgraphics.Polygon;
+import gameengine.threed.graphics.objectgraphics.skeletons.Polygon;
 import gameengine.threed.graphics.raytraceing.Ray;
-import gameengine.threed.graphics.textures.RayTracingTexture;
+import gameengine.threed.graphics.objectgraphics.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 
 public class Tri extends Polygon {

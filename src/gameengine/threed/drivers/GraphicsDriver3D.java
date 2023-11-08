@@ -1,7 +1,7 @@
 package gameengine.threed.drivers;
 
-import gameengine.threed.graphics.RayTracedCamera;
-import gameengine.threed.graphics.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.rendering.RayTracedCamera;
+import gameengine.threed.graphics.objectgraphics.skeletons.RayTraceable;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;

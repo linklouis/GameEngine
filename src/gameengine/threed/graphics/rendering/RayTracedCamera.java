@@ -1,8 +1,8 @@
-package gameengine.threed.graphics;
+package gameengine.threed.graphics.rendering;
 
-import gameengine.threed.graphics.objectgraphics.GraphicsObject3D;
+import gameengine.threed.graphics.objectgraphics.skeletons.GraphicsObject3D;
 import gameengine.threed.graphics.raytraceing.RayIntersectableList;
-import gameengine.threed.graphics.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.objectgraphics.skeletons.RayTraceable;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.RayPathTracer;
 import gameengine.timeformatting.TimeConversionFactor;

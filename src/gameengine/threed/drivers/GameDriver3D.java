@@ -1,8 +1,7 @@
 package gameengine.threed.drivers;
 
-import gameengine.threed.graphics.objectgraphics.Polygon;
-import gameengine.threed.graphics.objectgraphics.RayTraceable;
-import gameengine.threed.prebuilt.gameobjects.PolyObject;
+import gameengine.threed.graphics.objectgraphics.skeletons.RayTraceable;
+import gameengine.threed.graphics.objectgraphics.skeletons.PolyObject;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.stage.Stage;

@@ -1,4 +1,4 @@
-package gameengine.threed.graphics.objectgraphics;
+package gameengine.threed.graphics.objectgraphics.skeletons;
 
 import gameengine.vectormath.Vector3D;
 

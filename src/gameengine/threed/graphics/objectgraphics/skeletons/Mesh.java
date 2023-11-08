@@ -1,6 +1,5 @@
-package gameengine.threed.prebuilt.gameobjects;
+package gameengine.threed.graphics.objectgraphics.skeletons;
 
-import gameengine.threed.graphics.objectgraphics.Polygon;
 import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
