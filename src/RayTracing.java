@@ -1,20 +1,19 @@
-import gameengine.threed.GameDriver3D;
-import gameengine.threed.graphics.GraphicsDriver3D;
-import gameengine.threed.graphics.raytraceing.RayTracedCamera;
-import gameengine.threed.graphics.raytraceing.objectgraphics.Quad;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.graphics.raytraceing.objectgraphics.Tri;
-import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
-import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
-import gameengine.threed.graphics.raytraceing.textures.SubsurfaceTexture;
+import gameengine.threed.drivers.GameDriver3D;
+import gameengine.threed.drivers.GraphicsDriver3D;
+import gameengine.threed.graphics.RayTracedCamera;
+import gameengine.threed.prebuilt.gameobjects.Quad;
+import gameengine.threed.graphics.objectgraphics.RayTraceable;
+import gameengine.threed.prebuilt.gameobjects.Tri;
+import gameengine.threed.graphics.textures.BaseTexture;
+import gameengine.threed.graphics.textures.RayTracingTexture;
+import gameengine.threed.graphics.textures.ReflectingTexture;
+import gameengine.threed.graphics.textures.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.*;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
-import java.util.Collection;
 import java.util.Random;
 import java.util.function.Function;
 

@@ -1,8 +1,6 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.utilities.RayIntersectable;
+import gameengine.threed.graphics.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

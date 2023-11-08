@@ -1,4 +1,4 @@
-package gameengine.threed.graphics.raytraceing.textures;
+package gameengine.threed.graphics.textures;
 
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.Reflection;

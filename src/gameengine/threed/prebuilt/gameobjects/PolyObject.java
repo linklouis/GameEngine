@@ -1,8 +1,8 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.threed.GameDriver3D;
-import gameengine.threed.graphics.raytraceing.objectgraphics.Polygon;
-import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.drivers.GameDriver3D;
+import gameengine.threed.graphics.objectgraphics.Polygon;
+import gameengine.threed.graphics.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 
 public abstract class PolyObject<PolyType extends Polygon> extends Mesh<PolyType> {

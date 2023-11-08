@@ -1,16 +1,21 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.graphics;
 
-import gameengine.threed.graphics.Camera;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.objectgraphics.GraphicsObject3D;
+import gameengine.threed.graphics.raytraceing.RayIntersectableList;
+import gameengine.threed.graphics.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.graphics.raytraceing.RayPathTracer;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +28,27 @@ import java.util.concurrent.TimeUnit;
  * @author Louis Link
  * @since 1.0
  */
-public class RayTracedCamera extends Camera {
+public class RayTracedCamera {
+    private Vector3D position;
+    /**
+     * a {@link Vector3D} representing the amount the {@code Camera} is facing
+     * in each direction.
+     */
+    private Vector3D direction;
+    /**
+     * The {@link WritableImage} the {@code Camera} will render the image on.
+     */
+    private WritableImage image;
+    /**
+     * The number of degrees in the horizontal field of view.
+     */
+    private double fieldOfViewDegrees;
+    /**
+     * A flag indicating that the scene has changed, and the {@code Camera}
+     * needs to render a new frame.
+     */
+    private boolean updateNeeded = true;
+
     /**
      * The number of rays averaged to find each pixel's color.
      */
@@ -80,8 +105,10 @@ public class RayTracedCamera extends Camera {
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded,
                            final double fieldOfViewDegrees) {
-        super(position, direction, imageDimensions, fieldOfViewDegrees,
-                RayTraceable.class);
+        this.position = position;
+        this.direction = direction.unitVector();
+        image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
+        setFieldOfViewDegrees(fieldOfViewDegrees);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -108,8 +135,10 @@ public class RayTracedCamera extends Camera {
                            final Vector2D imageDimensions,
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded) {
-        super(position, direction, imageDimensions, 60.0,
-                RayTraceable.class);
+        this.position = position;
+        this.direction = direction.unitVector();
+        image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
+        setFieldOfViewDegrees(60);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -142,8 +171,10 @@ public class RayTracedCamera extends Camera {
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded,
                            final double fieldOfViewDegrees) {
-        super(x, y, z, direction, imageDimensions, fieldOfViewDegrees,
-                RayTraceable.class);
+        this.position = new Vector3D(x, y, z);
+        this.direction = direction.unitVector();
+        image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
+        setFieldOfViewDegrees(fieldOfViewDegrees);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -173,8 +204,10 @@ public class RayTracedCamera extends Camera {
                            final Vector2D imageDimensions,
                            final int maxBounces, final int raysPerPixel,
                            final boolean multiThreaded) {
-        super(x, y, z, direction, imageDimensions, 60.0,
-                RayTraceable.class);
+        this.position = new Vector3D(x, y, z);
+        this.direction = direction.unitVector();
+        image = new WritableImage((int) imageDimensions.getX(), (int) imageDimensions.getY());
+        setFieldOfViewDegrees(60);
         this.maxBounces = maxBounces;
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
@@ -194,7 +227,6 @@ public class RayTracedCamera extends Camera {
      *                          for the scene.
      * @return The rendered scene as a {@link WritableImage}.
      */
-    @Override
     public WritableImage renderImage(final Collection<RayTraceable> renderableObjects) {
         long startTime = System.nanoTime();
 
@@ -282,6 +314,50 @@ public class RayTracedCamera extends Camera {
                         (getHeight() - y * 2) * scaleX / getWidth()));
     }
 
+    /**
+     * Renders a new frame if it has been requested and applies
+     * post-processing, otherwise returns.
+     *
+     * @param renderableObjects The {@link GraphicsObject3D} objects to be rendered in
+     *                          the scene.
+     * @return True if a new frame has been rendered, otherwise false.
+     */
+    public boolean update(Collection<RayTraceable> renderableObjects) {
+        if (updateNeeded) {
+            renderImage(renderableObjects);
+            updateNeeded = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void requestUpdate() {
+        updateNeeded = true;
+    }
+
+    /**
+     * Saves {@link #image} to a .png file with the given path.
+     *
+     * @param fileName The file path to save the image to.
+     * @throws IOException
+     */
+    public void saveToFile(String fileName) throws IOException {
+        File file = new File(fileName);
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+    }
+
+    /**
+     * Saves {@link #image} to a file of the given image format and file path.
+     *
+     * @param fileName The file path to save the image to.
+     * @param format The image format to use to save the file.
+     * @throws IOException
+     */
+    public void saveToFile(String fileName, String format) throws IOException {
+        File file = new File(fileName);
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), format, file);
+    }
+
 
     /*
      ** Ray Tracing:
@@ -319,9 +395,8 @@ public class RayTracedCamera extends Camera {
      * Utilities:
      */
 
-    @Override
     protected void setFieldOfView(final double fieldOfViewDegrees) {
-        super.setFieldOfView(fieldOfViewDegrees);
+        this.fieldOfViewDegrees = fieldOfViewDegrees;
         updateScaleX();
     }
 
@@ -364,9 +439,8 @@ public class RayTracedCamera extends Camera {
         return tileDimensions;
     }
 
-    @Override
     public void setImage(WritableImage image) {
-        super.setImage(image);
+        this.image = image;
         tileDimensions = new Vector2D(
                 findClosestFactor((int) getWidth(), targetTileSize),
                 findClosestFactor((int) getHeight(), targetTileSize));
@@ -392,6 +466,62 @@ public class RayTracedCamera extends Camera {
 
     public void updateScaleX() {
         scaleX = Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+    }
+
+    public boolean needsUpdate() {
+        return updateNeeded;
+    }
+
+    public double getFieldOfViewDegrees() {
+        return fieldOfViewDegrees;
+    }
+
+    public double getFieldOfViewRadians() {
+        return Math.toRadians(fieldOfViewDegrees);
+    }
+
+    public void setFieldOfViewDegrees(double fieldOfViewDegrees) {
+        setFieldOfView(fieldOfViewDegrees);
+    }
+
+    public void setFieldOfViewRadians(double fieldOfViewRadians) {
+        setFieldOfView(Math.toDegrees(fieldOfViewRadians));
+    }
+
+    public Vector3D getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Vector3D direction) {
+        this.direction = direction.unitVector();
+    }
+
+    public Vector3D getLocation() {
+        return position;
+    }
+
+    public void setLocation(Vector3D newLocation) {
+        position = newLocation;
+    }
+
+    public WritableImage getImage() {
+        return image;
+    }
+
+    public double getWidth() {
+        return getImage().getWidth();
+    }
+
+    public double getHeight() {
+        return getImage().getHeight();
+    }
+
+    public double getAspectRatio() {
+        return image.getHeight() / image.getWidth();
+    }
+
+    public Class<? extends GraphicsObject3D> getRayTraceable() {
+        return RayTraceable.class;
     }
 }
 

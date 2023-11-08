@@ -1,19 +1,15 @@
-package gameengine.threed;
+package gameengine.threed.drivers;
 
-import gameengine.skeletons.GameObject;
-import gameengine.threed.graphics.GraphicsDriver3D;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.objectgraphics.Polygon;
+import gameengine.threed.graphics.objectgraphics.RayTraceable;
+import gameengine.threed.prebuilt.gameobjects.PolyObject;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class GameDriver3D extends Application {
-    private final List<GameObject> objects = new ArrayList<>();
     private final GraphicsDriver3D graphicsDriver;
     private AnimationTimer animationTimer;
     private final String name;
@@ -52,10 +48,6 @@ public abstract class GameDriver3D extends Application {
     }
 
     public abstract void updateGame();
-
-    public void forEach(Consumer<GameObject> function) {
-        objects.forEach(function);
-    }
 
     protected AnimationTimer setupAnimationTimer() {
         return new AnimationTimer() {
@@ -97,9 +89,8 @@ public abstract class GameDriver3D extends Application {
     public void newObject(RayTraceable object) {
         getGraphicsDriver().add(object);
     }
-
-    public List<GameObject> getObjects() {
-        return objects;
+    public void newObject(PolyObject<?> object) {
+        object.forEachPoly(graphicsDriver::add);
     }
 
     public GraphicsDriver3D getGraphicsDriver() {

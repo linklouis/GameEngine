@@ -1,7 +1,8 @@
-package gameengine.threed.graphics.raytraceing.objectgraphics;
+package gameengine.threed.prebuilt.gameobjects;
 
+import gameengine.threed.graphics.objectgraphics.Polygon;
 import gameengine.threed.graphics.raytraceing.Ray;
-import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.threed.graphics.textures.RayTracingTexture;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 

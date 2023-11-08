@@ -1,7 +1,7 @@
-package gameengine.threed.graphics;
+package gameengine.threed.drivers;
 
-import gameengine.threed.graphics.raytraceing.objectgraphics.Polygon;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.RayTracedCamera;
+import gameengine.threed.graphics.objectgraphics.RayTraceable;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -20,21 +20,21 @@ public class GraphicsDriver3D {
     private final ImageView view;
     private Scene scene;
     private final List<RayTraceable> visualObjects = new ArrayList<>();
-    private Camera camera;
+    private RayTracedCamera camera;
 
 
     /*
      * Construction:
      */
 
-    public GraphicsDriver3D(int width, int height, Camera camera) {
+    public GraphicsDriver3D(int width, int height, RayTracedCamera camera) {
         WIDTH = width;
         HEIGHT = height;
         this.camera = camera;
         view = new ImageView(camera.getImage());
     }
 
-    public GraphicsDriver3D(int width, int height, Color bgColor, Camera camera) {
+    public GraphicsDriver3D(int width, int height, Color bgColor, RayTracedCamera camera) {
         WIDTH = width;
         HEIGHT = height;
         background = bgColor;
@@ -78,11 +78,11 @@ public class GraphicsDriver3D {
         visualObjects.forEach(function);
     }
 
-    public Camera getCamera() {
+    public RayTracedCamera getCamera() {
         return camera;
     }
 
-    public void setCamera(Camera camera) {
+    public void setCamera(RayTracedCamera camera) {
         this.camera = camera;
     }
 

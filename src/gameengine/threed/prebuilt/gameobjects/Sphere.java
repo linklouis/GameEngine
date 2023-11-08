@@ -1,9 +1,9 @@
 package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.threed.graphics.raytraceing.Ray;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
+import gameengine.threed.graphics.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.textures.RayTracingTexture;
+import gameengine.threed.graphics.textures.ReflectingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

@@ -1,7 +1,5 @@
-package gameengine.threed.graphics.raytraceing.objectgraphics;
+package gameengine.threed.graphics.raytraceing;
 
-
-import gameengine.threed.utilities.RayIntersectable;
 
 import java.util.Collection;
 

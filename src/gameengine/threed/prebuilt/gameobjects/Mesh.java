@@ -1,6 +1,6 @@
 package gameengine.threed.prebuilt.gameobjects;
 
-import gameengine.threed.graphics.raytraceing.objectgraphics.Polygon;
+import gameengine.threed.graphics.objectgraphics.Polygon;
 import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package gameengine.threed.utilities;
+package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
