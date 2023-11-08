@@ -58,10 +58,6 @@ public interface Vector<T extends Vector<T>> {
      * Statics:
      */
 
-    static double clamp(double num, double min, double max) {
-        return Math.min(max, Math.max(min, num));
-    }
-
     static <VectorType extends Vector<VectorType>> VectorType sum(VectorType empty, VectorType... vectors) {
         VectorType sum = empty.newEmpty();
 
