@@ -11,7 +11,6 @@ import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SphereGraphics extends RayTraceable {
     private double radius;

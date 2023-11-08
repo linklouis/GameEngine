@@ -1,7 +1,5 @@
 package gameengine.threed.utilities;
 
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.utilities.VectorLineIntersectable;
 import gameengine.vectormath.Vector3D;
 
 public class VectorLine3D {

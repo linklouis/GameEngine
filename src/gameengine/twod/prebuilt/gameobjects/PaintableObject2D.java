@@ -1,7 +1,7 @@
 package gameengine.twod.prebuilt.gameobjects;
 
-import gameengine.twod.graphics.GraphicsObject2D;
 import gameengine.skeletons.Modifier;
+import gameengine.twod.graphics.GraphicsObject2D;
 import gameengine.twod.prebuilt.objectmovement.InPlane;
 import gameengine.utilities.ArgumentContext;
 import javafx.scene.canvas.GraphicsContext;

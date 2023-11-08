@@ -1,7 +1,5 @@
 package gameengine.skeletons;
 
-import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
-
 import java.util.ArrayList;
 import java.util.function.Supplier;
 

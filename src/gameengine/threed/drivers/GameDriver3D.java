@@ -2,7 +2,6 @@ package gameengine.threed.drivers;
 
 import gameengine.skeletons.GameDriver;
 import gameengine.skeletons.GameObject;
-import gameengine.threed.drivers.GraphicsDriver3D;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsObject3D;

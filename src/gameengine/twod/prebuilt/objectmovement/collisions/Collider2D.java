@@ -1,8 +1,8 @@
 package gameengine.twod.prebuilt.objectmovement.collisions;
 
-import gameengine.twod.graphics.GraphicsObject2D;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
+import gameengine.twod.graphics.GraphicsObject2D;
 import gameengine.twod.prebuilt.objectmovement.InPlane;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
 import gameengine.utilities.ArgumentContext;

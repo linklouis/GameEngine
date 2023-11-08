@@ -1,11 +1,11 @@
 package gameengine.twod.prebuilt.gameobjects;
 
-import gameengine.twod.graphics.Visual2D;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
+import gameengine.twod.graphics.Visual2D;
 import gameengine.twod.prebuilt.objectmovement.InPlane;
-import gameengine.twod.prebuilt.objectmovement.collisions.LayerCollider2D;
 import gameengine.twod.prebuilt.objectmovement.collisions.CollisionHandler;
+import gameengine.twod.prebuilt.objectmovement.collisions.LayerCollider2D;
 import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
 import gameengine.vectormath.Vector2D;
 import javafx.scene.paint.Color;

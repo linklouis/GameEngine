@@ -4,7 +4,9 @@ import gameengine.twod.prebuilt.objectmovement.physics.PhysicsObject2D;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class PhysicsCollisionHandler extends CollisionHandler<PhysicsCollision> {
     // TODO Change so that instead of moving between frames, applies a force away from center of intersecting objects??

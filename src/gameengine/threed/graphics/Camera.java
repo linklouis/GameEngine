@@ -10,7 +10,6 @@ import gameengine.vectormath.Vector3D;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Pane;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -46,7 +45,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      * A {@link List} of all the {@link PostProcess}es that the {@code Camera}
      * applies to the rendered image.
      */
-    private List<PostProcess> postProcesses = new ArrayList<>();
+    private final List<PostProcess> postProcesses = new ArrayList<>();
 
     private final Class<? extends VisualType> visualType;
 
@@ -141,8 +140,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
      * @throws IOException
      */
     public void saveToFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        saveToFile(fileName, "png");
     }
 
     /**
@@ -168,7 +166,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     public WritableImage applyPostProcessing(WritableImage image) {
         WritableImage currentImage = image;
         for (PostProcess process : postProcesses) {
-            currentImage = process.process(image);
+            currentImage = process.process(currentImage);
         }
         return currentImage;
     }
@@ -192,6 +190,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         }
         return Optional.empty();
     }
+
 
     /*
      * Utilities:

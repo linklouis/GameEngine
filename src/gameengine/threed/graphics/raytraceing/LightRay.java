@@ -54,7 +54,7 @@ public class LightRay extends Ray {
     @Override
     public void reflect(RayTraceable collider, int numBounces) {
         Reflection reflectionDetails = collider.reflection(this);
-        direction = reflectionDetails.direction().unitVectorMutable();
+        direction = reflectionDetails.direction();
         color.addMutable(reflectionDetails.color().scalarDivide(numBounces));
     }
 
@@ -69,10 +69,9 @@ public class LightRay extends Ray {
      */
     @Override
     public LightRay getReflected(RayTraceable collider, int numBounces) {
-        return new LightRay(position, collider.reflection(this));
-//        Reflection reflectionDetails = collider.reflection(this);
-//        return new LightRay(position, reflectionDetails.direction(),
-//                reflectionDetails.color().scalarDivide(numBounces));
+        Reflection reflectionDetails = collider.reflection(this);
+        return new LightRay(position, reflectionDetails.direction(),
+                reflectionDetails.color().scalarDivide(numBounces));
     }
 
 

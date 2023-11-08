@@ -1,8 +1,8 @@
 package gameengine.threed.prebuilt.objectmovement.collisions;
 
-import gameengine.threed.drivers.GameDriver3D;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
+import gameengine.threed.drivers.GameDriver3D;
 import gameengine.threed.prebuilt.gameobjects.Mesh;
 import gameengine.threed.prebuilt.gameobjects.Polygon;
 import gameengine.vectormath.Vector3D;

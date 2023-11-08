@@ -1,6 +1,5 @@
 package gameengine.skeletons;
 
-import gameengine.skeletons.Visual;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

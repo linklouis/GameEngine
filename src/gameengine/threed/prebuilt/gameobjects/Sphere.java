@@ -2,12 +2,12 @@ package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
+import gameengine.threed.graphics.Visual3D;
+import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
-import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.SphereCollider;
-import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

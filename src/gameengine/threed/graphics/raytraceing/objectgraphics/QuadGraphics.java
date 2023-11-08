@@ -5,6 +5,7 @@ import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.utilities.VectorLine3D;
+import gameengine.twod.Rect;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
 import gameengine.vectormath.Vector2D;
@@ -21,10 +22,7 @@ public class QuadGraphics extends RayTraceable {
     // Precomputed values for collision checks
     private Vector3D planeXaxis;
     private Vector3D planeYaxis;
-    private double minPlaneX;
-    private double minPlaneY;
-    private double maxPlaneX;
-    private double maxPlaneY;
+    private Rect planeCoords;
     private Vector3D normal;
     private Vector3D center;
 
@@ -94,11 +92,11 @@ public class QuadGraphics extends RayTraceable {
 
         normal = planeXaxis.crossProduct(planeYaxis);
         calculateCenter();
+        calculatePlaneCoords();
+    }
 
-        minPlaneX = Math.min(onPlane(vertex1).getX(), onPlane(vertex2).getX());
-        maxPlaneX = Math.max(onPlane(vertex1).getX(), onPlane(vertex2).getX());
-        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
-        maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
+    private void calculatePlaneCoords() {
+        planeCoords = new Rect(onPlane(vertex1), onPlane(vertex3), true);
     }
 
     /**
@@ -144,9 +142,10 @@ public class QuadGraphics extends RayTraceable {
      * @return True if the point is within the vertices, otherwise false.
      */
     public boolean inRange(final VectorLine3D line, double distance) {
-        Vector2D planeCoordinates = onPlane(line, distance);
-        return  minPlaneX <= planeCoordinates.getX() && maxPlaneX >= planeCoordinates.getX()
-                && minPlaneY <= planeCoordinates.getY() && maxPlaneY >= planeCoordinates.getY();
+        return planeCoords.contains(onPlane(line, distance));
+//        Vector2D planeCoordinates = onPlane(line, distance);
+//        return  minPlaneX <= planeCoordinates.getX() && maxPlaneX >= planeCoordinates.getX()
+//                && minPlaneY <= planeCoordinates.getY() && maxPlaneY >= planeCoordinates.getY();
     }
 
     public Vector2D onPlane(Vector3D other) {
@@ -266,15 +265,17 @@ public class QuadGraphics extends RayTraceable {
     }
 
     public void updateYVars() {
-        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
-        maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
+//        minPlaneY = Math.min(onPlane(vertex1).getY(), onPlane(vertex3).getY());
+//        maxPlaneY = Math.max(onPlane(vertex1).getY(), onPlane(vertex3).getY());
         calculatePlaneYaxis();
+        calculatePlaneCoords();
     }
 
     public void updateXVars() {
-        minPlaneX = Math.min(onPlane(vertex1).getX(), onPlane(vertex2).getX());
-        maxPlaneX = Math.max(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+//        minPlaneX = Math.min(onPlane(vertex1).getX(), onPlane(vertex2).getX());
+//        maxPlaneX = Math.max(onPlane(vertex1).getX(), onPlane(vertex2).getX());
         calculatePlaneXaxis();
+        calculatePlaneCoords();
     }
 
     public void calculatePlaneYaxis() {
