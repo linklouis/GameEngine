@@ -6,7 +6,7 @@ import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.Reflection;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.utilities.RayIntersectable;
+import gameengine.threed.geometry.RayIntersectable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 

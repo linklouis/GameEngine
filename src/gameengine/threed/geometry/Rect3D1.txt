@@ -1,0 +1,33 @@
+package gameengine.threed.geometry;
+
+import gameengine.vectormath.Vector2D;
+import gameengine.vectormath.Vector3D;
+
+public record Rect3D1(Vector3D min, Vector3D max) {
+    public static Rect3D1 newWithCorrectedValues(Vector3D min, Vector3D max) {
+        return new Rect3D1(new Vector3D(Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY()), Math.min(min.getZ(), max.getZ())),
+                new Vector3D(Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY()), Math.min(min.getZ(), max.getZ())));
+    }
+
+    public boolean contains(Vector2D point) {
+        return min.getX() < point.getX() && max.getX() > point.getX()
+                && min.getY() < point.getY() && max.getY() > point.getY();
+    }
+
+    private Vector3D getPlaneXaxis() {
+    }
+
+    public Vector2D onPlane(Vector3D other) {
+        return other.projectToPlane(getPlaneXaxis(), getPlaneYaxis());
+    }
+
+    public Vector2D onPlane(final VectorLine3D line, double distance) {
+        return line.getPosition()
+                .projectToPlane(getPlaneXaxis(), getPlaneYaxis(),
+                        line.getDirection(), distance);
+    }
+
+    public Vector3D getTopRight() {
+        return new Vector3D(max.getX(), min.getY(), );
+    }
+}

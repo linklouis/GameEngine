@@ -1,6 +1,5 @@
-package gameengine.threed.utilities;
+package gameengine.threed.geometry;
 
-import gameengine.threed.graphics.raytraceing.Ray;
 import gameengine.vectormath.Vector3D;
 
 public interface RayIntersectable extends VectorLineIntersectable {

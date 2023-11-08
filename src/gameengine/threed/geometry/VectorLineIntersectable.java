@@ -1,4 +1,4 @@
-package gameengine.threed.utilities;
+package gameengine.threed.geometry;
 
 import gameengine.vectormath.Vector3D;
 

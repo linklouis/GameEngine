@@ -2,7 +2,7 @@ package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
-import gameengine.threed.graphics.raytraceing.Ray;
+import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
@@ -163,7 +163,7 @@ public class TriGraphics extends RayTraceable {
     }
 
     public double maxX() {
-        return max(vertex1.getX(), getVertex2().getX(), vertex3.getX())/*Math.max(Math.max(vertex1.getX(), vertex2.getX()), vertex3.getX())*/;
+        return max(vertex1.getX(), getVertex2().getX(), vertex3.getX())/*Math.vertex3(Math.vertex3(vertex1.getX(), vertex2.getX()), vertex3.getX())*/;
     }
 
     public double maxY() {

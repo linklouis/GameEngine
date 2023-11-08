@@ -1,7 +1,7 @@
 package gameengine.threed.graphics.raytraceing.objectgraphics;
 
 
-import gameengine.threed.utilities.RayIntersectable;
+import gameengine.threed.geometry.RayIntersectable;
 
 /**
  * A very lightweight and specific use-case singly linked list implementation

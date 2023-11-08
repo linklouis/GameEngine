@@ -1,5 +1,6 @@
 package gameengine.threed.graphics.raytraceing;
 
+import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
@@ -45,8 +46,8 @@ public final class RayPathTracer {
     }
 
     public static LinkedHashMap<RayTraceable, Ray> getCollisions(final Ray currentRay,
-                                                       final int maxBounces,
-                                                       final RayIntersectableList objectsInField) {
+                                                                 final int maxBounces,
+                                                                 final RayIntersectableList objectsInField) {
         LinkedHashMap<RayTraceable, Ray> map = new LinkedHashMap<>(maxBounces);
         RayTraceable collision;
 

@@ -1,10 +1,8 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.geometry;
 
+import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.utilities.RayIntersectable;
-import gameengine.threed.utilities.VectorLine3D;
-import gameengine.threed.utilities.VectorLineIntersectable;
 import gameengine.vectormath.Vector3D;
 
 public class Ray extends VectorLine3D {
