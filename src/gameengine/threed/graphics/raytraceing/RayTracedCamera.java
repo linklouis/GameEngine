@@ -13,13 +13,14 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import javax.imageio.ImageWriter;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collector;
 import java.util.stream.IntStream;
 
 /**
@@ -57,6 +58,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private int targetTileSize;
     private Vector2D tileDimensions;
     private final ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
+//    private final IntBuffer buffer = ByteBuffer.allocateDirect(getWidth() * getHeight() * Integer.BYTES)
+//        .order(ByteOrder.nativeOrder())
+//        .asIntBuffer();
 
     private double scaleX;
 
@@ -209,7 +213,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
-            renderThreaded(getImage().getPixelWriter(),
+            renderThreaded1(getImage().getPixelWriter(),
                     new RayIntersectableList(objects));
         } else {
             renderUnthreaded(getImage().getPixelWriter(),
@@ -241,35 +245,14 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void renderUnthreaded(final PixelWriter writer,
                                   final RayIntersectableList objects) {
-        IntStream.range(0, getWidth() * getHeight()).forEach(pixelIndex -> buffer.put(
-                        pixelIndex * 3,
-                        calculatePixelColorBytes(
-                                rayTo(pixelIndex % getWidth(),
-                                        (double) pixelIndex / getWidth()),
-                                objects)));
-        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
+        IntStream.range(0, getWidth() * getHeight()).forEach(pixelIndex -> renderPixel(pixelIndex, objects));
+        updateImage(writer);
     }
 
     private void renderThreaded(final PixelWriter writer,
                                 final RayIntersectableList objects) {
-//        IntStream.range(0, getWidth()).parallel().forEach(x ->
-//            IntStream.range(0, getHeight()).parallel().forEach(y ->
-//                buffer.put((y * getWidth() + x) * 3, calculatePixelColorBytes(rayTo(x, y), objects))
-//            )
-//        );
-
-        IntStream.range(0, getWidth() * getHeight()).parallel().forEach(pixelIndex -> buffer.put(
-                pixelIndex * 3,
-//                    new byte[] {1, 0, 0}
-                calculatePixelColorBytes(
-                        rayTo(pixelIndex % getWidth(),
-                                (double) pixelIndex / getWidth()),
-                        objects)
-                )
-        );
-
-//        buffer.flip();
-        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
+        IntStream.range(0, getWidth() * getHeight()).parallel().forEach(pixelIndex -> renderPixel(pixelIndex, objects));
+        updateImage(writer);
     }
 
     private void renderThreaded1(final PixelWriter writer,
@@ -277,8 +260,8 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
-        int width = findClosestFactor(getWidth(), targetTileSize);
-        int height = findClosestFactor(getHeight(), targetTileSize);
+        int width = findClosestFactor(getWidth(), 10);
+        int height = findClosestFactor(getHeight(), 10);
         ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
 
 
@@ -290,7 +273,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                 threadPool.submit(() -> renderPixels(
                         finalX, finalY,
                         width, height,
-                        writer, objects, buffer));
+                        objects, buffer));
             }
         }
 
@@ -304,15 +287,24 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
     }
 
+    private void renderPixel(int pixelIndex, RayIntersectableList objects) {
+        buffer.put(
+                pixelIndex * 3,
+//                    new byte[] {1, 0, 0}
+                calculatePixelColorBytes(rayTo(pixelIndex), objects));
+    }
+
+    private void updateImage(PixelWriter writer) {
+        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
+    }
+
     private void renderPixels(final int startX, final int startY,
                               final double width, final double height,
-                              final PixelWriter writer,
                               final RayIntersectableList objects,
                               final ByteBuffer buffer) {
         for (int x = startX; x < startX + width; x++) {
             for (int y = startY; y < startY + height; y++) {
                 buffer.put((y * getWidth() + x) * 3, calculatePixelColorBytes(rayTo(x, y), objects));
-//                writer.setColor(x, y, calculatePixelColor(rayTo(x, y), objects));
             }
         }
     }
@@ -366,7 +358,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
             return firstCollision.getColor();
         }
 
-        Vector3D averageColor = new Vector3D(0);
+        Vector3D averageColor = new Vector3D();
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
                     RayPathTracer.getColor(

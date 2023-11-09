@@ -25,7 +25,9 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 100;
+    private final int NUM_TO_TEST = 20;
+    private final double PERCENT_TO_TAKE = 0.4;
+    private long minTime = Long.MAX_VALUE;
     private RayTracedCamera mainCam;
 
 
@@ -50,7 +52,8 @@ public class RayTracing extends GameDriver3D {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
 
-        colorSpace();
+//        colorSpace();
+        setupScene1();
 //        newObject(light);
 //        newObject(new Tri(new Vector3D(1, 2, 3), new Vector3D(3, 0, 2), new Vector3D(3, 2, 3), new BaseTexture(Color.RED, false)));
 ////        setupRandTri(5, (color) -> new BaseTexture(color, false), 3);
@@ -369,6 +372,15 @@ public class RayTracing extends GameDriver3D {
         ).initiate(this);
     }
 
+    private void setupRandRect(final double range,
+                                 final Function<Color, RayTracingTexture>
+                                         textureSupplier, int num) {
+
+        for (int i = 0; i < num; i++) {
+            setupRandRect(range, textureSupplier);
+        }
+    }
+
     private void setupRandTri(final double range,
                               final Function<Color, RayTracingTexture>
                                       textureSupplier) {
@@ -396,6 +408,15 @@ public class RayTracing extends GameDriver3D {
                 randomInRange(0.3, range / 6),
                 textureSupplier.apply(Vector3D.random(0, 1).toColor())
         ));
+    }
+
+    private void setupRandSphere(final double range,
+                                 final Function<Color, RayTracingTexture>
+                                         textureSupplier, int num) {
+
+        for (int i = 0; i < num; i++) {
+            setupRandSphere(range, textureSupplier);
+        }
     }
 
     private double randomInRange(double range) {
@@ -518,8 +539,8 @@ public class RayTracing extends GameDriver3D {
 //        mainCam.setLocation(spiral(Math.TAU, angle).scalarMultiply(5));//new Vector3D(Math.cos(angle), Math.sin(angle), Math.cos(angle) * Math.sin(angle)).scalarMultiply(10));
 //        mainCam.setDirection(mainCam.getLocation().atMagnitude(-1));
 
-        mainCam.setDirection(spiral(Math.TAU, angle));
-        angle += 0.1;
+//        mainCam.setDirection(spiral(Math.TAU, angle));
+//        angle += 0.1;
 
 //        mainCam.setLocation(mainCam.getLocation().add(new Vector3D(0, 0.15, 0)));
 //        mainCam.setDirection(mainCam.getDirection().add(new Vector3D(0, -0.01, 0)));
@@ -529,20 +550,28 @@ public class RayTracing extends GameDriver3D {
 //        }
         if (renders < NUM_TO_TEST) {
             getGraphicsDriver().getCamera().requestUpdate();
-            avTime += mainCam.getRenderTime();
-            avTime /= 2;
+            if (renders >= NUM_TO_TEST * (0.5 - PERCENT_TO_TAKE / 2)
+                    && renders <= NUM_TO_TEST * (0.5 + PERCENT_TO_TAKE / 2)) {
+                avTime += mainCam.getRenderTime();
+                System.out.println("measured");
+            }
+            if (renders > 0 && mainCam.getRenderTime() < minTime) {
+                minTime = mainCam.getRenderTime();
+            }
             renders++;
         } else if (renders < NUM_TO_TEST + 1) {
+            avTime /= NUM_TO_TEST * PERCENT_TO_TAKE;
             System.out.println(
                     "\nBenchmark Complete."
                     + "\nSize: " + mainCam.getWidth()
                     + "\nRays/Pixel: " + mainCam.getRaysPerPixel()
                     + "\nTotal rays: " + (
                             mainCam.getWidth()
-                        * mainCam.getHeight()
-                        * mainCam.getRaysPerPixel())
+                            * mainCam.getHeight()
+                            * mainCam.getRaysPerPixel())
                     + "\nMax bounces: " + mainCam.getMaxBounces()
                     + "\nAverage render time: " + TimeFormatter.format(avTime)
+                    + "\nMin render time: " + TimeFormatter.format(minTime)
             );
             System.out.println(
                     mainCam.getWidth() + "\t"
