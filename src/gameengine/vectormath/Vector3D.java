@@ -1,11 +1,11 @@
 package gameengine.vectormath;
 
 import gameengine.utilities.ExtraMath;
+import gameengine.utilities.Random;
 import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -361,12 +361,15 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
-
+    private static Random rand = new Random(10);
     public static Vector3D random() {
         return new Vector3D(
-                ThreadLocalRandom.current().nextGaussian(),
-                ThreadLocalRandom.current().nextGaussian(),
-                ThreadLocalRandom.current().nextGaussian()
+                rand.next(),
+                rand.next(),
+                rand.next()
+//                ThreadLocalRandom.current().nextGaussian(),
+//                ThreadLocalRandom.current().nextGaussian(),
+//                ThreadLocalRandom.current().nextGaussian()
         );
     }
 

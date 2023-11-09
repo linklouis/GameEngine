@@ -5,6 +5,7 @@ import gameengine.skeletons.GameObject;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsObject3D;
+import gameengine.utilities.Random;
 
 public abstract class GameDriver3D extends GameDriver<GraphicsDriver3D, PhysicsEngine3D> {
     /*

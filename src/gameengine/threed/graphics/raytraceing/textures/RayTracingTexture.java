@@ -18,7 +18,7 @@ public abstract class RayTracingTexture {
                                           final Vector3D surfaceNormal);
 
     protected Vector3D scatterRay(Vector3D surfaceNormal) {
-        Vector3D reflection = Vector3D.random(-1, 1);
+        Vector3D reflection = Vector3D.random();
         if (reflection.dotProduct(surfaceNormal) < 0) {
             return reflection.scalarMultiply(-1);
         }
