@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -374,15 +375,11 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public static Vector3D randomFromStdev(double mean, double stdev) {
-        return
-                new Vector3D(
-                        ThreadLocalRandom.current()
-                                .nextGaussian(mean, stdev),
-                        ThreadLocalRandom.current()
-                                .nextGaussian(mean, stdev),
-                        ThreadLocalRandom.current()
-                                .nextGaussian(mean, stdev)
-                );
+        return new Vector3D(
+                ThreadLocalRandom.current().nextGaussian(mean, stdev),
+                ThreadLocalRandom.current().nextGaussian(mean, stdev),
+                ThreadLocalRandom.current().nextGaussian(mean, stdev)
+        );
     }
 
     public static Vector3D random(Vector3D model, double range) {
@@ -410,12 +407,13 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public int oneInt() {
-        return ((byte) (x * 255) << 16) | ((byte) (y * 255 ) << 8) | (byte) (z * 255);
+        return (255 << 24) | ((int) (x * 255) << 16) | ((int) (y * 255 ) << 8) | (int) (z * 255);
     }
 
     public static int oneInt(Color color) {
-        return ((byte) (color.getRed() * 255) << 16) | ((byte) (color.getGreen() * 255) << 8) | (byte) (color.getBlue() * 255);
+        return ((255 << 24) | ((int) (color.getRed() * 255) << 16) | ((int) (color.getGreen() * 255) << 8) | (int) (color.getBlue() * 255));
     }
+
 
     public static Vector3D average(Vector3D a, Vector3D b, Vector3D c) {
         return new Vector3D(

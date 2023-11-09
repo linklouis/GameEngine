@@ -58,9 +58,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private int targetTileSize;
     private Vector2D tileDimensions;
 //    private final ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
-    private final IntBuffer buffer = ByteBuffer.allocateDirect(getWidth() * getHeight() * Integer.BYTES)
-        .order(ByteOrder.nativeOrder())
-        .asIntBuffer();
+    private final IntBuffer buffer = IntBuffer.allocate(getWidth() * getHeight() * Integer.BYTES);
+//        .order(ByteOrder.nativeOrder())
+//        .asIntBuffer();
 
     private double scaleX;
 
@@ -213,7 +213,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
-            renderThreaded1(getImage().getPixelWriter(),
+            renderThreaded(getImage().getPixelWriter(),
                     new RayIntersectableList(objects));
         } else {
             renderUnthreaded(getImage().getPixelWriter(),
@@ -249,9 +249,21 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         updateImage(writer);
     }
 
+    private void renderThreadedCool(final PixelWriter writer,
+                                final RayIntersectableList objects) {
+        IntStream.range(0, getWidth()/* * getHeight()*/).parallel().forEach(pixelIndex ->
+                IntStream.range(pixelIndex, pixelIndex + getHeight()).forEach(pixInd -> renderPixel(pixInd * pixelIndex, objects))
+        );
+        updateImage(writer);
+    }
+
     private void renderThreaded(final PixelWriter writer,
                                 final RayIntersectableList objects) {
         IntStream.range(0, getWidth() * getHeight()).parallel().forEach(pixelIndex -> renderPixel(pixelIndex, objects));
+//        IntStream.range(0, getWidth()).parallel().forEach(x ->
+//                IntStream.range(0, getHeight()).forEach(y ->
+//                        renderPixel(x, y, objects))
+//        );
         updateImage(writer);
     }
 
@@ -289,13 +301,22 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void renderPixel(int pixelIndex, RayIntersectableList objects) {
         buffer.put(
-                pixelIndex * 3,
-//                    new byte[] {1, 0, 0}
-                calculatePixelColorInt(rayTo(pixelIndex), objects));
+                pixelIndex,
+//                    new
+//                    new Vector3D(1, 0, 0).oneInt()
+                calculatePixelColorInt(rayTo(pixelIndex), objects)
+        );
+    }
+
+    private void renderPixel(int x, int y, RayIntersectableList objects) {
+        buffer.put(
+                x + y * getWidth(),
+                calculatePixelColorInt(rayTo(x, y), objects)
+        );
     }
 
     private void updateImage(PixelWriter writer) {
-        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getIntArgbInstance(), buffer, getWidth() * 3);
+        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getIntArgbInstance(), buffer, getWidth());
     }
 
     private void renderPixels(final int startX, final int startY,
