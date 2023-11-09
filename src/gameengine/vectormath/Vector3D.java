@@ -60,6 +60,13 @@ public class Vector3D implements Vector<Vector3D> {
         this.magnitude = vector.magnitude();
     }
 
+    public Vector3D() {
+        x = 0;
+        y = 0;
+        z = 0;
+        magnitude = 0;
+    }
+
 
     /*
      * Functionality:
@@ -148,6 +155,13 @@ public class Vector3D implements Vector<Vector3D> {
                 y / scalar,
                 z / scalar
         );
+    }
+
+    public Vector3D scalarDivideMutable(final double scalar) {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        return this;
     }
 
     @Override
@@ -274,6 +288,10 @@ public class Vector3D implements Vector<Vector3D> {
                 1);
     }
 
+    public Vector2D to2D() {
+        return new Vector2D(x, y);
+    }
+
     public Vector3D crossProduct(final Vector3D other) {
         return new Vector3D(
                 this.y * other.z - this.z * other.y,
@@ -352,14 +370,19 @@ public class Vector3D implements Vector<Vector3D> {
     }
 
     public static Vector3D random(double min, double max) {
-        return new Vector3D(
-                ThreadLocalRandom.current()
-                        .nextGaussian((min + max) / 2.0, (max - min) / 2.0),
-                ThreadLocalRandom.current()
-                        .nextGaussian((min + max) / 2.0, (max - min) / 2.0),
-                ThreadLocalRandom.current()
-                        .nextGaussian((min + max) / 2.0, (max - min) / 2.0)
-        );
+        return randomFromStdev((min + max) / 2.0, (max - min) / 2.0);
+    }
+
+    public static Vector3D randomFromStdev(double mean, double stdev) {
+        return
+                new Vector3D(
+                        ThreadLocalRandom.current()
+                                .nextGaussian(mean, stdev),
+                        ThreadLocalRandom.current()
+                                .nextGaussian(mean, stdev),
+                        ThreadLocalRandom.current()
+                                .nextGaussian(mean, stdev)
+                );
     }
 
     public static Vector3D random(Vector3D model, double range) {

@@ -1,6 +1,5 @@
 package gameengine.threed.graphics.raytraceing;
 
-import com.sun.javafx.tk.PlatformImage;
 import gameengine.threed.graphics.Camera;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
@@ -12,15 +11,15 @@ import gameengine.vectormath.Vector3D;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
 import java.util.stream.IntStream;
 
 /**
@@ -30,6 +29,8 @@ import java.util.stream.IntStream;
  * @since 1.0
  */
 public class RayTracedCamera extends Camera<RayTraceable> {
+    private static final byte[] BLACK = new byte[] { 0, 0, 0 };
+
     /**
      * The number of rays averaged to find each pixel's color.
      */
@@ -55,6 +56,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      */
     private int targetTileSize;
     private Vector2D tileDimensions;
+    private final ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
 
     private double scaleX;
 
@@ -231,6 +233,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
+
 //        System.exit(0);
 
         return getImage();
@@ -238,42 +241,35 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void renderUnthreaded(final PixelWriter writer,
                                   final RayIntersectableList objects) {
-        renderPixels(0, 0, getWidth(), getHeight(), writer, objects);
+        IntStream.range(0, getWidth() * getHeight()).forEach(pixelIndex -> buffer.put(
+                        pixelIndex * 3,
+                        calculatePixelColorBytes(
+                                rayTo(pixelIndex % getWidth(),
+                                        (double) pixelIndex / getWidth()),
+                                objects)));
+        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
     }
 
     private void renderThreaded(final PixelWriter writer,
                                 final RayIntersectableList objects) {
+//        IntStream.range(0, getWidth()).parallel().forEach(x ->
+//            IntStream.range(0, getHeight()).parallel().forEach(y ->
+//                buffer.put((y * getWidth() + x) * 3, calculatePixelColorBytes(rayTo(x, y), objects))
+//            )
+//        );
 
-//        IntStream.range(0, (int) getWidth()).parallel().forEach(x -> {
-//            IntStream.range(0, (int) getHeight()).parallel().forEach(y -> {
-////                writer.setColor(
-////                        x, y,
-////                        calculatePixelColor(
-////                                rayTo(x, y),
-////                        objects));
-//            });
-//        });
-
-        PixelFormat<ByteBuffer> pixelFormat = PixelFormat.getByteRgbInstance();
-        ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
-
-//        IntStream.range(0, getWidth()).parallel().forEach(x -> {
-//            IntStream.range(0, getHeight()).parallel().forEach(y -> {
-//                Color color = calculatePixelColor(rayTo(x, y), objects);
-//                buffer.put((byte) (color.getRed() * 255));
-//                buffer.put((byte) (color.getGreen() * 255));
-//                buffer.put((byte) (color.getBlue() * 255));
-//            });
-//        });
-
-        IntStream.range(0, getWidth()).parallel().forEach(x -> {
-            IntStream.range(0, getHeight()).parallel().forEach(y -> {
-                buffer.put((y * getWidth() + x) * 3, calculatePixelColorBytes(rayTo(x, y), objects));
-            });
-        });
+        IntStream.range(0, getWidth() * getHeight()).parallel().forEach(pixelIndex -> buffer.put(
+                pixelIndex * 3,
+//                    new byte[] {1, 0, 0}
+                calculatePixelColorBytes(
+                        rayTo(pixelIndex % getWidth(),
+                                (double) pixelIndex / getWidth()),
+                        objects)
+                )
+        );
 
 //        buffer.flip();
-        writer.setPixels(0, 0, getWidth(), getHeight(), pixelFormat, buffer, getWidth() * 3);
+        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
     }
 
     private void renderThreaded1(final PixelWriter writer,
@@ -281,8 +277,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
-        int width = findClosestFactor((int) getWidth(), 150);
-        int height = findClosestFactor((int) getHeight(), 150);
+        int width = findClosestFactor(getWidth(), targetTileSize);
+        int height = findClosestFactor(getHeight(), targetTileSize);
+        ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
 
 
         //   Split the canvas into smaller tasks for multithreading
@@ -290,10 +287,10 @@ public class RayTracedCamera extends Camera<RayTraceable> {
             for (int y = 0; y < getHeight(); y += height) {
                 int finalX = x;
                 int finalY = y;
-                threadPool.submit(() ->
-                        renderPixels(finalX, finalY,
-                                width, height,
-                                writer, objects));
+                threadPool.submit(() -> renderPixels(
+                        finalX, finalY,
+                        width, height,
+                        writer, objects, buffer));
             }
         }
 
@@ -303,6 +300,20 @@ public class RayTracedCamera extends Camera<RayTraceable> {
             threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
+    }
+
+    private void renderPixels(final int startX, final int startY,
+                              final double width, final double height,
+                              final PixelWriter writer,
+                              final RayIntersectableList objects,
+                              final ByteBuffer buffer) {
+        for (int x = startX; x < startX + width; x++) {
+            for (int y = startY; y < startY + height; y++) {
+                buffer.put((y * getWidth() + x) * 3, calculatePixelColorBytes(rayTo(x, y), objects));
+//                writer.setColor(x, y, calculatePixelColor(rayTo(x, y), objects));
+            }
         }
     }
 
@@ -324,6 +335,15 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                 getDirection().transformToNewCoordinates(
                         (x * 2 / getWidth() - 1) * scaleX,
                         (getHeight() - y * 2) * scaleX / getWidth()));
+    }
+
+    private LightRay rayTo(final double pixelIndex) {
+        return new LightRay(
+                getLocation(),
+                // Thx to ChatGPT:
+                getDirection().transformToNewCoordinates(
+                        (pixelIndex % getWidth() * 2 / getWidth() - 1) * scaleX,
+                        (getHeight() - pixelIndex / getWidth() * 2) * scaleX / getWidth()));
     }
 
 
@@ -350,7 +370,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
                     RayPathTracer.getColor(
-                            startLightRay.getReflected(firstCollision, 1),
+                            startLightRay.getReflected(firstCollision),
                             maxBounces,
                             objectsInField));
         }
@@ -358,7 +378,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         return averageColor.scalarDivide(raysPerPixel).toColor();
     }
 
-    private static final byte[] BLACK = new byte[] { 0, 0, 0 };
     private byte[] calculatePixelColorBytes(final LightRay startLightRay,
                                       final RayIntersectableList objectsInField) {
         RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
@@ -371,10 +390,17 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
 
         Vector3D averageColor = new Vector3D(0);
+//        IntStream.range(0, raysPerPixel).forEach(ray ->
+//                averageColor.addMutable(
+//                        RayPathTracer.getColor(
+//                                startLightRay.getReflected(firstCollision),
+//                                maxBounces,
+//                                objectsInField)));
+
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
                     RayPathTracer.getColor(
-                            startLightRay.getReflected(firstCollision, 1),
+                            startLightRay.getReflected(firstCollision),
                             maxBounces,
                             objectsInField));
         }

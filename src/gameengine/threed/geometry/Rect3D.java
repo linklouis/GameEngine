@@ -24,6 +24,10 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
         return new Rect3D(vertex1, vertex2, vertex3, vertex4);
     }
 
+    public double distanceToCollide(VectorLine3D ray) {
+        return normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
+    }
+
     public boolean contains(Vector3D point) {
         return planeCoords.contains(onPlane(point));
     }

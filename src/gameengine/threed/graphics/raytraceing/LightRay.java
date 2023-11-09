@@ -56,7 +56,13 @@ public class LightRay extends Ray {
     public void reflect(RayTraceable collider, int numBounces) {
         Reflection reflectionDetails = collider.reflection(this);
         direction = reflectionDetails.direction();
-        color.addMutable(reflectionDetails.color().scalarDivide(numBounces));
+        color.addMutable(reflectionDetails.color().scalarDivideMutable(numBounces));
+    }
+
+    public void reflect(RayTraceable collider) {
+        Reflection reflectionDetails = collider.reflection(this);
+        direction = reflectionDetails.direction();
+        color.addMutable(reflectionDetails.color());
     }
 
     /**
@@ -72,7 +78,13 @@ public class LightRay extends Ray {
     public LightRay getReflected(RayTraceable collider, int numBounces) {
         Reflection reflectionDetails = collider.reflection(this);
         return new LightRay(position, reflectionDetails.direction(),
-                reflectionDetails.color().scalarDivide(numBounces));
+                reflectionDetails.color().scalarDivideMutable(numBounces));
+    }
+
+    public LightRay getReflected(RayTraceable collider) {
+        Reflection reflectionDetails = collider.reflection(this);
+        return new LightRay(position, reflectionDetails.direction(),
+                reflectionDetails.color());
     }
 
 

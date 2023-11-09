@@ -29,9 +29,14 @@ public class Ray extends VectorLine3D {
         RayIntersectable closest = null;
         double newDistance;
 
+//        int count = 0;
+//        int total = 0;
+
         for (RayIntersectableList.Element element = objectsInField.getHead();
              element != null; element = element.next()) {
+//            total++;
             if (objectIsInDirection(element.value())) {
+//                count++;
                 newDistance = element.value().distanceToCollide(this, closestDist);
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
@@ -39,6 +44,7 @@ public class Ray extends VectorLine3D {
                 }
             }
         }
+//        System.out.println(count + ", " + total);
 
         if (closest != null) {
             position = position.addMultiplied(direction,closestDist - 0.01);
@@ -57,8 +63,10 @@ public class Ray extends VectorLine3D {
      * the {@code LightRay} from the {@code LightRay}'s initial position.
      */
     public boolean objectIsInDirection(final VectorLineIntersectable collider) {
-        Vector3D toCenter = position.subtract(collider.getCenter());
-        return !(getDirection().dotProduct(toCenter) > 0 && toCenter.magnitudeSquared() < 1);
+        return getDirection().dotWithSubtracted(collider.getCenter(), position) > 0;
+
+//        Vector3D toCenter = position.subtract(collider.getCenter());
+//        return !(getDirection().dotProduct(toCenter) > 0/* && toCenter.magnitudeSquared() < 0.5*/);
 
 //        return !(getDirection().dotWithSubtracted(position, collider.getCenter()) > 0
 //                && Math.abs(position.distance(collider.getCenter())/*toCenter.magnitude()*/) < 1);
@@ -71,7 +79,7 @@ public class Ray extends VectorLine3D {
      * @param collider The {@link RayTraceable} to reflect off of.
      */
     public void reflect(RayTraceable collider, int numBounces) {
-        direction = collider.reflection((LightRay) this).direction().unitVector();
+        direction = collider.reflection((LightRay) this).direction();
     }
 
     /**
@@ -84,6 +92,6 @@ public class Ray extends VectorLine3D {
      * reflecting off of {@code collider}.
      */
     public Ray getReflected(RayTraceable collider, int numBounces) {
-        return new Ray(position, collider.reflection((LightRay) this).direction().unitVector());
+        return new Ray(position, collider.reflection((LightRay) this).direction());
     }
 }
