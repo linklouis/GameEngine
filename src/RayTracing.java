@@ -50,10 +50,11 @@ public class RayTracing extends GameDriver3D {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
 
-        setupScene1();
-//        newObject(light);
+//        setupScene1();
+        newObject(light);
+        newObject(new Tri(new Vector3D(1, 2, 3), new Vector3D(3, 0, 2), new Vector3D(3, 2, 3), new BaseTexture(Color.RED, false)));
 //        setupRandTri(5, (color) -> new BaseTexture(color, false), 3);
-//        mainCam.setFieldOfViewDegrees(100);
+        mainCam.setFieldOfViewDegrees(80);
 
     }
 

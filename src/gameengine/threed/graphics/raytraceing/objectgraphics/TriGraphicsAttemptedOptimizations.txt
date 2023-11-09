@@ -1,0 +1,354 @@
+package gameengine.threed.graphics.raytraceing.objectgraphics;
+
+import gameengine.skeletons.GameObject;
+import gameengine.skeletons.Modifier;
+import gameengine.threed.geometry.Ray;
+import gameengine.threed.geometry.Triangle3D;
+import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.utilities.ArgumentContext;
+import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.vectormath.Vector3D;
+
+import java.util.List;
+
+public class TriGraphicsAttemptedOptimizations extends RayTraceable {
+    private Triangle3D triData;
+    private Vector3D normal;
+
+
+    /*
+     * Construction:
+     */
+
+    @Override
+    public List<Class<? extends Modifier>> getDependencies() {
+        return null;
+    }
+
+    @Override
+    public ArgumentContext[] getArgumentContexts() {
+        return new ArgumentContext[] {
+                new ArgumentContext(
+                        new ModifierInstantiateParameter<>(
+                                "vertices", Vector3D[].class,
+                                this::setVertices),
+                        new ModifierInstantiateParameter<>(
+                                "texture", RayTracingTexture.class,
+                                this::setTexture)
+                )
+        };
+    }
+
+    @Override
+    public void instantiate(GameObject parent, Object... args) {
+        try {
+            super.instantiate(parent, args);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /*
+     * Functionality:
+     */
+
+    @Override
+    public Vector3D surfaceNormal(Ray perspective) {
+        if (normal.dotProduct(perspective.getDirection()) > 0) {
+            return normal.scalarMultiply(-1);
+        }
+        return normal;
+    }
+
+    /**
+     * Finds the first intersection a ray will have with the
+     * {@code TriGraphics}.
+     *
+     * @param ray The ray to find a collision with.
+     * @param curSmallestDist The largest distance the output is looking for.
+     *                        Can be used to count out {@code TriColliders}
+     *                        before having to check if it's in the triangle.
+     * @return -1 if never enters range or if collision is behind start.
+     * Otherwise, the distance to first hit
+     */
+    @Override
+    public double distanceToCollide(Ray ray, double curSmallestDist) {
+        double distance = normal.distToCollidePlane(triData.vertex1(), ray.getPosition(), ray.getDirection());
+        if (distance <= 0 || distance >= curSmallestDist || !inRange(ray.pointAtDistance(distance))) {
+            return Double.NaN;
+        }
+        return distance;
+    }
+
+    /**
+     * Assumes the point is on the plane.
+     *
+     * @return True if the point is within the vertices, otherwise false.
+     */
+//    public boolean inRange(Vector3D point) {
+//        // ChatGPT
+//        double dot02 = triData.v0().dotWithSubtracted(point, triData.vertex1());
+//        double dot12 = triData.v1().dotWithSubtracted(point, triData.vertex1());
+//
+//        // Compute barycentric coordinates
+//        double u = (triData.dot11() * dot02 - triData.dot01() * dot12);
+//        double v = (triData.dot00() * dot12 - triData.dot01() * dot02);
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= triData.invDenom());
+//    }
+
+//    public boolean inRange(Vector3D point) {
+//        Vector3D v0 = triData.vertex2().subtract(triData.vertex1());
+//        Vector3D v1 = triData.vertex3().subtract(triData.vertex1());
+//
+//        // ChatGPT
+//        double dot00 = v0.dotSelf();
+//        double dot01 = v0.dotProduct(v1);
+//        double dot11 = v1.dotSelf();
+//        double dot02 = v0.dotWithSubtracted(point, triData.vertex1());
+//        double dot12 = v1.dotWithSubtracted(point, triData.vertex1());
+//
+//        // Compute barycentric coordinates
+//        double u = (dot11 * dot02 - dot01 * dot12);
+//        double v = (dot00 * dot12 - dot01 * dot02);
+//
+//        double invDenom = (dot00 * dot11 - dot01 * dot01);
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= invDenom);
+//    }
+
+//    public boolean inRange(Vector3D point) {
+//        // ChatGPT
+//        double dot00 = triData.vertex2().subtract(triData.vertex1()).dotSelf();
+//        double dot01 = triData.vertex2().subtract(triData.vertex1()).dotProduct(triData.vertex3().subtract(triData.vertex1()));
+//        double dot11 = triData.vertex3().subtract(triData.vertex1()).dotSelf();
+//        double dot02 = triData.vertex2().subtract(triData.vertex1()).dotWithSubtracted(point, triData.vertex1());
+//        double dot12 = triData.vertex3().subtract(triData.vertex1()).dotWithSubtracted(point, triData.vertex1());
+//
+//        // Compute barycentric coordinates
+//        double u = (dot11 * dot02 - dot01 * dot12);
+//        double v = (dot00 * dot12 - dot01 * dot02);
+//
+//        double invDenom = (dot00 * dot11 - dot01 * dot01);
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= invDenom);
+//    }
+
+//    public boolean inRange(Vector3D point) {
+//        // ChatGPT
+////        double dot00 = triData.vertex2().subtract(triData.vertex1()).dotSelf();
+////        double dot01 = triData.vertex2().subtract(triData.vertex1()).dotProduct(triData.vertex3().subtract(triData.vertex1()));
+////        double dot11 = triData.vertex3().subtract(triData.vertex1()).dotSelf();
+////        double dot02 = triData.vertex2().subtract(triData.vertex1()).dotProduct(point.subtract(triData.vertex1()));
+////        double dot12 = triData.vertex3().subtract(triData.vertex1()).dotProduct(point.subtract(triData.vertex1()));
+//
+//        double x1 = triData.vertex1().getX();
+//        double y1 = triData.vertex1().getY();
+//        double z1 = triData.vertex1().getZ();
+//        double x2 = triData.vertex2().getX();
+//        double y2 = triData.vertex2().getY();
+//        double z2 = triData.vertex2().getZ();
+//        double x3 = triData.vertex3().getX();
+//        double y3 = triData.vertex3().getY();
+//        double z3 = triData.vertex3().getZ();
+//        double xp = point.getX();
+//        double yp = point.getY();
+//        double zp = point.getZ();
+//        double dot00 = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2);
+//        double dot01 = (x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3);
+//        double dot11 = (x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3);
+//        double dot02 = (x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1);
+//        double dot12 = (x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1);
+//
+//        // Compute barycentric coordinates
+//        double u = (dot11 * dot02 - dot01 * dot12);
+//        double v = (dot00 * dot12 - dot01 * dot02);
+//        double i = (dot00 * dot11 - dot01 * dot01);
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= i);
+//    }
+
+//    public boolean inRange(Vector3D point) {
+//        double x1 = triData.vertex1().getX();
+//        double y1 = triData.vertex1().getY();
+//        double z1 = triData.vertex1().getZ();
+//        double x2 = triData.vertex2().getX();
+//        double y2 = triData.vertex2().getY();
+//        double z2 = triData.vertex2().getZ();
+//        double x3 = triData.vertex3().getX();
+//        double y3 = triData.vertex3().getY();
+//        double z3 = triData.vertex3().getZ();
+//        double xp = point.getX();
+//        double yp = point.getY();
+//        double zp = point.getZ();
+//
+////        double dot00 = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2);
+////        double dot01 = (x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3);
+////        double dot11 = (x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3);
+////        double dot02 = (x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1);
+////        double dot12 = (x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1);
+//
+//        // Compute barycentric coordinates
+//        double u = (((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)) * ((x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1)));
+//        double v = (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2)) * ((x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1)));
+//        double i = (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2)) * ((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)));
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= i);
+//    }
+
+//    public boolean inRange(Vector3D point) {
+//        double x1 = triData.vertex1().getX();
+//        double y1 = triData.vertex1().getY();
+//        double z1 = triData.vertex1().getZ();
+//        double x2 = triData.vertex2().getX();
+//        double y2 = triData.vertex2().getY();
+//        double z2 = triData.vertex2().getZ();
+//        double x3 = triData.vertex3().getX();
+//        double y3 = triData.vertex3().getY();
+//        double z3 = triData.vertex3().getZ();
+//        double xp = point.getX();
+//        double yp = point.getY();
+//        double zp = point.getZ();
+//
+//        // Compute barycentric coordinates
+//        double u = (((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)) * ((x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1)));
+//        double v = (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2)) * ((x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1)));
+//        double i = (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2)) * ((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)));
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= i);
+//    }
+
+
+//    public boolean inRange(Vector3D point) {
+//        // Compute barycentric coordinates
+//        double dot00 = triData.vertex2().subtract(triData.vertex1()).dotSelf();
+//        double dot01 = triData.vertex2().subtract(triData.vertex1()).dotProduct(triData.vertex3().subtract(triData.vertex1()));
+//        double dot11 = triData.vertex3().subtract(triData.vertex1()).dotSelf();
+//        double dot02 = triData.vertex2().subtract(triData.vertex1()).dotWithSubtracted(point, triData.vertex1());
+//        double dot12 = triData.vertex3().subtract(triData.vertex1()).dotWithSubtracted(point, triData.vertex1());
+//
+//        // Compute barycentric coordinates
+//        double u = (dot11 * dot02 - dot01 * dot12);
+//        double v = (dot00 * dot12 - dot01 * dot02);
+//        double i = (dot00 * dot11 - dot01 * dot01);
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= i);
+//    }
+
+//    public boolean inRange(Vector3D point) {
+//        // Compute barycentric coordinates
+//        Vector3D v1 = triData.vertex1();
+//        Vector3D v2 = triData.vertex2();
+//        Vector3D v3 = triData.vertex3();
+//        Vector3D p = point;
+//
+//        double dot00 = v2.subtract(v1).dotSelf();
+//        double dot01 = v2.subtract(v1).dotProduct(v3.subtract(v1));
+//        double dot11 = v3.subtract(v1).dotSelf();
+//        double dot02 = v2.subtract(v1).dotProduct(p.subtract(v1));
+//        double dot12 = v3.subtract(v1).dotProduct(p.subtract(v1));
+//
+//        // Compute barycentric coordinates
+//        double u = dot11 * dot02 - dot01 * dot12;
+//        double v = dot00 * dot12 - dot01 * dot02;
+//        double i = dot00 * dot11 - dot01 * dot01;
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= i);
+//    }
+//    public boolean inRange(Vector3D point) {
+//        // Compute barycentric coordinates
+//        Vector3D v1 = triData.vertex1();
+//        Vector3D v2 = triData.vertex2();
+//        Vector3D v3 = triData.vertex3();
+//        Vector3D p = point;
+//
+//        double x1 = triData.vertex1().getX();
+//        double y1 = triData.vertex1().getY();
+//        double z1 = triData.vertex1().getZ();
+//        double x2 = triData.vertex2().getX();
+//        double y2 = triData.vertex2().getY();
+//        double z2 = triData.vertex2().getZ();
+//        double x3 = triData.vertex3().getX();
+//        double y3 = triData.vertex3().getY();
+//        double z3 = triData.vertex3().getZ();
+//        double xp = point.getX();
+//        double yp = point.getY();
+//        double zp = point.getZ();
+//
+//        // Compute barycentric coordinates
+////        double u = (((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)) * ((x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1))
+////                -   ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1)));
+////        double v = (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2)) * ((x3 - x1) * (xp - x1) + (y3 - y1) * (yp - y1) + (z3 - z1) * (zp - z1)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x2 - x1) * (xp - x1) + (y2 - y1) * (yp - y1) + (z2 - z1) * (zp - z1)));
+////        double i = (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2)) * ((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)) - ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)) * ((x1 - x2) * (x1 - x3) + (y1 - y2) * (y1 - y3) + (z1 - z2) * (z1 - z3)));
+//
+////        double dot00 = (v2 - v1) * (v2 - v1);//v2.subtract(v1).dotSelf();
+////        double dot01 = (v2 - v1) * (v3 - v1);//v2.subtract(v1).dotProduct(v3.subtract(v1));
+////        double dot11 = (v3 - v1) * (v3 - v1);//v3.subtract(v1).dotSelf();
+////        double dot02 = (v2 - v1) * (p - v1);//v2.subtract(v1).dotProduct(p.subtract(v1));
+////        double dot12 = (v3 - v1) * (p - v1);//v3.subtract(v1).dotProduct(p.subtract(v1));
+//
+//        // Compute barycentric coordinates
+////        double u = (v3 - v1) * (v3 - v1) * (v2 - v1) * (p - v1) - (v2 - v1) * (v3 - v1) * (v3 - v1) * (p - v1);
+////        double v = (v2 - v1) * (v2 - v1) * (v3 - v1) * (p - v1) - (v2 - v1) * (v3 - v1) * (v2 - v1) * (p - v1);
+////        double i = (v2 - v1) * (v2 - v1) * (v3 - v1) * (v3 - v1) - (v2 - v1) * (v3 - v1) * (v2 - v1) * (v3 - v1);
+////        double u = v3.subtract(v1).dotSelf() * v2.subtract(v1).dotProduct(p.subtract(v1)) - v2.subtract(v1).dotProduct(v3.subtract(v1)) * v3.subtract(v1).dotProduct(p.subtract(v1));
+////        double v = v2.subtract(v1).dotSelf() * v3.subtract(v1).dotProduct(p.subtract(v1)) - v2.subtract(v1).dotProduct(v3.subtract(v1)) * v2.subtract(v1).dotProduct(p.subtract(v1));
+////        double i = v2.subtract(v1).dotSelf() * v3.subtract(v1).dotSelf() - v2.subtract(v1).dotProduct(v3.subtract(v1)) * v2.subtract(v1).dotProduct(v3.subtract(v1));
+//        double u = v3.subtract(v1).dotSelf() * v2.subtract(v1).dotProduct(p.subtract(v1)) - v2.subtract(v1).dotProduct(v3.subtract(v1)) * v3.subtract(v1).dotProduct(p.subtract(v1));
+//        double v = v2.subtract(v1).dotSelf() * v3.subtract(v1).dotProduct(p.subtract(v1)) - v2.subtract(v1).dotProduct(v3.subtract(v1)) * v2.subtract(v1).dotProduct(p.subtract(v1));
+//        double i = v2.subtract(v1).dotSelf() * v3.subtract(v1).dotSelf() - v2.subtract(v1).dotProduct(v3.subtract(v1)) * v2.subtract(v1).dotProduct(v3.subtract(v1));
+////        (v3 - v1) * (v3 - v1) * (v2 - v1) * (p - v1) - (v2 - v1) * (v3 - v1) * (v3 - v1) * (p - v1);
+////        (v2 - v1) * (v2 - v1) * (v3 - v1) * (p - v1) - (v2 - v1) * (v3 - v1) * (v2 - v1) * (p - v1);
+////        (v2 - v1) * (v2 - v1) * (v3 - v1) * (v3 - v1) - (v2 - v1) * (v3 - v1) * (v2 - v1) * (v3 - v1)
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= i);
+//    }
+
+
+    /*
+     * Utilities:
+     */
+
+    @Override
+    public Vector3D[] getVertices() {
+        return new Vector3D[] { triData.vertex1(), triData.vertex2(), triData.vertex3() };
+    }
+
+    @Override
+    public Vector3D getCenter() {
+        return triData.calculateCenter();
+    }
+
+    public Vector3D getVertex1() {
+        return triData.vertex1();
+    }
+
+    public Vector3D getVertex2() {
+        return triData.vertex2();
+    }
+
+    public Vector3D getVertex3() {
+        return triData.vertex3();
+    }
+
+    protected void setVertices(Vector3D[] vertices) {
+        triData = Triangle3D.computeValues(vertices[0], vertices[1], vertices[2]);
+        normal = triData.normal();
+    }
+
+    @Override
+    public String toString() {
+        return "TriGraphics: " + getVertex1() + ", " + getVertex2() + ", "
+                + getVertex3() + ", " + getTexture();
+    }
+}

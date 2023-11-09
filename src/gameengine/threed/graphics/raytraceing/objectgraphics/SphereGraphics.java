@@ -90,10 +90,10 @@ public class SphereGraphics extends RayTraceable {
     public double distanceToCollide(Ray lightRay, double curSmallestDist) {
         double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
 
-//        if (b > 0) {
+        if (b > 0) {
             return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
-//        }
-//        return Double.NaN;
+        }
+        return Double.NaN;
     }
 
     public double distanceToCollideMoreTests(Ray lightRay, double curSmallestDist) {

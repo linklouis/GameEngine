@@ -74,12 +74,13 @@ public class TriGraphics extends RayTraceable {
      */
     @Override
     public double distanceToCollide(Ray ray, double curSmallestDist) {
-//                normal.dotWithSubtracted(triData.vertex1(), ray.getPosition())
-//                / normal.dotWithUnitOf(ray.getDirection());
+//        if (distanceToCollideSphere(ray, getCenter(), ))
         double distance = normal.distToCollidePlane(triData.vertex1(), ray.getPosition(), ray.getDirection());
+
         if (distance <= 0 || distance >= curSmallestDist || !inRange(ray.pointAtDistance(distance))) {
             return Double.NaN;
         }
+
         return distance;
     }
 
