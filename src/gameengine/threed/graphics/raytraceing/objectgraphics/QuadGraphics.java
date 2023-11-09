@@ -72,15 +72,16 @@ public class QuadGraphics extends RayTraceable {
      * Finds the first intersection a lightRay will have with the
      * {@code Collider3D}.
      *
-     * @param ray             The lightRay to find a collision with.
-     * @param curSmallestDist The largest distance the output is looking for.
-     *                        Can be used for optimization by counting out a
-     *                        {@code Collider3D} early.
+     * @param ray               The lightRay to find a collision with.
+     * @param curSmallestDist   The largest distance the output is looking for.
+     *                          Can be used for optimization by counting out a
+     *                          {@code Collider3D} early.
+     * @param amountInDirection
      * @return NaN if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(final Ray ray, final double curSmallestDist) {
+    public double distanceToCollide(final Ray ray, final double curSmallestDist, double amountInDirection) {
         double distance = rect.distanceToCollide(ray);
         return distance > 0 && distance < curSmallestDist && rect.contains(ray, distance) ? distance : Double.NaN;
     }

@@ -80,20 +80,27 @@ public class SphereGraphics extends RayTraceable {
     /**
      * Finds the first intersection a lightRay would have with the Sphere.
      *
-     * @param lightRay The lightRay to find a collision with.
-     * @param curSmallestDist The largest distance the output is looking for.
-     *                        not used for optimization for Spheres.
+     * @param lightRay          The lightRay to find a collision with.
+     * @param curSmallestDist   The largest distance the output is looking for.
+     *                          not used for optimization for Spheres.
+     * @param amountInDirection
      * @return {@code NaN} if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
-        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
+    public double distanceToCollide(Ray lightRay, double curSmallestDist, double amountInDirection) {
+//        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
+//
+//        if (b > 0) {
+//            return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
+//        }
+//        return Double.NaN;
+//        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
 
-        if (b > 0) {
-            return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
-        }
-        return Double.NaN;
+//        if (-amountInDirection > 0) {
+            return -amountInDirection - Math.sqrt(amountInDirection * amountInDirection + radiusSquared - lightRay.getPosition().distanceSquared(getCenter()));
+//        }
+//        return Double.NaN;
     }
 
     public double distanceToCollideMoreTests(Ray lightRay, double curSmallestDist) {

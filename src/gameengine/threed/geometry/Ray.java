@@ -29,22 +29,17 @@ public class Ray extends VectorLine3D {
         RayIntersectable closest = null;
         double newDistance;
 
-//        int count = 0;
-//        int total = 0;
-
         for (RayIntersectableList.Element element = objectsInField.getHead();
              element != null; element = element.next()) {
-//            total++;
-            if (objectIsInDirection(element.value())) {
-//                count++;
-                newDistance = element.value().distanceToCollide(this, closestDist);
+            double amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
+            if (amountInDirec < 0.5) {
+                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.value();
                 }
             }
         }
-//        System.out.println(count + ", " + total);
 
         if (closest != null) {
             position = position.addMultiplied(direction,closestDist - 0.01);

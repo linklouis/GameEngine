@@ -25,7 +25,7 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 20;
+    private final int NUM_TO_TEST = 100;
     private RayTracedCamera mainCam;
 
 
@@ -37,7 +37,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                                 new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                                1, 1, true, 70/*160*/)),
+                                10, 10, true, 70/*160*/)),
                 new PhysicsEngine3D());
     }
 

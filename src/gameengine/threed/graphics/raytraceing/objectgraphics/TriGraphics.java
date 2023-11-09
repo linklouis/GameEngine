@@ -65,15 +65,16 @@ public class TriGraphics extends RayTraceable {
      * Finds the first intersection a ray will have with the
      * {@code TriGraphics}.
      *
-     * @param ray The ray to find a collision with.
-     * @param curSmallestDist The largest distance the output is looking for.
-     *                        Can be used to count out {@code TriColliders}
-     *                        before having to check if it's in the triangle.
+     * @param ray               The ray to find a collision with.
+     * @param curSmallestDist   The largest distance the output is looking for.
+     *                          Can be used to count out {@code TriColliders}
+     *                          before having to check if it's in the triangle.
+     * @param amountInDirection
      * @return -1 if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
     @Override
-    public double distanceToCollide(Ray ray, double curSmallestDist) {
+    public double distanceToCollide(Ray ray, double curSmallestDist, double amountInDirection) {
 //        if (distanceToCollideSphere(ray, getCenter(), ))
         double distance = normal.distToCollidePlane(triData.vertex1(), ray.getPosition(), ray.getDirection());
 
