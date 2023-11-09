@@ -57,10 +57,10 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      */
     private int targetTileSize;
     private Vector2D tileDimensions;
-    private final ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
-//    private final IntBuffer buffer = ByteBuffer.allocateDirect(getWidth() * getHeight() * Integer.BYTES)
-//        .order(ByteOrder.nativeOrder())
-//        .asIntBuffer();
+//    private final ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
+    private final IntBuffer buffer = ByteBuffer.allocateDirect(getWidth() * getHeight() * Integer.BYTES)
+        .order(ByteOrder.nativeOrder())
+        .asIntBuffer();
 
     private double scaleX;
 
@@ -291,11 +291,11 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         buffer.put(
                 pixelIndex * 3,
 //                    new byte[] {1, 0, 0}
-                calculatePixelColorBytes(rayTo(pixelIndex), objects));
+                calculatePixelColorInt(rayTo(pixelIndex), objects));
     }
 
     private void updateImage(PixelWriter writer) {
-        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
+        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getIntArgbInstance(), buffer, getWidth() * 3);
     }
 
     private void renderPixels(final int startX, final int startY,
@@ -398,6 +398,36 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
 
         return averageColor.scalarDivide(raysPerPixel).bytes();
+    }
+
+    private int calculatePixelColorInt(final LightRay startLightRay,
+                                            final RayIntersectableList objectsInField) {
+        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
+
+        if (firstCollision == null) {
+            return 0;
+        }
+        if (firstCollision.getTexture().isLightSource()) {
+            return Vector3D.oneInt(firstCollision.getColor());
+        }
+
+        Vector3D averageColor = new Vector3D(0);
+//        IntStream.range(0, raysPerPixel).forEach(ray ->
+//                averageColor.addMutable(
+//                        RayPathTracer.getColor(
+//                                startLightRay.getReflected(firstCollision),
+//                                maxBounces,
+//                                objectsInField)));
+
+        for (int i = 0; i < raysPerPixel; i++) {
+            averageColor.addMutable(
+                    RayPathTracer.getColor(
+                            startLightRay.getReflected(firstCollision),
+                            maxBounces,
+                            objectsInField));
+        }
+
+        return averageColor.scalarDivide(raysPerPixel).oneInt();
     }
 
 

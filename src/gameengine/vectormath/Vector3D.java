@@ -409,6 +409,14 @@ public class Vector3D implements Vector<Vector3D> {
         return new byte[] { (byte) (color.getRed() * 255), (byte) (color.getGreen() * 255), (byte) (color.getBlue() * 255) };
     }
 
+    public int oneInt() {
+        return ((byte) (x * 255) << 16) | ((byte) (y * 255 ) << 8) | (byte) (z * 255);
+    }
+
+    public static int oneInt(Color color) {
+        return ((byte) (color.getRed() * 255) << 16) | ((byte) (color.getGreen() * 255) << 8) | (byte) (color.getBlue() * 255);
+    }
+
     public static Vector3D average(Vector3D a, Vector3D b, Vector3D c) {
         return new Vector3D(
                 ExtraMath.average(a.getX(), b.getX(), c.getX()),
