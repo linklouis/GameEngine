@@ -74,7 +74,7 @@ public class SphereGraphics extends RayTraceable {
 
     @Override
     public Vector3D surfaceNormal(Ray perspective) {
-        return perspective.getPosition().subtract(getCenter())/*.unitVector()*/;
+        return perspective.getPosition().subtract(getCenter()).unitVector();
     }
 
     /**

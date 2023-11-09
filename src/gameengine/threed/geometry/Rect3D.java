@@ -15,7 +15,7 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
                 new Rect(vertex1.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
                         vertex3.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
                         true),
-                vertex2.subtract(vertex1).crossProduct(vertex4.subtract(vertex1)),
+                vertex2.subtract(vertex1).crossProduct(vertex4.subtract(vertex1)).unitVectorMutable(),
                 Vector3D.average(vertex1, vertex2, vertex3, vertex4)
         );
     }
@@ -28,10 +28,9 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
         return normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
     }
 
-//    public double distanceToCollide(VectorLine3D ray) {
-//        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
-//        return distance > 0 && rect.contains(ray, distance) ? distance : Double.NaN;
-//    }
+    public double distanceToCollide(VectorLine3D ray, double dirDotNorm) {
+        return normal.dotWithSubtracted(vertex1, ray.getPosition()) / dirDotNorm;
+    }
 
     public boolean contains(Vector3D point) {
         return planeCoords.contains(onPlane(point));

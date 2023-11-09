@@ -361,15 +361,11 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
-    private static Random rand = new Random(10);
     public static Vector3D random() {
         return new Vector3D(
-                rand.next(),
-                rand.next(),
-                rand.next()
-//                ThreadLocalRandom.current().nextGaussian(),
-//                ThreadLocalRandom.current().nextGaussian(),
-//                ThreadLocalRandom.current().nextGaussian()
+                ThreadLocalRandom.current().nextGaussian(0, 1),
+                ThreadLocalRandom.current().nextGaussian(0, 1),
+                ThreadLocalRandom.current().nextGaussian(0, 1)
         );
     }
 

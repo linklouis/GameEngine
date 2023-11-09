@@ -102,9 +102,10 @@ public class ReflectingTexture extends RayTracingTexture {
                     reflectRay(lightRay.getDirection(), surfaceNormal),
                     colorVector());
         }
+
         return new Reflection(
                 reflectRay(lightRay.getDirection(), surfaceNormal),
-                new Vector3D(0));
+                new Vector3D());
     }
 
     public double getReflectivity() {
