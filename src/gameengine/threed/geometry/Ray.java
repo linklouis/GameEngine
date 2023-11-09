@@ -25,23 +25,37 @@ public class Ray extends VectorLine3D {
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
     public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-        double closestDist = Double.MAX_VALUE;
-        RayIntersectable closest = null;
+        double closestDist = Double.MAX_VALUE;//objectsInField.getHead().value().distanceToCollide(this, Double.MAX_VALUE);
+        RayIntersectable closest = null;//objectsInField.getHead().value();
         double newDistance;
+        double amountInDirec;
 
+//        System.out.println();
+//        String output = "";
         for (RayIntersectableList.Element element = objectsInField.getHead();
              element != null; element = element.next()) {
-            double amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
-            if (amountInDirec < 0.5) {
+            amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
+            if (amountInDirec < 0.5 && element.value().closestDistTo(position) < closestDist) {
                 newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+//                System.out.println(element.value().getClass() + ": " + element.dist() + ", " + newDistance);
+//                output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.value();
+//                        break;
+//                    if (element.next() != null && newDistance <= element.next().dist()) {
+//                        element = element.next();
+//                        newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+//                        output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
+////                            System.out.println(output);
+//                        break;
+//                    }
                 }
             }
         }
+//        System.exit(0);
 
-        if (closest != null) {
+        if (closest != null/*objectsInField.getHead().value()*/) {
             position = position.addMultiplied(direction,closestDist - 0.01);
         }
 

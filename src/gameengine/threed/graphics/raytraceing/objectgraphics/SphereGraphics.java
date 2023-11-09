@@ -87,8 +87,8 @@ public class SphereGraphics extends RayTraceable {
      * @return {@code NaN} if never enters range or if collision is behind start.
      * Otherwise, the distance to first hit
      */
-    @Override
-    public double distanceToCollide(Ray lightRay, double curSmallestDist, double amountInDirection) {
+//    @Override
+    public double distanceToCollide1(Ray lightRay, double curSmallestDist, double amountInDirection) {
 //        double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), getCenter());
 //
 //        if (b > 0) {
@@ -173,35 +173,35 @@ public class SphereGraphics extends RayTraceable {
         return a + Math.sqrt(-b) > radiusSquared ? Math.sqrt(d) - b : Double.NaN;
     }
 
-//    public double distanceToCollide(Ray lightRay, double curSmallestDist) {
-//        if (contains(lightRay.getPosition())) {
-//            return 0;
-//        }
-//
-//        double b = lightRay.getDirection()
-//                .dotWithSubtracted(lightRay.getPosition(), getCenter())
-//                * 2 / lightRay.getDirection().magnitude();
-//        double d = b * b
-//                - 4 * (lightRay.getPosition().distanceSquared(getCenter())
-//                        - radius * radius);  // discriminant of quadratic
-//
-//        if (d <= 0) {
-//            return -1; // Solutions are complex, no intersections
-//        }
-//
-//        // Intersections exists
-//        d = Math.sqrt(d);
-//        double t1 = d - b;
-//        double t2 = -(d + b);
-//
-//        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
-//            return t1 / 2;
-//        }
-//        if (t2 > 0) {
-//            return t2 / 2;
-//        }
-//        return -1;
-//    }
+    public double distanceToCollide(Ray lightRay, double curSmallestDist, double amountInDirection) {
+        if (contains(lightRay.getPosition())) {
+            return 0;
+        }
+
+        double b = lightRay.getDirection()
+                .dotWithSubtracted(lightRay.getPosition(), getCenter())
+                * 2 / lightRay.getDirection().magnitude();
+        double d = b * b
+                - 4 * (lightRay.getPosition().distanceSquared(getCenter())
+                        - radius * radius);  // discriminant of quadratic
+
+        if (d <= 0) {
+            return -1; // Solutions are complex, no intersections
+        }
+
+        // Intersections exists
+        d = Math.sqrt(d);
+        double t1 = d - b;
+        double t2 = -(d + b);
+
+        if (t1 > 0 && (t2 <= 0 || t1 < t2)) {
+            return t1 / 2;
+        }
+        if (t2 > 0) {
+            return t2 / 2;
+        }
+        return -1;
+    }
 
     @Override
     public Vector3D getCenter() {
@@ -224,5 +224,10 @@ public class SphereGraphics extends RayTraceable {
     public void setRadius(double radius) {
         this.radius = radius;
         radiusSquared = radius * radius;
+    }
+
+    @Override
+    public double getRange() {
+        return radius;
     }
 }

@@ -7,7 +7,7 @@ import gameengine.vectormath.Vector3D;
 import static gameengine.utilities.ExtraMath.*;
 
 public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vector3D vertex4,
-                     Vector3D planeXaxis, Vector3D planeYaxis, Rect planeCoords, Vector3D normal, Vector3D center) {
+                     Vector3D planeXaxis, Vector3D planeYaxis, Rect planeCoords, Vector3D normal, Vector3D center, double range) {
     public Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vector3D vertex4) {
         this(
                 vertex1, vertex2, vertex3, vertex4,
@@ -16,7 +16,8 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
                         vertex3.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
                         true),
                 vertex2.subtract(vertex1).crossProduct(vertex4.subtract(vertex1)).unitVectorMutable(),
-                Vector3D.average(vertex1, vertex2, vertex3, vertex4)
+                Vector3D.average(vertex1, vertex2, vertex3, vertex4),
+                vertex1.distance(vertex3)
         );
     }
 

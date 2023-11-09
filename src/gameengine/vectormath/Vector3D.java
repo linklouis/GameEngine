@@ -99,6 +99,15 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
+    public Vector3D reflectFromNormal(Vector3D normal) {
+        double dotProdx2 = 2 * (x * normal.x + y * normal.y + z * normal.z);
+        return new Vector3D(
+                x - normal.x * dotProdx2,
+                y - normal.y * dotProdx2,
+                z - normal.z * dotProdx2
+        );
+    }
+
     public double dotWithSubtracted(final Vector3D v1, final Vector3D v2) {
         return    x * (v1.x - v2.x)
                 + y * (v1.y - v2.y)

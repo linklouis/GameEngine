@@ -22,6 +22,13 @@ public interface RayIntersectable extends VectorLineIntersectable {
                 ray.getDirection().dotWithSubtracted(ray.getPosition(), getCenter()));
     }
 
+    double getRange();
+
+    default double closestDistTo(Vector3D point) {
+//        System.out.println(getCenter().distance(point) + ", " + getRange());
+        return getCenter().distance(point) - getRange();
+    }
+
     /**
      * Returns the normal vector of the intersectable object facing towards the
      * {@code VectorLine}.

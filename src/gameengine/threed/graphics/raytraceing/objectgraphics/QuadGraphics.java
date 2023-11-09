@@ -98,7 +98,8 @@ public class QuadGraphics extends RayTraceable {
 
     @Override
     public Vector3D getCenter() {
-        return rect.center();
+        return rect.vertex1();
+//                rect.center();
     }
 
     public Vector3D getVertex1() {
@@ -119,6 +120,11 @@ public class QuadGraphics extends RayTraceable {
 
     private void setVertices(Vector3D[] vertices) {
         rect = new Rect3D(vertices[0], vertices[1], vertices[2], vertices[3]);
+    }
+
+    @Override
+    public double getRange() {
+        return rect.range();
     }
 
     @Override

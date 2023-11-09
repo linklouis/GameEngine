@@ -28,10 +28,11 @@ public abstract class RayTracingTexture {
 
     protected Vector3D reflectRay(final Vector3D rayDirection,
                                   final Vector3D surfaceNormal) {
-        return rayDirection.subtract(
-                surfaceNormal.scalarMultiply(
-                        2 * rayDirection.dotProduct(surfaceNormal)
-                              /*  / Math.pow(surfaceNormal.magnitude(), 2)*/));
+        return rayDirection.reflectFromNormal(surfaceNormal);
+//          return rayDirection.subtract(
+//                surfaceNormal.scalarMultiply(
+//                        2 * rayDirection.dotProduct(surfaceNormal)));
+                              /*  / Math.pow(surfaceNormal.magnitude(), 2)*/
     }
 
 

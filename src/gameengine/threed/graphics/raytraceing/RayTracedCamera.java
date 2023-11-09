@@ -17,7 +17,9 @@ import javax.imageio.ImageWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -208,16 +210,23 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      */
     @Override
     public WritableImage renderImage(final Collection<RayTraceable> renderableObjects) {
-        RayTraceable[] objects = renderableObjects.toArray(new RayTraceable[0]);
+//        RayTraceable[] objects = renderableObjects.stream()
+//                .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
+//                .toArray(RayTraceable[]::new);
+
+        RayIntersectableList objects = new RayIntersectableList(
+                renderableObjects.stream()
+                        .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
+                        .toArray(RayTraceable[]::new),
+                getLocation()
+                );
 
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
-            renderThreaded(getImage().getPixelWriter(),
-                    new RayIntersectableList(objects));
+            renderThreaded(getImage().getPixelWriter(), objects);
         } else {
-            renderUnthreaded(getImage().getPixelWriter(),
-                    new RayIntersectableList(objects));
+            renderUnthreaded(getImage().getPixelWriter(), objects);
         }
 
 

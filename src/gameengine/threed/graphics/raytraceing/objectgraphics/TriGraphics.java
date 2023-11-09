@@ -136,6 +136,11 @@ public class TriGraphics extends RayTraceable {
     }
 
     @Override
+    public double getRange() {
+        return triData.range();
+    }
+
+    @Override
     public String toString() {
         return "TriGraphics: " + getVertex1() + ", " + getVertex2() + ", "
                 + getVertex3() + ", " + getTexture();
