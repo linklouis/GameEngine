@@ -77,13 +77,13 @@ public class LightRay extends Ray {
     @Override
     public LightRay getReflected(RayTraceable collider, int numBounces) {
         Reflection reflectionDetails = collider.reflection(this);
-        return new LightRay(position, reflectionDetails.direction(),
+        return new LightRay(new Vector3D(position), reflectionDetails.direction(),
                 reflectionDetails.color().scalarDivideMutable(numBounces));
     }
 
     public LightRay getReflected(RayTraceable collider) {
         Reflection reflectionDetails = collider.reflection(this);
-        return new LightRay(position, reflectionDetails.direction(),
+        return new LightRay(new Vector3D(position), reflectionDetails.direction(),
                 reflectionDetails.color());
     }
 

@@ -1,9 +1,11 @@
 package gameengine.threed.graphics.raytraceing;
 
+import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.Camera;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
@@ -423,9 +425,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         return averageColor.scalarDivide(raysPerPixel).bytes();
     }
 
-    private int calculatePixelColorInt(final LightRay startLightRay,
+    private int calculatePixelColorInt(final LightRay startRay,
                                             final RayIntersectableList objectsInField) {
-        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return 0;
@@ -435,20 +437,53 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
 
         Vector3D averageColor = new Vector3D(0);
-//        IntStream.range(0, raysPerPixel).forEach(ray ->
-//                averageColor.addMutable(
-//                        RayPathTracer.getColor(
-//                                startLightRay.getReflected(firstCollision),
-//                                maxBounces,
-//                                objectsInField)));
+        if (firstCollision.getTexture() instanceof ReflectingTexture
+                && ((ReflectingTexture) firstCollision.getTexture()).getReflectivity() > 0) {
+//            Reflection reflectionDetails = firstCollision.reflection(startRay);
+            LightRay reflected1 = startRay.getReflected(firstCollision);
+            LightRay reflected = new LightRay(
+                    reflected1.getPosition(),
+                    firstCollision.getTexture().reflectRay(startRay.getDirection(),
+                            firstCollision.surfaceNormal(startRay).unitVectorMutable()),
+                    reflected1.getColor());
+            RayTraceable reflectedCollision = (RayTraceable) reflected.firstCollision(objectsInField);
 
-        for (int i = 0; i < raysPerPixel; i++) {
-            averageColor.addMutable(
-                    RayPathTracer.getColor(
-                            startLightRay.getReflected(firstCollision),
-                            maxBounces,
-                            objectsInField));
+            LightRay newRay;
+            for (int i = 0; i < raysPerPixel; i++) {
+                newRay = startRay.getReflected(firstCollision);
+//                System.out.println(newRay.getDirection() + ", " +  reflected.getDirection());
+//                System.out.println(newRay.getDirection().compareTo(reflected.getDirection()));
+                if (newRay.getDirection().compareTo(reflected.getDirection()) == 0) {
+//                    System.out.println("a");
+                    if (reflectedCollision == null) {
+                        averageColor.addMutable(reflected.getColor());
+                    } else {
+                        averageColor.addMutable(
+                                RayPathTracer.getColor(
+                                        reflected.getReflected(reflectedCollision),
+                                        maxBounces - 1,
+                                        objectsInField));
+                    }
+                } else {
+//                    System.out.println("b");
+                    averageColor.addMutable(
+                            RayPathTracer.getColor(
+                                    newRay,
+                                    maxBounces,
+                                    objectsInField));
+                }
+            }
+        } else {
+            for (int i = 0; i < raysPerPixel; i++) {
+//                System.out.println(startRay.getPosition() + ", " + startRay.getDirection());
+                averageColor.addMutable(
+                        RayPathTracer.getColor(
+                                startRay.getReflected(firstCollision),
+                                maxBounces,
+                                objectsInField));
+            }
         }
+//        System.exit(0);
 
         return averageColor.scalarDivide(raysPerPixel).oneInt();
     }
