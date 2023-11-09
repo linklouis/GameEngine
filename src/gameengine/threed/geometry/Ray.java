@@ -25,42 +25,118 @@ public class Ray extends VectorLine3D {
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
     public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-        double closestDist = Double.MAX_VALUE;//objectsInField.getHead().value().distanceToCollide(this, Double.MAX_VALUE);
-        RayIntersectable closest = null;//objectsInField.getHead().value();
         double newDistance;
         double amountInDirec;
+        double closestDist = Double.MAX_VALUE;
+        RayIntersectable closest = null;
+        RayIntersectableList.Element element = objectsInField.getHead();
 
-//        System.out.println();
-//        String output = "";
-        for (RayIntersectableList.Element element = objectsInField.getHead();
-             element != null; element = element.next()) {
+        do {
             amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
-            if (amountInDirec < 0.5 && element.value().closestDistTo(position) < closestDist) {
+
+            if (amountInDirec < 0.5) {
                 newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-//                System.out.println(element.value().getClass() + ": " + element.dist() + ", " + newDistance);
-//                output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
+                if (newDistance > 0) {
+                    closestDist = newDistance;
+                    closest = element.value();
+                }
+            }
+
+            if (element.next() == null) {
+                return null;
+            }
+            element = element.next();
+        } while (closest == null);
+
+        Vector3D toCenter;
+
+        do {
+            toCenter = position.subtract(element.value().getCenter());
+            amountInDirec = getDirection().dotProduct(toCenter);
+
+            if (amountInDirec < 0.5 && toCenter.magnitude() - element.value().getRange() < closestDist) {
+                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.value();
-//                        break;
-//                    if (element.next() != null && newDistance <= element.next().dist()) {
-//                        element = element.next();
-//                        newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-//                        output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
-////                            System.out.println(output);
-//                        break;
-//                    }
                 }
             }
-        }
-//        System.exit(0);
 
-        if (closest != null/*objectsInField.getHead().value()*/) {
-            position = position.addMultiplied(direction,closestDist - 0.01);
-        }
+            element = element.next();
+        } while (element != null);
 
+        toDistance(closestDist - 0.01);
         return closest;
     }
+
+//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
+//        double closestDist = Double.MAX_VALUE;
+//        RayIntersectable closest = null;
+//        double newDistance;
+//        double amountInDirec;
+//        Vector3D toCenter;
+//
+//        for (RayIntersectableList.Element element = objectsInField.getHead();
+//             element != null; element = element.next()) {
+//
+//            toCenter = position.subtract(element.value().getCenter());
+//            amountInDirec = getDirection().dotProduct(toCenter);
+//            if (amountInDirec < 0.5 && toCenter.magnitude() - element.value().getRange() < closestDist) {
+//                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+//                if (newDistance >= 0 && newDistance < closestDist) {
+//                    closestDist = newDistance;
+//                    closest = element.value();
+//                }
+//            }
+//        }
+//
+//        if (closest != null) {
+//            position = position.addMultiplied(direction,closestDist - 0.01);
+//        }
+//
+//        return closest;
+//    }
+
+
+//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
+//        double closestDist = Double.MAX_VALUE;//objectsInField.getHead().value().distanceToCollide(this, Double.MAX_VALUE);
+//        RayIntersectable closest = null;//objectsInField.getHead().value();
+//        double newDistance;
+//        double amountInDirec;
+//        Vector3D toCenter;
+//
+////        System.out.println();
+////        String output = "";
+//        for (RayIntersectableList.Element element = objectsInField.getHead();
+//             element != null; element = element.next()) {
+//
+//            amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
+//            if (amountInDirec < 0.5 && element.value().closestDistTo(position) < closestDist) {
+//                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+////                System.out.println(element.value().getClass() + ": " + element.dist() + ", " + newDistance);
+////                output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
+//                if (newDistance >= 0 && newDistance < closestDist) {
+//                    closestDist = newDistance;
+//                    closest = element.value();
+////                        break;
+////                    if (element.next() != null && newDistance <= element.next().dist()) {
+////                        element = element.next();
+////                        newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+////                        output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
+//////                            System.out.println(output);
+////                        break;
+////                    }
+//                }
+//            }
+//        }
+////        System.exit(0);
+//
+//        if (closest != null/*objectsInField.getHead().value()*/) {
+//            position = position.addMultiplied(direction,closestDist - 0.01);
+//        }
+//
+//        return closest;
+//    }
 
     /**
      * Finds whether {@code collider} is possible for the {@code LightRay} ray to

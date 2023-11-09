@@ -26,6 +26,10 @@ public class VectorLine3D {
         return position.addMultiplied(direction, distance);
     }
 
+    public void toDistance(double distance) {
+        position = position.addMultiplied(direction, distance);
+    }
+
 
     /*
      * Utilities:

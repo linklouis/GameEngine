@@ -54,7 +54,10 @@ public class RayTracing extends GameDriver3D {
 
 //        colorSpace();
         setupScene1();
-//        newObject(light);
+
+//        setupRandSphere(100, (color -> new ReflectingTexture(color, Math.random() > 0.7, 0.5, 0.8)), 100);
+//        setupBoundingBox(100);
+
 //        newObject(new Tri(new Vector3D(1, 2, 3), new Vector3D(3, 0, 2), new Vector3D(3, 2, 3), new BaseTexture(Color.RED, false)));
 ////        setupRandTri(5, (color) -> new BaseTexture(color, false), 3);
 //        mainCam.setFieldOfViewDegrees(80);
@@ -83,7 +86,7 @@ public class RayTracing extends GameDriver3D {
 //        TextureHelper.setMinimumReflectingAngle(45);
 //        TextureHelper.setRandomness(0.01);
         TextureHelper.setReflectivity(0.7);
-        TextureHelper.setAbsorption(0.2);
+        TextureHelper.setAbsorption(/*0.2*/0.8);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -410,7 +413,26 @@ public class RayTracing extends GameDriver3D {
         ));
     }
 
+    private void setupRandSphere(final double range, final double size,
+                                final Function<Color, RayTracingTexture>
+                                        textureSupplier) {
+        newObject(new Sphere(
+                Vector3D.random(-range, range),
+                randomInRange(0.3, range / 6),
+                textureSupplier.apply(Vector3D.random(0, 1).toColor())
+        ));
+    }
+
     private void setupRandSphere(final double range,
+                                 final Function<Color, RayTracingTexture>
+                                         textureSupplier, int num) {
+
+        for (int i = 0; i < num; i++) {
+            setupRandSphere(range, textureSupplier);
+        }
+    }
+
+    private void setupRandSphere(final double range, final double size,
                                  final Function<Color, RayTracingTexture>
                                          textureSupplier, int num) {
 

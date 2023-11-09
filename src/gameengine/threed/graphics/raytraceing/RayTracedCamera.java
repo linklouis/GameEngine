@@ -311,8 +311,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private void renderPixel(int pixelIndex, RayIntersectableList objects) {
         buffer.put(
                 pixelIndex,
-//                    new
-//                    new Vector3D(1, 0, 0).oneInt()
                 calculatePixelColorInt(rayTo(pixelIndex), objects)
         );
     }
@@ -360,12 +358,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     }
 
     private LightRay rayTo(final double pixelIndex) {
-        return new LightRay(
-                getLocation(),
-                // Thx to ChatGPT:
-                getDirection().transformToNewCoordinates(
-                        (pixelIndex % getWidth() * 2 / getWidth() - 1) * scaleX,
-                        (getHeight() - pixelIndex / getWidth() * 2) * scaleX / getWidth()));
+        return rayTo(pixelIndex % getWidth(), pixelIndex / getWidth());
     }
 
 
