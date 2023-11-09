@@ -378,6 +378,30 @@ public class Vector3D implements Vector<Vector3D> {
         );
     }
 
+    public byte[] bytes() {
+        return new byte[] { (byte) (x * 255), (byte) (y * 255), (byte) (z * 255) };
+    }
+
+    public static byte[] bytes(Color color) {
+        return new byte[] { (byte) (color.getRed() * 255), (byte) (color.getGreen() * 255), (byte) (color.getBlue() * 255) };
+    }
+
+    public static Vector3D average(Vector3D a, Vector3D b, Vector3D c) {
+        return new Vector3D(
+                ExtraMath.average(a.getX(), b.getX(), c.getX()),
+                ExtraMath.average(a.getY(), b.getY(), c.getY()),
+                ExtraMath.average(a.getZ(), b.getZ(), c.getZ())
+        );
+    }
+
+    public static Vector3D average(Vector3D a, Vector3D b, Vector3D c, Vector3D d) {
+        return new Vector3D(
+                ExtraMath.average(a.getX(), b.getX(), c.getX(), d.getX()),
+                ExtraMath.average(a.getY(), b.getY(), c.getY(), d.getY()),
+                ExtraMath.average(a.getZ(), b.getZ(), c.getZ(), d.getZ())
+        );
+    }
+
     public double distanceSquared(final Vector3D other) {
         return (x - other.x) * (x - other.x)
                 + (y - other.y) * (y - other.y)

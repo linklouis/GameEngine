@@ -4,11 +4,10 @@ import gameengine.twod.Rect;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 
-import static gameengine.utilities.ExtraMath.max;
-import static gameengine.utilities.ExtraMath.min;
+import static gameengine.utilities.ExtraMath.*;
 
 public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vector3D vertex4,
-                     Vector3D planeXaxis, Vector3D planeYaxis, Rect planeCoords, Vector3D normal) {
+                     Vector3D planeXaxis, Vector3D planeYaxis, Rect planeCoords, Vector3D normal, Vector3D center) {
     public Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vector3D vertex4) {
         this(
                 vertex1, vertex2, vertex3, vertex4,
@@ -16,7 +15,8 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
                 new Rect(vertex1.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
                         vertex3.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
                         true),
-                vertex2.subtract(vertex1).crossProduct(vertex4.subtract(vertex1))
+                vertex2.subtract(vertex1).crossProduct(vertex4.subtract(vertex1)),
+                Vector3D.average(vertex1, vertex2, vertex3, vertex4)
         );
     }
 
@@ -41,34 +41,27 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
     }
 
     public double minX() {
-        return min(vertex1.getX(), vertex2.getX(), vertex3.getX());
+        return min(vertex1.getX(), vertex2.getX(), vertex3.getX(), vertex4.getX());
     }
 
     public double minY() {
-        return min(vertex1.getY(), vertex2.getY(), vertex3.getY());
+        return min(vertex1.getY(), vertex2.getY(), vertex3.getY(), vertex4.getX());
     }
 
     public double minZ() {
-        return min(vertex1.getZ(), vertex2.getZ(), vertex3.getZ());
+        return min(vertex1.getZ(), vertex2.getZ(), vertex3.getZ(), vertex4.getY());
     }
 
     public double maxX() {
-        return max(vertex1.getX(), vertex2.getX(), vertex3.getX());
+        return max(vertex1.getX(), vertex2.getX(), vertex3.getX(), vertex4.getY());
     }
 
     public double maxY() {
-        return max(vertex1.getY(), vertex2.getY(), vertex3.getY());
+        return max(vertex1.getY(), vertex2.getY(), vertex3.getY(), vertex4.getZ());
     }
 
     public double maxZ() {
-        return max(vertex1.getZ(), vertex2.getZ(), vertex3.getZ());
-    }
-
-    public Vector3D calculateCenter() {
-        return new Vector3D(
-                (maxX() + minX()) / 2,
-                (maxY() + minY()) / 2,
-                (maxZ() + minZ()) / 2 );
+        return max(vertex1.getZ(), vertex2.getZ(), vertex3.getZ(), vertex4.getZ());
     }
 
     public Vector3D[] vertices() {

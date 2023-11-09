@@ -102,7 +102,7 @@ public class QuadGraphics extends RayTraceable {
 
     @Override
     public Vector3D getCenter() {
-        return rect.calculateCenter();
+        return rect.center();
     }
 
     public Vector3D getVertex1() {

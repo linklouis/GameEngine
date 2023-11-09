@@ -114,7 +114,7 @@ public class TriGraphics extends RayTraceable {
 
     @Override
     public Vector3D getCenter() {
-        return triData.calculateCenter();
+        return triData.center();
     }
 
     public Vector3D getVertex1() {

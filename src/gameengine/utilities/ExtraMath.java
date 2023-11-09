@@ -12,6 +12,22 @@ public interface ExtraMath {
         return Math.max(Math.max(a, b), c);
     }
 
+    static double average(double a, double b, double c) {
+        return (a + b + c) / 3;
+    }
+
+    static double min(double a, double b, double c, double d) {
+        return Math.min(Math.min(a, b), Math.min(c, d));
+    }
+
+    static double max(double a, double b, double c, double d) {
+        return Math.max(Math.max(a, b), Math.max(c, d));
+    }
+
+    static double average(double a, double b, double c, double d) {
+        return (a + b + c + d) / 4;
+    }
+
     static double clamp(double num, double min, double max) {
         return Math.min(max, Math.max(min, num));
     }
