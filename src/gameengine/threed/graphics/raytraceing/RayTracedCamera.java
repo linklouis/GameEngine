@@ -220,7 +220,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
         RayIntersectableList objects = new RayIntersectableList(
                 renderableObjects.stream()
-                        .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
+//                        .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
                         .toArray(RayTraceable[]::new),
                 getLocation()
                 );

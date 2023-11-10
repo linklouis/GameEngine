@@ -173,6 +173,7 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         x /= scalar;
         y /= scalar;
         z /= scalar;
+        magnitude = Double.NaN;
         return this;
     }
 
@@ -236,6 +237,7 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         x /= magnitude();
         y /= magnitude();
         z /= magnitude();
+        magnitude = 1;
         return this;
     }
 
@@ -355,6 +357,8 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
 //                dotProduct(planeX),
 //                dotProduct(planeY)
 //        );
+        planeX = planeX.unitVector();
+        planeY = planeY.unitVector();
         return new Vector2D(
                 x * planeX.x + y * planeX.y + z * planeX.z,
                 x * planeY.x + y * planeY.y + z * planeY.z
@@ -362,6 +366,8 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
     }
 
     public Vector2D projectToPlane(Vector3D planeX, Vector3D planeY, Vector3D direction, double distance) {
+        planeX = planeX.unitVector();
+        planeY = planeY.unitVector();
         return new Vector2D(
                 (x + direction.x * distance) * planeX.x
                         + (y + direction.y * distance) * planeX.y
@@ -413,6 +419,28 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
                 ThreadLocalRandom.current().nextGaussian(model.x, range),
                 ThreadLocalRandom.current().nextGaussian(model.y, range),
                 ThreadLocalRandom.current().nextGaussian(model.z, range)
+        );
+    }
+
+    public Vector3D blendWithA(Vector3D other, double interpolationStrength) {
+        double complement = 1.0 - interpolationStrength;
+        return new Vector3D(
+                x * complement + other.x * interpolationStrength,
+                y * complement + other.y * interpolationStrength,
+                z * complement + other.z * interpolationStrength
+        );
+    }
+
+    public Vector3D blendWith(Vector3D other, double interpolationStrength) {
+        interpolationStrength = clamp(interpolationStrength, 0, 1);
+        double complement = 1.0 - interpolationStrength;
+        return new Vector3D(
+                x + (other.x - x) * interpolationStrength,
+                y + (other.y - y) * interpolationStrength,
+                z + (other.z - z) * interpolationStrength
+//                other.x + (other.x - x) * interpolationStrength,
+//                other.y + (other.y - y) * interpolationStrength,
+//                other.z + (other.z - z) * interpolationStrength
         );
     }
 

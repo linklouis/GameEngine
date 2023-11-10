@@ -83,7 +83,7 @@ public class QuadGraphics extends RayTraceable {
     @Override
     public double distanceToCollide(final Ray ray, final double curSmallestDist, double amountInDirection) {
         double distance = rect.distanceToCollide(ray);
-        return distance > 0 && distance < curSmallestDist && rect.contains(ray, distance) ? distance : Double.NaN;
+        return rect.contains(ray, distance) ? distance : Double.NaN;
     }
 
 

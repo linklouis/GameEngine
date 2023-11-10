@@ -9,17 +9,20 @@ public abstract class RayTracingTexture {
     private Color color;
     private double emissionStrength;
     private Vector3D emissionColor;
+    private Vector3D emission;
 
     public RayTracingTexture(Color color, double emissionStrength, Vector3D emissionColor) {
         this.color = color;
         this.emissionStrength = emissionStrength;
         this.emissionColor = new Vector3D(emissionColor);
+        calculateEmission();
     }
 
     public RayTracingTexture(Color color, double emissionStrength, Color emissionColor) {
         this.color = color;
         this.emissionStrength = emissionStrength;
         this.emissionColor = new Vector3D(emissionColor);
+        calculateEmission();
     }
 
     public abstract Reflection reflection(final LightRay lightRayDirection,
@@ -67,6 +70,7 @@ public abstract class RayTracingTexture {
 
     public void setEmissionStrength(double emissionStrength) {
         this.emissionStrength = emissionStrength;
+        calculateEmission();
     }
 
     public Vector3D getEmissionColor() {
@@ -75,6 +79,15 @@ public abstract class RayTracingTexture {
 
     public void setEmissionColor(Vector3D emissionColor) {
         this.emissionColor = emissionColor;
+        calculateEmission();
+    }
+
+    public Vector3D getEmission() {
+        return emission;
+    }
+
+    protected void calculateEmission() {
+        emission = emissionColor.scalarMultiply(emissionStrength);
     }
 
     public boolean isLightSource() {

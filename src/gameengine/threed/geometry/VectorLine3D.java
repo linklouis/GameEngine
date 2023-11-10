@@ -6,7 +6,7 @@ public class VectorLine3D {
     /**
      * The direction the {@code Line} moves.
      */
-    protected Vector3D direction;
+    private Vector3D direction;
     /**
      * The current position of the {@code Line}.
      */
@@ -37,6 +37,10 @@ public class VectorLine3D {
 
     public Vector3D getDirection() {
         return direction;
+    }
+
+    protected void setDirection(Vector3D direction) {
+        this.direction = direction.unitVector();
     }
 
     public Vector3D getPosition() {

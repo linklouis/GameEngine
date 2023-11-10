@@ -4,6 +4,7 @@ import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.QuadGraphics;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
+import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
@@ -15,9 +16,9 @@ public class Quad extends Polygon  {
         get(QuadGraphics.class).instantiate(this, new Vector3D[] { point1, point2, point3, point4 }, texture);
     }
 
-    public Quad(Vector3D position, Vector3D displacement, RayTracingTexture texture) {
+    public Quad(Vector3D position, Vector2D size, Vector3D normal, RayTracingTexture texture) {
         super(new QuadGraphics());
-        get(QuadGraphics.class).instantiate(this, generateVertices(position, displacement), texture);
+        get(QuadGraphics.class).instantiate(this, generateVertices(position, size, normal), texture);
     }
 
 
@@ -30,6 +31,48 @@ public class Quad extends Polygon  {
             }
         };
     }
+
+    private static Vector3D[] generateVertices(Vector3D position,
+                                               Vector2D size, Vector3D normal) {
+        // Calculate the right and up vectors based on the normal
+        Vector3D rightVector = normal.crossProduct(Vector3D.J).unitVector();
+        Vector3D upVector = normal.crossProduct(rightVector).unitVector();
+
+        // Adjust width and height vectors according to the orientation
+        Vector3D width = rightVector.scalarMultiply(size.getX());
+        Vector3D height = upVector.scalarMultiply(size.getY());
+
+        Vector3D vertex1 = position.add(width).add(height);
+        Vector3D vertex2 = position.subtract(width).add(height);
+        Vector3D vertex3 = position.subtract(width).subtract(height);
+        Vector3D vertex4 = position.add(width).subtract(height);
+
+        return new Vector3D[]{vertex1, vertex2, vertex3, vertex4};
+    }
+
+//    private static Vector3D[] generateVertices(Vector3D position,
+//                                               Vector3D displacement1, Vector3D displacement2) {
+//        Vector3D vertex2 = new Vector3D(
+//                position.getX() + displacement1.getX(),
+//                position.getY()
+//                        + (displacement2.getZ() != 0 ?
+//                        displacement1.getY()
+//                        : 0),
+//                position.getZ());
+//        Vector3D vertex3 = new Vector3D(
+//                position.getX() + displacement1.getX() + displacement2.getX(),
+//                position.getY() + displacement1.getY() + displacement2.getY(),
+//                position.getZ() + displacement2.getZ());
+//        Vector3D vertex4 = new Vector3D(
+//                position.getX() + displacement2.getX(),
+//                position.getY()
+//                        + (displacement2.getZ() == 0 ?
+//                        displacement1.getY()
+//                        : 0),
+//                position.getZ() + displacement2.getZ());
+//
+//        return new Vector3D[]{position, vertex2, vertex3, vertex4};
+//    }
 
     private static Vector3D[] generateVertices(Vector3D position,
                                                Vector3D displacement) {

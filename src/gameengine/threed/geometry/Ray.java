@@ -3,6 +3,7 @@ package gameengine.threed.geometry;
 import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.vectormath.Vector3D;
 
 public class Ray extends VectorLine3D {
@@ -24,14 +25,50 @@ public class Ray extends VectorLine3D {
      *                       potentially collide with.
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
+//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
+//        double newDistance;
+//        double amountInDirec;
+//        double closestDist = Double.MAX_VALUE;
+//        RayIntersectable closest = null;
+//        RayIntersectableList.Element element = objectsInField.getHead();
+//
+//        boolean a = false;
+//
+//        Vector3D toCenter;
+//
+//        while (element != null) {
+//            toCenter = position.subtract(element.value().getCenter());
+//            amountInDirec = getDirection().dotProduct(toCenter);
+//            if (((RayTraceable) element.value()).getTexture().isLightSource()) {
+//                a = true;
+////                System.out.println(element.value().distanceToCollide(this, closestDist, amountInDirec));
+//            }
+//
+//            newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+//            if (newDistance >= 0 && newDistance < closestDist) {
+//                closestDist = newDistance;
+//                closest = element.value();
+//            }
+//
+//            element = element.next();
+//        }
+//
+////        if (((RayTraceable) closest).getTexture().isLightSource() || a) {
+////            System.out.println(closest.getClass() + ": " + ((RayTraceable) closest).getTexture().getColor() + ", " + closestDist);
+////        }
+////        System.out.println();
+//
+//        toDistance(closestDist - 0.01);
+//        return closest;
+//    }
     public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
         double newDistance;
         double amountInDirec;
         double closestDist = Double.MAX_VALUE;
-        RayIntersectable closest = null;
+        RayIntersectable closest;
         RayIntersectableList.Element element = objectsInField.getHead();
 
-        do {
+        while (true) {
             amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
 
             if (amountInDirec < 0.5) {
@@ -39,6 +76,7 @@ public class Ray extends VectorLine3D {
                 if (newDistance > 0) {
                     closestDist = newDistance;
                     closest = element.value();
+                    break;
                 }
             }
 
@@ -46,11 +84,11 @@ public class Ray extends VectorLine3D {
                 return null;
             }
             element = element.next();
-        } while (closest == null);
+        }
 
         Vector3D toCenter;
 
-        do {
+        while (element != null) {
             toCenter = position.subtract(element.value().getCenter());
             amountInDirec = getDirection().dotProduct(toCenter);
 
@@ -63,7 +101,7 @@ public class Ray extends VectorLine3D {
             }
 
             element = element.next();
-        } while (element != null);
+        }
 
         toDistance(closestDist - 0.01);
         return closest;
@@ -164,7 +202,7 @@ public class Ray extends VectorLine3D {
      * @param collider The {@link RayTraceable} to reflect off of.
      */
     public void reflect(RayTraceable collider, int numBounces) {
-        direction = collider.reflection((LightRay) this).direction();
+        setDirection(collider.reflection((LightRay) this).direction());
     }
 
     /**

@@ -129,21 +129,24 @@ public class ReflectingTexture extends RayTracingTexture {
     @Override
     public Reflection reflection(final LightRay lightRay,
                                  final Vector3D surfaceNormal) {
-        if (ThreadLocalRandom.current().nextDouble() > reflectivity) {
-            return new Reflection(
-                    scatterRay(surfaceNormal),
-                    colorVector());
-        }
-
-        if (ThreadLocalRandom.current().nextDouble() > absorption) {
-            return new Reflection(
-                    reflectRay(lightRay.getDirection(), surfaceNormal),
-                    colorVector());
-        }
-
         return new Reflection(
-                reflectRay(lightRay.getDirection(), surfaceNormal),
-                new Vector3D());
+                scatterRay(surfaceNormal).blendWith(reflectRay(lightRay.getDirection(), surfaceNormal), reflectivity),
+                colorVector());
+//        if (ThreadLocalRandom.current().nextDouble() > reflectivity) {
+//            return new Reflection(
+//                    scatterRay(surfaceNormal),
+//                    colorVector());
+//        }
+//
+////        if (ThreadLocalRandom.current().nextDouble() > absorption) {
+//            return new Reflection(
+//                    reflectRay(lightRay.getDirection(), surfaceNormal),
+//                    colorVector());
+////        }
+
+//        return new Reflection(
+//                reflectRay(lightRay.getDirection(), surfaceNormal),
+//                new Vector3D());
     }
 
     public double getReflectivity() {

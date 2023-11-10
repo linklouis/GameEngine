@@ -27,6 +27,13 @@ public class QuadRectangle extends PolyObject<Quad> {
         setTexture(texture);
     }
 
+    public QuadRectangle(Vector3D position, Vector3D space,
+                         RayTracingTexture texture) {
+        super(generateVertices(position.getX(), position.getY(), position.getZ(), space), new Mesh<>(new Quad[0]), new InPlane3D());
+        get(InPlane3D.class).instantiate(this, position);
+        setTexture(texture);
+    }
+
     public QuadRectangle(double x, double y, double z, Vector3D space, Color color,
                         boolean isLightSource) {
         super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]), new InPlane3D());
