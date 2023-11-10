@@ -16,6 +16,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import javax.imageio.ImageWriter;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -241,14 +242,14 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                 + " milliseconds");
         System.out.println("rendered");
 
-//        try {
-//            saveToFile("RayTraced_0_1_("
-//                    + (int) getWidth() + "," + (int) getHeight() + ")_"
-//                    + "rays" + raysPerPixel + "_bounces"
-//                    + maxBounces + ".png");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            saveToFile("RayTraced_0_1_("
+                    + (int) getWidth() + "," + (int) getHeight() + ")_"
+                    + "rays" + raysPerPixel + "_bounces"
+                    + maxBounces + ".png");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 //        System.exit(0);
 

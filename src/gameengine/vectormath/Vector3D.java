@@ -380,6 +380,14 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         );
     }
 
+    public static Vector3D random(Vector3D normal) {
+        return new Vector3D(
+                ThreadLocalRandom.current().nextDouble(-1, 1),
+                ThreadLocalRandom.current().nextDouble(-1, 1),
+                ThreadLocalRandom.current().nextDouble(-1, 1)
+        ).add(normal).unitVector();
+    }
+
     public static Vector3D random(double min, double max) {
         return randomFromStdev((min + max) / 2.0, (max - min) / 2.0);
     }

@@ -66,7 +66,8 @@ public class LightRay extends Ray {
         direction = reflectionDetails.direction();
 //        color.addMutable(reflectionDetails.color().scalarDivideMutable(numBounces));
         RayTracingTexture texture = collider.getTexture();
-        color = color.multiplyAcross(reflectionDetails.color());
+//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
+        color = color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/);
         incomingLight = incomingLight.add(
                 texture.getEmissionColor()
                         .scalarMultiply(texture.getEmissionStrength())
@@ -78,7 +79,8 @@ public class LightRay extends Ray {
         direction = reflectionDetails.direction();
 //        color.addMutable(reflectionDetails.color());
         RayTracingTexture texture = collider.getTexture();
-        color = color.multiplyAcross(reflectionDetails.color());
+//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
+        color = color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/);
         incomingLight = incomingLight.add(
                 texture.getEmissionColor()
                         .scalarMultiply(texture.getEmissionStrength())
@@ -98,9 +100,10 @@ public class LightRay extends Ray {
     public LightRay getReflected(RayTraceable collider, int numBounces) {
         Reflection reflectionDetails = collider.reflection(this);
         RayTracingTexture texture = collider.getTexture();
+//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
 
         return new LightRay(new Vector3D(position), reflectionDetails.direction(),
-                color.multiplyAcross(reflectionDetails.color()),
+                color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/),
                         incomingLight.add(
                                 texture.getEmissionColor()
                                         .scalarMultiply(texture.getEmissionStrength())
@@ -111,9 +114,10 @@ public class LightRay extends Ray {
     public LightRay getReflected(RayTraceable collider) {
         Reflection reflectionDetails = collider.reflection(this);
         RayTracingTexture texture = collider.getTexture();
+//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
 
         return new LightRay(new Vector3D(position), reflectionDetails.direction(),
-                color.multiplyAcross(reflectionDetails.color()),
+                color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/),
                         incomingLight.add(
                                 texture.getEmissionColor()
                                         .scalarMultiply(texture.getEmissionStrength())

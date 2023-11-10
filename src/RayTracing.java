@@ -38,8 +38,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                                new Vector2D(/*2000, 2000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                                10, 100, true, 70/*160*/)),
+                                new Vector2D(/*2000, 2000*//*1000, 1000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
+                                10, 10, true, 70/*160*/)),
                 new PhysicsEngine3D());
     }
 
@@ -85,8 +85,8 @@ public class RayTracing extends GameDriver3D {
     private void setupScene1() {
 //        TextureHelper.setMinimumReflectingAngle(45);
 //        TextureHelper.setRandomness(0.01);
-        TextureHelper.setReflectivity(0.9);
-        TextureHelper.setAbsorption(/*0.2*/0.1);
+        TextureHelper.setReflectivity(0.8);
+        TextureHelper.setAbsorption(/*0.2*/0.4);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -100,7 +100,7 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(0, 0, 100, 100,
                 TextureHelper.newReflecting(Color.BROWN)));
 
-        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 5, Color.WHITE, 0, 1)));
+        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)));
     }
 
     private void setupScene2() {
