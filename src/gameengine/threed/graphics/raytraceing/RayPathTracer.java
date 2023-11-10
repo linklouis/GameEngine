@@ -32,17 +32,17 @@ public final class RayPathTracer {
             collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
-                return BLACK;
+                return currentLightRay.litColor();
             }
 
             currentLightRay.reflect(collision, bounces);
 
-            if (collision.getTexture().isLightSource()) {
-                return currentLightRay.getColor();
-            }
+//            if (collision.getTexture().isLightSource()) {
+//                return currentLightRay.getColor();
+//            }
         }
 
-        return BLACK;
+        return currentLightRay.litColor();
     }
 
     public static LinkedHashMap<RayTraceable, Ray> getCollisions(final Ray currentRay,
@@ -61,9 +61,9 @@ public final class RayPathTracer {
             map.put(collision, new Ray(currentRay));
             currentRay.reflect(collision, bounces);
 
-            if (collision.getTexture().isLightSource()) {
-                return map;
-            }
+//            if (collision.getTexture().isLightSource()) {
+//                return map;
+//            }
         }
 
         return map;

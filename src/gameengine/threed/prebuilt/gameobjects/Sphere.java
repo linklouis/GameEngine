@@ -35,7 +35,7 @@ public class Sphere extends GameObject {
         super(new SphereCollider(), new InPlane3D(), new SphereGraphics(), new Visual3D());
         get(SphereCollider.class).instantiate(this, r);
         get(InPlane3D.class).instantiate(this, x, y, z);
-        get(SphereGraphics.class).instantiate(this, r, new ReflectingTexture(color, isLightSource, 0));
+        get(SphereGraphics.class).instantiate(this, r, new ReflectingTexture(color, isLightSource ? 1 : 0, 0));
         get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 

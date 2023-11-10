@@ -449,6 +449,14 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         return Math.sqrt(distanceSquared(other));
     }
 
+    public Vector3D multiplyAcross(Vector3D other) {
+        return new Vector3D(
+                x * other.x,
+                y * other.y,
+                z * other.z
+        );
+    }
+
     public Vector3D onlyX() {
         return new Vector3D(x, 0, 0);
     }

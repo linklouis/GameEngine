@@ -30,7 +30,7 @@ public class TriRectangle extends PolyObject<Tri> {
     public TriRectangle(double x, double y, double z, Vector3D space, Color color,
                         boolean isLightSource) {
         super(generateVertices(x, y, z, space), new Mesh<>(new Tri[0]), new InPlane3D());
-        setTexture(new ReflectingTexture(color, isLightSource, 0));
+        setTexture(new ReflectingTexture(color, isLightSource ? 1 : 0, 0));
         get(InPlane3D.class).instantiate(this, x, y, z);
     }
 
@@ -81,7 +81,7 @@ public class TriRectangle extends PolyObject<Tri> {
 
     @Override
     protected Tri[] createMesh(Vector3D[] vertices) {
-        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, true, 0);
+        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, 1, 0);
 
         return new Tri[]{
                 // Front face triangles

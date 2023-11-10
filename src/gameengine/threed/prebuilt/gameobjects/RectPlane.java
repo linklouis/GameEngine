@@ -70,7 +70,7 @@ public class RectPlane extends PolyObject<Tri> {
 
     @Override
     protected Tri[] createMesh(Vector3D[] vertices) {
-        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, true, 0);
+        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, 1, 0);
 
         return new Tri[]{
                 new Tri(vertices[0], vertices[1], vertices[2], texture),

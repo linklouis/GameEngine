@@ -19,8 +19,16 @@ public class BaseTexture extends RayTracingTexture {
      * @param color The color of the surface
      * @param isLightSource Whether the surface emits light
      */
-    public BaseTexture(final Color color, final boolean isLightSource) {
-        super(color, isLightSource);
+    public BaseTexture(final Color color, double emissionStrength, Vector3D emissionColor) {
+        super(color, emissionStrength, emissionColor);
+    }
+
+    public BaseTexture(final Color color, double emissionStrength, Color emissionColor) {
+        super(color, emissionStrength, emissionColor);
+    }
+
+    public BaseTexture(final Color color, double emissionStrength) {
+        super(color, emissionStrength, new Vector3D(1));
     }
 
     /**

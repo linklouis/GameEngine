@@ -16,7 +16,7 @@ public class SubsurfaceTextureComplex extends RayTracingTexture {
 
     public SubsurfaceTextureComplex(final Color color, final boolean isLightSource,
                              double scatterCoefficient, double absorptionCoefficient, double scatteringAnisotropy) {
-        super(color, isLightSource);
+        super(color, isLightSource, );
         this.scatterCoefficient = scatterCoefficient;
         this.absorptionCoefficient = absorptionCoefficient;
         this.scatteringAnisotropy = scatteringAnisotropy;

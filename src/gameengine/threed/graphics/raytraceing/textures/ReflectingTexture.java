@@ -51,9 +51,27 @@ public class ReflectingTexture extends RayTracingTexture {
      *                      {@code RayTracingTexture} should be to not scatter.
      */
     public ReflectingTexture(final Color color,
-                             final boolean isLightSource,
+                             final double emissionStrength,
+                             final Vector3D emissionColor,
                              final double reflectivity) {
-        super(color, isLightSource);
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.absorption = DEFAULT_ABSORPTION;
+    }
+
+    public ReflectingTexture(final Color color,
+                             final double emissionStrength,
+                             final Color emissionColor,
+                             final double reflectivity) {
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.absorption = DEFAULT_ABSORPTION;
+    }
+
+    public ReflectingTexture(final Color color,
+                             final double emissionStrength,
+                             final double reflectivity) {
+        super(color, emissionStrength, new Vector3D(1));
         this.reflectivity = reflectivity;
         this.absorption = DEFAULT_ABSORPTION;
     }
@@ -70,10 +88,30 @@ public class ReflectingTexture extends RayTracingTexture {
      *                   of incoming {@code Rays}.
      */
     public ReflectingTexture(final Color color,
-                             final boolean isLightSource,
+                             final double emissionStrength,
+                             final Vector3D emissionColor,
                              final double reflectivity,
                              final double absorption) {
-        super(color, isLightSource);
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.absorption = absorption;
+    }
+
+    public ReflectingTexture(final Color color,
+                             final double emissionStrength,
+                             final double reflectivity,
+                             final double absorption) {
+        super(color, emissionStrength, new Vector3D(1));
+        this.reflectivity = reflectivity;
+        this.absorption = absorption;
+    }
+
+    public ReflectingTexture(final Color color,
+                             final double emissionStrength,
+                             final Color emissionColor,
+                             final double reflectivity,
+                             final double absorption) {
+        super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
         this.absorption = absorption;
     }
@@ -120,7 +158,7 @@ public class ReflectingTexture extends RayTracingTexture {
     public String toString() {
         return "ReflectingTexture: "
                 + getColor()
-                + ", " + isLightSource()
+//                + ", " + isLightSource()
                 + ", " + reflectivity;
     }
 }

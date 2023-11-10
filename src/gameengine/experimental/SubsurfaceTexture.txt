@@ -14,7 +14,7 @@ public class SubsurfaceTexture extends RayTracingTexture {
     private final double randomness;
 
     public SubsurfaceTexture(final Color color, final boolean isLightSource, double minimumReflectionAngle, double randomness) {
-        super(color, isLightSource);
+        super(color, isLightSource, );
         this.minimumReflectionAngle = minimumReflectionAngle;
         this.randomness = randomness;
     }

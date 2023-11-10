@@ -7,11 +7,19 @@ import javafx.scene.paint.Color;
 
 public abstract class RayTracingTexture {
     private Color color;
-    private boolean lightSource;
+    private double emissionStrength;
+    private Vector3D emissionColor;
 
-    public RayTracingTexture(Color color, boolean isLightSource) {
+    public RayTracingTexture(Color color, double emissionStrength, Vector3D emissionColor) {
         this.color = color;
-        this.lightSource = isLightSource;
+        this.emissionStrength = emissionStrength;
+        this.emissionColor = new Vector3D(emissionColor);
+    }
+
+    public RayTracingTexture(Color color, double emissionStrength, Color emissionColor) {
+        this.color = color;
+        this.emissionStrength = emissionStrength;
+        this.emissionColor = new Vector3D(emissionColor);
     }
 
     public abstract Reflection reflection(final LightRay lightRayDirection,
@@ -52,16 +60,25 @@ public abstract class RayTracingTexture {
         this.color = color;
     }
 
-    public boolean isLightSource() {
-        return lightSource;
+    public double getEmissionStrength() {
+        return emissionStrength;
     }
 
-    public void setLightSource(boolean lightSource) {
-        this.lightSource = lightSource;
+    public void setEmissionStrength(double emissionStrength) {
+        this.emissionStrength = emissionStrength;
+    }
+
+    public Vector3D getEmissionColor() {
+        return emissionColor;
+    }
+
+    public void setEmissionColor(Vector3D emissionColor) {
+        this.emissionColor = emissionColor;
     }
 
     @Override
     public String toString() {
-        return "RayTracingTexture: " + color + ", " + isLightSource();
+        return "RayTracingTexture: " + color;
+//                + ", " + isLightSource();
     }
 }
