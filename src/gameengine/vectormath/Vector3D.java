@@ -9,6 +9,8 @@ import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
+import static gameengine.utilities.ExtraMath.clamp;
+
 public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
     /*
      * Unit Vectors:
@@ -292,9 +294,9 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
 
     public Color toColor() {
         return new Color(
-                ExtraMath.clamp(x, 0, 1),
-                ExtraMath.clamp(y, 0, 1),
-                ExtraMath.clamp(z, 0, 1),
+                clamp(x, 0, 1),
+                clamp(y, 0, 1),
+                clamp(z, 0, 1),
                 1);
     }
 
@@ -415,7 +417,7 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
     }
 
     public int oneInt() {
-        return (255 << 24) | ((int) (x * 255) << 16) | ((int) (y * 255 ) << 8) | (int) (z * 255);
+        return (255 << 24) | ((int) clamp(x * 255, 0, 255) << 16) | ((int) clamp(y * 255, 0, 255) << 8) | (int) clamp(z * 255, 0, 255);
     }
 
     public static int oneInt(Color color) {

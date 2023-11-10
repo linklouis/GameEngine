@@ -76,6 +76,10 @@ public abstract class RayTracingTexture {
         this.emissionColor = emissionColor;
     }
 
+    public boolean isLightSource() {
+        return emissionStrength > 0;
+    }
+
     @Override
     public String toString() {
         return "RayTracingTexture: " + color;

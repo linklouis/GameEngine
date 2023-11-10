@@ -433,9 +433,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         if (firstCollision == null) {
             return 0;
         }
-//        if (firstCollision.getTexture().isLightSource()) {
-//            return Vector3D.oneInt(firstCollision.getColor());
-//        }
+        if (firstCollision.getTexture().isLightSource()) {
+            return Vector3D.oneInt(firstCollision.getColor());
+        }
 
         Vector3D averageColor = new Vector3D(0);
 //        if (firstCollision.getTexture() instanceof ReflectingTexture
