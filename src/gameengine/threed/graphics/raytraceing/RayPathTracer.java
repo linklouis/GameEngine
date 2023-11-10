@@ -4,6 +4,7 @@ import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
+import javafx.scene.paint.Color;
 
 import java.util.LinkedHashMap;
 
@@ -36,6 +37,10 @@ public final class RayPathTracer {
             }
 
             currentLightRay.reflect(collision, bounces);
+
+            if (collision.getTexture().getColor().equals(Color.BLACK)) {
+                return currentLightRay.litColor();
+            }
 
 //            if (collision.getTexture().isLightSource()) {
 //                return currentLightRay.getColor();

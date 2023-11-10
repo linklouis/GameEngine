@@ -84,7 +84,7 @@ public class LightRay extends Ray {
         incomingLight = incomingLight.add(
                 texture.getEmissionColor()
                         .scalarMultiply(texture.getEmissionStrength())
-                        .multiplyAcross(color));
+                        .multiplyAcross(color)); // TODO Precalc this
     }
 
     /**
