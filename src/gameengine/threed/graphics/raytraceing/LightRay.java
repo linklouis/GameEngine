@@ -2,7 +2,6 @@ package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -61,24 +60,11 @@ public class LightRay extends Ray {
      * @param collider The {@link RayTraceable} to reflect off of.
      */
     @Override
-    public void reflect(RayTraceable collider, int numBounces) {
-        Reflection reflectionDetails = collider.reflection(this);
-        setDirection(reflectionDetails.direction());
-//        color.addMutable(reflectionDetails.color().scalarDivideMutable(numBounces));
-        RayTracingTexture texture = collider.getTexture();
-//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
-        color = color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/);
-        incomingLight = incomingLight.add(color.multiplyAcross(texture.getEmission()));
-    }
-
     public void reflect(RayTraceable collider) {
         Reflection reflectionDetails = collider.reflection(this);
         setDirection(reflectionDetails.direction());
-//        color.addMutable(reflectionDetails.color());
-        RayTracingTexture texture = collider.getTexture();
-//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
-        color = color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/);
-        incomingLight = incomingLight.add(color.multiplyAcross(texture.getEmission()));
+        color = reflectionDetails.color();
+        incomingLight = updatedIncomingLight(collider.getTexture().getEmission());
     }
 
     /**
@@ -91,26 +77,15 @@ public class LightRay extends Ray {
      * reflecting off of {@code collider}.
      */
     @Override
-    public LightRay getReflected(RayTraceable collider, int numBounces) {
-        Reflection reflectionDetails = collider.reflection(this);
-        RayTracingTexture texture = collider.getTexture();
-//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
-
-        return new LightRay(new Vector3D(position), reflectionDetails.direction(),
-                color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/),
-                        incomingLight.add(color.multiplyAcross(texture.getEmission())));
-//                reflectionDetails.color().scalarDivideMutable(numBounces)
-    }
-
     public LightRay getReflected(RayTraceable collider) {
         Reflection reflectionDetails = collider.reflection(this);
-        RayTracingTexture texture = collider.getTexture();
-//        double lightStrength = collider.surfaceNormal(this).dotProduct(direction) * 2;
-
         return new LightRay(new Vector3D(position), reflectionDetails.direction(),
-                color.multiplyAcross(reflectionDetails.color()/*.scalarMultiply(lightStrength)*/),
-                        incomingLight.add(color.multiplyAcross(texture.getEmission())));
-//                reflectionDetails.color()
+                reflectionDetails.color(),
+                updatedIncomingLight(collider.getTexture().getEmission()));
+    }
+
+    private Vector3D updatedIncomingLight(Vector3D emission) {
+        return incomingLight.add(color.multiplyAcross(emission));
     }
 
 

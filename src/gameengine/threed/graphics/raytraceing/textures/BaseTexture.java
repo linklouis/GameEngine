@@ -45,6 +45,6 @@ public class BaseTexture extends RayTracingTexture {
                                  final Vector3D surfaceNormal) {
         return new Reflection(
                 scatterRay(surfaceNormal),
-                colorVector());
+                defaultColorUpdate(lightRay.getColor()));
     }
 }

@@ -131,7 +131,7 @@ public class ReflectingTexture extends RayTracingTexture {
                                  final Vector3D surfaceNormal) {
         return new Reflection(
                 scatterRay(surfaceNormal).blendWith(reflectRay(lightRay.getDirection(), surfaceNormal), reflectivity),
-                colorVector());
+                defaultColorUpdate(lightRay.getColor()));
 //        if (ThreadLocalRandom.current().nextDouble() > reflectivity) {
 //            return new Reflection(
 //                    scatterRay(surfaceNormal),

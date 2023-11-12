@@ -39,7 +39,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                                 new Vector2D(/*2000, 2000*//*1000, 1000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                                6, 300, true, 70/*160*/)),
+                                10, 300, true, 70/*160*/)),
                 new PhysicsEngine3D());
     }
 
@@ -130,7 +130,7 @@ public class RayTracing extends GameDriver3D {
     }
 
     private void setupScene1_5() {
-        TextureHelper.setReflectivity(0);
+        TextureHelper.setReflectivity(0.7);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),

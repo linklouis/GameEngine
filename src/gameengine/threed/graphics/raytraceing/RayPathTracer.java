@@ -36,7 +36,7 @@ public final class RayPathTracer {
                 return currentLightRay.litColor();
             }
 
-            currentLightRay.reflect(collision, bounces);
+            currentLightRay.reflect(collision);
 
             if (collision.getTexture().getColor().equals(Color.BLACK)) {
                 return currentLightRay.litColor();
@@ -64,7 +64,7 @@ public final class RayPathTracer {
             }
 
             map.put(collision, new Ray(currentRay));
-            currentRay.reflect(collision, bounces);
+            currentRay.reflect(collision);
 
 //            if (collision.getTexture().isLightSource()) {
 //                return map;

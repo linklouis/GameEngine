@@ -47,6 +47,10 @@ public abstract class RayTracingTexture {
                               /*  / Math.pow(surfaceNormal.magnitude(), 2)*/
     }
 
+    protected Vector3D defaultColorUpdate(Vector3D rayColor) {
+        return rayColor.multiplyAcross(colorVector());
+    }
+
 
     /*
      * Utilities:

@@ -201,7 +201,7 @@ public class Ray extends VectorLine3D {
      *
      * @param collider The {@link RayTraceable} to reflect off of.
      */
-    public void reflect(RayTraceable collider, int numBounces) {
+    public void reflect(RayTraceable collider) {
         setDirection(collider.reflection((LightRay) this).direction());
     }
 
@@ -214,7 +214,7 @@ public class Ray extends VectorLine3D {
      * @return A new {@code Ray} representing the current {@code Ray} after
      * reflecting off of {@code collider}.
      */
-    public Ray getReflected(RayTraceable collider, int numBounces) {
+    public Ray getReflected(RayTraceable collider) {
         return new Ray(position, collider.reflection((LightRay) this).direction());
     }
 }
