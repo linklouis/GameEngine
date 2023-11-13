@@ -77,8 +77,8 @@ public class RayTracing extends GameDriver3D {
 //        newObject(new Sphere(new Vector3D(50, 0, 0), 5,
 //                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)));
         newObject(new Sphere(new Vector3D(-10, 2, 10).scalarMultiply(3.8), 7 * 5/*140*/,
-                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)));
-        newObject(new Quad(new Vector3D(0, -5, 0), new Vector2D(5, 10), new Vector3D(0, 0, 1), new ReflectingTexture(Color.RED, 0, 0, 1)));
+                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0)));
+        newObject(new Quad(new Vector3D(0, -5, 0), new Vector2D(5, 10), new Vector3D(0, 0, 1), new ReflectingTexture(Color.RED, 0, 0)));
     }
 
     private void rectDirTests() {
@@ -90,7 +90,7 @@ public class RayTracing extends GameDriver3D {
                 mainCam.getLocation().scalarMultiply(-1)
         );
 
-        newObject(new Quad(new Vector3D(0, 0, 0), new Vector2D(1, 1), new Vector3D(0, 1, 1), new ReflectingTexture(Color.RED, 0, 0, 1)));
+        newObject(new Quad(new Vector3D(0, 0, 0), new Vector2D(1, 1), new Vector3D(0, 1, 1), new ReflectingTexture(Color.RED, 0, 0)));
         newObject(new Sphere(0, 0, -11, 10, new BaseTexture(Color.GRAY, 0)));
         newObject(new Sphere(0, 0, 30, 5, new BaseTexture(Color.GRAY, 40)));
     }
@@ -126,11 +126,11 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(0, 0, 100, 100,
                 TextureHelper.newReflecting(Color.BROWN)));
 
-        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0, 1)));
+        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
     }
 
     private void setupScene1_5() {
-        TextureHelper.setReflectivity(0.7);
+        TextureHelper.setReflectivity(0.4);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -147,7 +147,7 @@ public class RayTracing extends GameDriver3D {
 //        new QuadRectangle(new Vector3D(-10, 2, -10).scalarMultiply(4), new Vector3D(1, 1, 1).scalarMultiply(7*5/2.0),
 //                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)).initiate(this);
         newObject(new Sphere(new Vector3D(-10, 2, -10).scalarMultiply(7), 7 * 5/*140*/,
-                new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0, 1)));
+                new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
     }
 
     private void setupScene2() {
@@ -508,7 +508,7 @@ public class RayTracing extends GameDriver3D {
 //        }
 
         public static ReflectingTexture newReflecting(final Color color) {
-            return new ReflectingTexture(color, 0.0, reflectivity, absorption);
+            return new ReflectingTexture(color, 0.0, reflectivity);
         }
 
         public static Function<Color, RayTracingTexture>
