@@ -54,6 +54,14 @@ public class LightRay extends Ray {
      * Functionality:
      */
 
+    private static Vector3D sunPos = new Vector3D(1, 4,3).unitVector();
+    public static Vector3D getSkyColor(Vector3D dir) {
+//        if (dir.angleInDegreesWith(sunPos) < 4) {
+//            return new Vector3D(Color.LIGHTYELLOW).scalarMultiply(3 * Math.exp(-Math.abs(dir.dotProduct(sunPos))));
+//        }
+        return new Vector3D(Color.SKYBLUE).scalarMultiply(0.3 * dir.dotProduct(sunPos)).add(new Vector3D(Color.LIGHTYELLOW).scalarMultiply(3 / (1 + Math.pow(dir.angleInDegreesWith(sunPos), 2))));//.scalarMultiply(3 * Math.exp(-Math.abs(dir.angleInDegreesWith(sunPos) / 2))));
+    }
+
     public Vector3D getColor(final int maxBounces,
                              final RayIntersectableList objectsInField, int startingBounce) {
         RayTraceable collision;
@@ -62,7 +70,7 @@ public class LightRay extends Ray {
             collision = (RayTraceable) firstCollision(objectsInField);
 
             if (collision == null) {
-                return getIncomingLight();//.add(new Vector3D(Color.SKYBLUE));
+                return getIncomingLight().add(getSkyColor(getDirection()));
             }
 
             reflect(collision);

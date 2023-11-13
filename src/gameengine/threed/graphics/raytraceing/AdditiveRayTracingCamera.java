@@ -9,6 +9,8 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
+import java.util.List;
+
 public class AdditiveRayTracingCamera extends RayTracedCamera {
     /**
      * Constructs a new {@code RayTracedCamera} with a position given by a
@@ -184,6 +186,7 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
 
         if (firstCollision == null) {
 //            averageColor.addMutable(new Vector3D(Color.SKYBLUE));
+            averageColor.addMutable(LightRay.getSkyColor(startRay.getDirection()));
             return/* averageColor*/;
         }
         if (firstCollision.getTexture().getColor().equals(Color.BLACK)

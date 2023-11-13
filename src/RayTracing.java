@@ -38,7 +38,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new AdditiveRayTracingCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                                 new Vector2D(/*2000, 2000*//*1000, 1000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                                10, 10, true, 70/*160*/)),
+                                10, 10, true, 70/*180*/)),
                 new PhysicsEngine3D());
     }
 
@@ -50,13 +50,15 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
+        mainCam.setDirection(new Vector3D(1, 4, 3));
 
 //        colorSpace();
 //        ballReflectionTests();
 //        sphereDistTest();
-        setupScene1();
+//        setupScene1();
 
-//        setupRandSphere(100, (color -> new ReflectingTexture(color, Math.random() > 0.7, 0.5, 0.8)), 100);
+
+        setupRandSphere(100, (color -> new BaseTexture(color, /*Math.random()*/0)), 1);
 //        setupBoundingBox(100);
 
 //        newObject(new Tri(new Vector3D(1, 2, 3), new Vector3D(3, 0, 2), new Vector3D(3, 2, 3), new BaseTexture(Color.RED, false)));
