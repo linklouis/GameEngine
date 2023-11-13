@@ -64,7 +64,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private int targetTileSize;
     private Vector2D tileDimensions;
 //    private final ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
-    private final IntBuffer buffer = IntBuffer.allocate(getWidth() * getHeight() * Integer.BYTES);
+    protected final IntBuffer buffer = IntBuffer.allocate(getWidth() * getHeight() * Integer.BYTES);
 //        .order(ByteOrder.nativeOrder())
 //        .asIntBuffer();
 
@@ -312,7 +312,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
     }
 
-    private void renderPixel(int pixelIndex, RayIntersectableList objects) {
+    protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
         buffer.put(
                 pixelIndex,
                 calculatePixelColorInt(rayTo(pixelIndex), objects)
@@ -326,7 +326,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         );
     }
 
-    private void updateImage(PixelWriter writer) {
+    protected void updateImage(PixelWriter writer) {
         writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getIntArgbInstance(), buffer, getWidth());
     }
 
@@ -341,17 +341,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
     }
 
-    private void renderPixels(final int startX, final int startY,
-                              final double width, final double height,
-                              final PixelWriter writer,
-                              final RayIntersectableList objects) {
-        for (int x = startX; x < startX + width; x++) {
-            for (int y = startY; y < startY + height; y++) {
-                writer.setColor(x, y, calculatePixelColor(rayTo(x, y), objects));
-            }
-        }
-    }
-
     private LightRay rayTo(final double x, final double y) {
         return new LightRay(
                 getLocation(),
@@ -361,7 +350,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                         (getHeight() - y * 2) * scaleX / getWidth()));
     }
 
-    private LightRay rayTo(final double pixelIndex) {
+    protected LightRay rayTo(final double pixelIndex) {
         return rayTo(pixelIndex % getWidth(), pixelIndex / getWidth());
     }
 
@@ -374,9 +363,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      * @return The average color of each ray to measure based on
      * {@link #raysPerPixel}.
      */
-    private Color calculatePixelColor(final LightRay startLightRay,
+    protected Color calculatePixelColor(final LightRay startRay,
                                       final RayIntersectableList objectsInField) {
-        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return Color.BLACK;
@@ -390,7 +379,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
                     RayPathTracer.getColor(
-                            startLightRay.getReflected(firstCollision),
+                            startRay.getReflected(firstCollision),
                             maxBounces,
                             objectsInField));
         }
@@ -429,7 +418,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         return averageColor.scalarDivide(raysPerPixel).bytes();
     }
 
-    private int calculatePixelColorInt(final LightRay startRay,
+    protected int calculatePixelColorInt(final LightRay startRay,
                                             final RayIntersectableList objectsInField) {
         RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
 

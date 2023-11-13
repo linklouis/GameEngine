@@ -92,6 +92,14 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         return this;
     }
 
+    public static Vector3D add(Color a, Color b) {
+        return new Vector3D(
+                a.getRed() + b.getRed(),
+                a.getGreen() + b.getGreen(),
+                a.getBlue() + b.getBlue()
+        );
+    }
+
     @Override
     public Vector3D subtract(final Vector3D other) {
         return new Vector3D(
