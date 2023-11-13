@@ -109,14 +109,11 @@ public class RayTracing extends GameDriver3D {
     }
 
     private void setupScene1() {
-//        TextureHelper.setMinimumReflectingAngle(45);
-//        TextureHelper.setRandomness(0.01);
-        TextureHelper.setReflectivity(0.8);
+        TextureHelper.setReflectivity(0.1);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 TextureHelper.newReflecting(Color.AZURE)).initiate(this);
-//        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2,
                 TextureHelper.newReflecting(Color.AQUA)));

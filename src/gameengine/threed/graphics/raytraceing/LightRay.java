@@ -1,6 +1,7 @@
 package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.geometry.Ray;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
@@ -52,6 +53,27 @@ public class LightRay extends Ray {
     /*
      * Functionality:
      */
+
+    public Vector3D getColor(final int maxBounces,
+                             final RayIntersectableList objectsInField, int startingBounce) {
+        RayTraceable collision;
+
+        for (int bounces = startingBounce; bounces <= maxBounces; bounces++) {
+            collision = (RayTraceable) firstCollision(objectsInField);
+
+            if (collision == null) {
+                return getIncomingLight();//.add(new Vector3D(Color.SKYBLUE));
+            }
+
+            reflect(collision);
+
+            if (collision.getTexture().getColor().equals(Color.BLACK)) {
+                return getIncomingLight();
+            }
+        }
+
+        return getIncomingLight();
+    }
 
     /**
      * Updates the {@code LightRay}'s direction based on its reflection of off the

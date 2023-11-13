@@ -196,8 +196,7 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
 //        Vector3D averageColor = new Vector3D();
         for (int i = 0; i <= getRaysPerPixel(); i++) {
             averageColor.addMutable(
-                    RayPathTracer.getColor(
-                            startRay.getReflected(firstCollision),
+                            startRay.getReflected(firstCollision).getColor(
                             getMaxBounces(),
                             objectsInField, 2).scalarDivide(getRaysPerPixel()));
         }

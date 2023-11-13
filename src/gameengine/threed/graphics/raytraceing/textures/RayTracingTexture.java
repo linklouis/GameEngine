@@ -30,15 +30,7 @@ public abstract class RayTracingTexture {
 
     public Vector3D scatterRay(Vector3D surfaceNormal) {
         Vector3D reflection = Vector3D.random(-1, 1);
-//        Vector3D reflection = Vector3D.randomFlat();
-//        if (reflection.dotProduct(surfaceNormal) < 0) {
-//            return reflection.scalarMultiply(-1);
-//        }
         return reflection.add(surfaceNormal.unitVector()).unitVector();
-
-//        return surfaceNormal.add(Vector3D.randomFlat(surfaceNormal, 1));
-
-//        return Vector3D.random(surfaceNormal, 0.5);
     }
 
     public Vector3D reflectRay(final Vector3D rayDirection,

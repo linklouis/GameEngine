@@ -402,8 +402,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
-                    RayPathTracer.getColor(
-                            startLightRay.getReflected(firstCollision),
+                            startLightRay.getReflected(firstCollision).getColor(
                             maxBounces,
                             objectsInField, 2));
         }
@@ -426,8 +425,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         Vector3D averageColor = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
-                    RayPathTracer.getColor(
-                            startRay.getReflected(firstCollision),
+                            startRay.getReflected(firstCollision).getColor(
                             maxBounces,
                             objectsInField, 2));
         }

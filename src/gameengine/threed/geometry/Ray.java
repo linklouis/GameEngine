@@ -5,6 +5,9 @@ import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableLis
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.vectormath.Vector3D;
+import javafx.scene.paint.Color;
+
+import java.util.LinkedHashMap;
 
 public class Ray extends VectorLine3D {
 
@@ -25,42 +28,6 @@ public class Ray extends VectorLine3D {
      *                       potentially collide with.
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
-//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-//        double newDistance;
-//        double amountInDirec;
-//        double closestDist = Double.MAX_VALUE;
-//        RayIntersectable closest = null;
-//        RayIntersectableList.Element element = objectsInField.getHead();
-//
-//        boolean a = false;
-//
-//        Vector3D toCenter;
-//
-//        while (element != null) {
-//            toCenter = position.subtract(element.value().getCenter());
-//            amountInDirec = getDirection().dotProduct(toCenter);
-//            if (((RayTraceable) element.value()).getTexture().isLightSource()) {
-//                a = true;
-////                System.out.println(element.value().distanceToCollide(this, closestDist, amountInDirec));
-//            }
-//
-//            newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-//            if (newDistance >= 0 && newDistance < closestDist) {
-//                closestDist = newDistance;
-//                closest = element.value();
-//            }
-//
-//            element = element.next();
-//        }
-//
-////        if (((RayTraceable) closest).getTexture().isLightSource() || a) {
-////            System.out.println(closest.getClass() + ": " + ((RayTraceable) closest).getTexture().getColor() + ", " + closestDist);
-////        }
-////        System.out.println();
-//
-//        toDistance(closestDist - 0.01);
-//        return closest;
-//    }
     public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
         double newDistance;
         double amountInDirec;
@@ -136,45 +103,24 @@ public class Ray extends VectorLine3D {
 //    }
 
 
-//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-//        double closestDist = Double.MAX_VALUE;//objectsInField.getHead().value().distanceToCollide(this, Double.MAX_VALUE);
-//        RayIntersectable closest = null;//objectsInField.getHead().value();
-//        double newDistance;
-//        double amountInDirec;
-//        Vector3D toCenter;
-//
-////        System.out.println();
-////        String output = "";
-//        for (RayIntersectableList.Element element = objectsInField.getHead();
-//             element != null; element = element.next()) {
-//
-//            amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
-//            if (amountInDirec < 0.5 && element.value().closestDistTo(position) < closestDist) {
-//                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-////                System.out.println(element.value().getClass() + ": " + element.dist() + ", " + newDistance);
-////                output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
-//                if (newDistance >= 0 && newDistance < closestDist) {
-//                    closestDist = newDistance;
-//                    closest = element.value();
-////                        break;
-////                    if (element.next() != null && newDistance <= element.next().dist()) {
-////                        element = element.next();
-////                        newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-////                        output += "\n" + element.value().getClass() + ": " + element.dist() + ", " + newDistance;
-//////                            System.out.println(output);
-////                        break;
-////                    }
-//                }
-//            }
-//        }
-////        System.exit(0);
-//
-//        if (closest != null/*objectsInField.getHead().value()*/) {
-//            position = position.addMultiplied(direction,closestDist - 0.01);
-//        }
-//
-//        return closest;
-//    }
+    public LinkedHashMap<RayTraceable, Ray> getCollisions(final int maxBounces,
+                                                          final RayIntersectableList objectsInField) {
+        LinkedHashMap<RayTraceable, Ray> map = new LinkedHashMap<>(maxBounces);
+        RayTraceable collision;
+
+        for (int bounces = 2; bounces <= maxBounces; bounces++) {
+            collision = (RayTraceable) firstCollision(objectsInField);
+
+            if (collision == null) {
+                return null;
+            }
+
+            map.put(collision, new Ray(this));
+            reflect(collision);
+        }
+
+        return map;
+    }
 
     /**
      * Finds whether {@code collider} is possible for the {@code LightRay} ray to
