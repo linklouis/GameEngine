@@ -7,7 +7,6 @@ import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
 import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
-//import gameengine.experimental.SubsurfaceTexture;
 import gameengine.threed.prebuilt.gameobjects.*;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.drivers.GraphicsDriver3D;
@@ -39,7 +38,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new AdditiveRayTracingCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                                 new Vector2D(/*2000, 2000*//*1000, 1000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
-                                10, 3, true, 70/*160*/)),
+                                10, 10, true, 70/*160*/)),
                 new PhysicsEngine3D());
     }
 
@@ -53,8 +52,9 @@ public class RayTracing extends GameDriver3D {
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
 
 //        colorSpace();
-        setupScene1_5();
+//        ballReflectionTests();
 //        sphereDistTest();
+        setupScene1();
 
 //        setupRandSphere(100, (color -> new ReflectingTexture(color, Math.random() > 0.7, 0.5, 0.8)), 100);
 //        setupBoundingBox(100);
@@ -111,7 +111,7 @@ public class RayTracing extends GameDriver3D {
     private void setupScene1() {
 //        TextureHelper.setMinimumReflectingAngle(45);
 //        TextureHelper.setRandomness(0.01);
-        TextureHelper.setReflectivity(0);
+        TextureHelper.setReflectivity(0.8);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -125,11 +125,11 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(0, 0, 100, 100,
                 TextureHelper.newReflecting(Color.BROWN)));
 
-        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
+        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 3, Color.WHITE, 0)));
     }
 
     private void setupScene1_5() {
-        TextureHelper.setReflectivity(0);
+        TextureHelper.setReflectivity(0.7);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -145,6 +145,17 @@ public class RayTracing extends GameDriver3D {
 
 //        new QuadRectangle(new Vector3D(-10, 2, -10).scalarMultiply(4), new Vector3D(1, 1, 1).scalarMultiply(7*5/2.0),
 //                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)).initiate(this);
+        newObject(new Sphere(new Vector3D(-10, 2, -10).scalarMultiply(7), 7 * 5/*140*/,
+                new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
+    }
+
+    private void setupScene1_6() {
+        TextureHelper.setReflectivity(0);
+        mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
+
+        newObject(new Sphere(-1, 2, -3, 3,
+                TextureHelper.newReflecting(Color.GREEN)));
+
         newObject(new Sphere(new Vector3D(-10, 2, -10).scalarMultiply(7), 7 * 5/*140*/,
                 new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
     }
@@ -186,6 +197,114 @@ public class RayTracing extends GameDriver3D {
 
         // Backlight
         newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
+    }
+
+    private void setupScene2_1() {
+        mainCam.setDirection(new Vector3D(1, 0, 0));
+        mainCam.setLocation(new Vector3D(-10, 0, 0));
+
+        // Center Sphere
+        newObject(new Sphere(3, 0, 0, 2,
+                new ReflectingTexture(Color.WHITE, 0, 0.9)));
+
+        setupBoundingBox(40);
+
+        // Walls:
+        double reflectivity = 0;
+        double emission = 0;
+        TextureHelper.setReflectivity(reflectivity);
+        double wallSize = 10;
+        double hWallSize = wallSize / 2;
+        // Back
+        new RectPlane(hWallSize, -hWallSize, -hWallSize,
+                new Vector3D(0, wallSize, wallSize),
+                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.RED)*/).initiate(this);
+        // Left
+        new RectPlane(-hWallSize, -hWallSize, -hWallSize,
+                new Vector3D(wallSize, 0, wallSize),
+                new ReflectingTexture(Color.BLUE, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.BLUE)*/).initiate(this);
+        // Right
+        new RectPlane(-hWallSize, hWallSize, -hWallSize,
+                new Vector3D(wallSize, 0, wallSize),
+                new ReflectingTexture(Color.BLUE, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.BLUE)*/).initiate(this);
+        // Bottom
+        new RectPlane(-hWallSize, -hWallSize, -hWallSize,
+                new Vector3D(wallSize, wallSize, 0),
+                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
+        // Top
+        new RectPlane(-hWallSize, -hWallSize, hWallSize,
+                new Vector3D(wallSize, wallSize, 0),
+                new ReflectingTexture(Color.GREEN, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
+
+        // Backlight
+        newObject(new Sphere(0, 0, 15, 7, Color.WHITE, true));
+    }
+
+    private void ballReflectionTests() {
+        mainCam.setDirection(new Vector3D(1, 0, 0));
+        mainCam.setLocation(new Vector3D(-10, 0, 0));
+        mainCam.setFieldOfViewDegrees(100);
+
+        double r = 2;
+        double padding = 1;
+        // Center Sphere
+        newObject(new Sphere(3, -3 * r - padding * 2, 0, 2,
+                new ReflectingTexture(Color.WHITE, 0, 0.2)));
+        newObject(new Sphere(3, -r - padding * 0.5, 0, 2,
+                new ReflectingTexture(Color.WHITE, 0, 0.4)));
+        newObject(new Sphere(3, r + padding * 0.5, 0, 2,
+                new ReflectingTexture(Color.WHITE, 0, 0.8)));
+        newObject(new Sphere(3, 3 * r + padding * 1.5, 0, 2,
+                new ReflectingTexture(Color.WHITE, 0, 1)));
+
+        // Walls:
+        double reflectivity = 0;
+        double emission = 0;
+        double wallSize = 20;
+        double hWallSize = wallSize / 2;
+        double yWallSize = 30;
+        double hYWallSize = yWallSize / 2;
+        // Back
+        new RectPlane(hWallSize, -hYWallSize, -hWallSize,
+                new Vector3D(0, yWallSize, wallSize),
+                new ReflectingTexture(Color.WHITE, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.RED)*/).initiate(this);
+        // Front
+        new RectPlane(-hWallSize, -hYWallSize, -hWallSize,
+                new Vector3D(0, yWallSize, wallSize),
+                new ReflectingTexture(Color.WHITE, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.RED)*/).initiate(this);
+        // Left
+        new RectPlane(-hWallSize, -hYWallSize, -hWallSize,
+                new Vector3D(wallSize, 0, wallSize),
+                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.BLUE)*/).initiate(this);
+        // Right
+        new RectPlane(-hWallSize, hYWallSize, -hWallSize,
+                new Vector3D(wallSize, 0, wallSize),
+                new ReflectingTexture(Color.GREEN, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.BLUE)*/).initiate(this);
+        // Bottom
+        new RectPlane(-hWallSize, -hYWallSize, -hWallSize,
+                new Vector3D(wallSize, yWallSize, 0),
+                new ReflectingTexture(Color.GRAY, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
+        // Top
+        new RectPlane(-hWallSize, -hYWallSize, hWallSize,
+                new Vector3D(wallSize, yWallSize, 0),
+                new ReflectingTexture(Color.GRAY, emission, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
+
+        // Light
+        new RectPlane(-hWallSize/2, -hYWallSize/2, hWallSize - 1,
+                new Vector3D(wallSize/2, yWallSize/2, 0),
+                new ReflectingTexture(Color.BLACK, 3, Color.WHITE, reflectivity)
+                /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
     }
 
     private void setupGrassScene() {

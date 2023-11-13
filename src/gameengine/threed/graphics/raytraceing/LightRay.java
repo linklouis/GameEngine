@@ -63,8 +63,8 @@ public class LightRay extends Ray {
     public void reflect(RayTraceable collider) {
         Reflection reflectionDetails = collider.reflection(this);
         setDirection(reflectionDetails.direction());
-        color = reflectionDetails.color();
         incomingLight = updatedIncomingLight(collider.getTexture().getEmission());
+        color = reflectionDetails.color();
     }
 
     /**
@@ -99,9 +99,5 @@ public class LightRay extends Ray {
 
     public Vector3D getIncomingLight() {
         return incomingLight;
-    }
-
-    public Vector3D litColor() {
-        return incomingLight.multiplyAcross(color);
     }
 }

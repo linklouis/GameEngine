@@ -183,10 +183,13 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
         RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
+//            averageColor.addMutable(new Vector3D(Color.SKYBLUE));
             return/* averageColor*/;
         }
         if (firstCollision.getTexture().getColor().equals(Color.BLACK)
                 || firstCollision.getTexture().isLightSource()) {
+//            averageColor.addMutable(new Vector3D(firstCollision.getColor())/*.scalarDivide(getRaysPerPixel())*/);
+            averageColor.addMutable(startRay.getReflected(firstCollision).getIncomingLight());
             return /*averageColor.add(new Vector3D(firstCollision.getColor()))*/;
         }
 

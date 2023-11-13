@@ -34,13 +34,13 @@ public final class RayPathTracer {
             collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
-                return currentLightRay.litColor();
+                return currentLightRay.getIncomingLight();//.add(new Vector3D(Color.SKYBLUE));
             }
 
             currentLightRay.reflect(collision);
 
             if (collision.getTexture().getColor().equals(Color.BLACK)) {
-                return currentLightRay.litColor();
+                return currentLightRay.getIncomingLight();
             }
 
 //            if (collision.getTexture().isLightSource()) {
@@ -48,7 +48,7 @@ public final class RayPathTracer {
 //            }
         }
 
-        return currentLightRay.litColor();
+        return currentLightRay.getIncomingLight();
     }
 
     public static LinkedHashMap<RayTraceable, Ray> getCollisions(final Ray currentRay,

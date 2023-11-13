@@ -402,6 +402,14 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         ).unitVector();
     }
 
+    public static Vector3D randomFlat(Vector3D model, double range) {
+        return new Vector3D(
+                ThreadLocalRandom.current().nextDouble(model.x - range, model.x + range),
+                ThreadLocalRandom.current().nextDouble(model.y - range, model.y + range),
+                ThreadLocalRandom.current().nextDouble(model.z - range, model.z + range)
+        ).unitVector();
+    }
+
     public static Vector3D random(Vector3D normal) {
         return new Vector3D(
                 ThreadLocalRandom.current().nextDouble(-1, 1),
