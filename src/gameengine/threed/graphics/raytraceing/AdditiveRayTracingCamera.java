@@ -1,11 +1,13 @@
 package gameengine.threed.graphics.raytraceing;
 
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
+import javafx.scene.paint.Color;
 
 public class AdditiveRayTracingCamera extends RayTracedCamera {
     /**
@@ -32,6 +34,7 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
             final boolean multiThreaded, final double fieldOfViewDegrees) {
         super(position, direction, imageDimensions, maxBounces, raysPerPixel,
                 multiThreaded, fieldOfViewDegrees);
+        populateColors();
     }
 
     /**
@@ -56,6 +59,7 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
             final boolean multiThreaded) {
         super(position, direction, imageDimensions, maxBounces, raysPerPixel,
                 multiThreaded, 60.0);
+        populateColors();
     }
 
     /**
@@ -84,6 +88,7 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
             final boolean multiThreaded, final double fieldOfViewDegrees) {
         super(x, y, z, direction, imageDimensions, maxBounces, raysPerPixel,
                 multiThreaded, fieldOfViewDegrees);
+        populateColors();
     }
 
     /**
@@ -110,25 +115,90 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
             final boolean multiThreaded) {
         super(x, y, z, direction, imageDimensions, maxBounces, raysPerPixel,
                 multiThreaded, 60.0);
+        populateColors();
     }
 
-    private int numRenders = 1;
+    private int numRenders = 0;
     private final PixelReader reader = getImage().getPixelReader();
-    @Override
-    protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
-        buffer.put(
-                pixelIndex,
-                new Vector3D(calculatePixelColor(rayTo(pixelIndex), objects))
-                        .add(new Vector3D(
-                                reader.getColor(pixelIndex % getWidth(), pixelIndex / getWidth()))
-                                .scalarMultiply(numRenders))
-                        .scalarDivide(numRenders + 1).oneInt()
-        );
-    }
 
     @Override
     protected void updateImage(PixelWriter writer) {
         writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getIntArgbInstance(), buffer, getWidth());
         numRenders++;
+    }
+
+//    @Override
+//    protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
+//        buffer.put(
+//                pixelIndex,
+//                new Vector3D(calculatePixelColor(rayTo(pixelIndex), objects,
+//                        new Vector3D(reader.getColor(pixelIndex % getWidth(), pixelIndex / getWidth()))
+//                                .scalarMultiply(numRenders * (getRaysPerPixel() - 1))
+//                ))
+//                        .scalarDivide(numRenders + 1).oneInt()
+//        );
+//    }
+//
+//    protected Vector3D calculatePixelColor(final LightRay startRay,
+//                                        final RayIntersectableList objectsInField,
+//                                        final Vector3D averageColor) {
+//        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
+//
+//        if (firstCollision == null) {
+//            return new Vector3D();
+//        }
+////        if (firstCollision.getTexture().getColor().equals(Color.BLACK)
+////                || firstCollision.getTexture().isLightSource()) {
+////            return averageColor.add(new Vector3D(firstCollision.getColor()));
+////        }
+//
+//        for (int i = 0; i < getRaysPerPixel(); i++) {
+//            averageColor.addMutable(
+//                    RayPathTracer.getColor(
+//                            startRay.getReflected(firstCollision),
+//                            getMaxBounces(),
+//                            objectsInField, 2));
+//        }
+//
+//        return averageColor.scalarDivide(getRaysPerPixel() - 1);
+//    }
+
+    private void populateColors() {
+        for (int i = 0; i < getWidth() * getHeight(); i++) {
+            colors[i] = new Vector3D();
+        }
+    }
+    private final Vector3D[] colors = new Vector3D[getWidth() * getHeight()];
+
+    @Override
+    protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
+        calculatePixelColorVector(rayTo(pixelIndex), objects, colors[pixelIndex]);
+        buffer.put(pixelIndex, colors[pixelIndex].scalarDivide(numRenders).oneInt());
+//        colors[pixelIndex] = color;
+    }
+
+    protected void calculatePixelColorVector(final LightRay startRay,
+                                                 final RayIntersectableList objectsInField,
+                                                 Vector3D averageColor) {
+        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
+
+        if (firstCollision == null) {
+            return/* averageColor*/;
+        }
+        if (firstCollision.getTexture().getColor().equals(Color.BLACK)
+                || firstCollision.getTexture().isLightSource()) {
+            return /*averageColor.add(new Vector3D(firstCollision.getColor()))*/;
+        }
+
+//        Vector3D averageColor = new Vector3D();
+        for (int i = 0; i <= getRaysPerPixel(); i++) {
+            averageColor.addMutable(
+                    RayPathTracer.getColor(
+                            startRay.getReflected(firstCollision),
+                            getMaxBounces(),
+                            objectsInField, 2).scalarDivide(getRaysPerPixel()));
+        }
+
+//        return averageColor/*.scalarDivide(getRaysPerPixel())*/;
     }
 }

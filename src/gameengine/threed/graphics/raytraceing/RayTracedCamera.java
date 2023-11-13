@@ -1,11 +1,9 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.Camera;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
 import gameengine.vectormath.Vector2D;
@@ -15,17 +13,12 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import javax.imageio.ImageWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -381,7 +374,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                     RayPathTracer.getColor(
                             startRay.getReflected(firstCollision),
                             maxBounces,
-                            objectsInField));
+                            objectsInField, 2));
         }
 
         return averageColor.scalarDivide(raysPerPixel).toColor();
@@ -412,7 +405,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                     RayPathTracer.getColor(
                             startLightRay.getReflected(firstCollision),
                             maxBounces,
-                            objectsInField));
+                            objectsInField, 2));
         }
 
         return averageColor.scalarDivide(raysPerPixel).bytes();
@@ -436,7 +429,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                     RayPathTracer.getColor(
                             startRay.getReflected(firstCollision),
                             maxBounces,
-                            objectsInField));
+                            objectsInField, 2));
         }
 
         return averageColor.scalarDivide(raysPerPixel).oneInt();

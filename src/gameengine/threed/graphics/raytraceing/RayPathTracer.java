@@ -22,14 +22,15 @@ public final class RayPathTracer {
      * reflections.
      *
      * @param currentLightRay The initial {@link LightRay} who's path to trace.
+     * @param startingBounce
      * @return The color of {@code currentLightRay} after all of its reflections.
      */
     public static Vector3D getColor(final LightRay currentLightRay,
                                     final int maxBounces,
-                                    final RayIntersectableList objectsInField) {
+                                    final RayIntersectableList objectsInField, int startingBounce) {
         RayTraceable collision;
 
-        for (int bounces = 2; bounces <= maxBounces; bounces++) {
+        for (int bounces = startingBounce; bounces <= maxBounces; bounces++) {
             collision = (RayTraceable) currentLightRay.firstCollision(objectsInField);
 
             if (collision == null) {
