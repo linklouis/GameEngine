@@ -38,14 +38,14 @@ public class Ray extends VectorLine3D {
         while (true) {
             amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
 
-            if (amountInDirec < 0.5) {
+//            if (amountInDirec < 0) {
                 newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
                 if (newDistance > 0) {
                     closestDist = newDistance;
                     closest = element.value();
                     break;
                 }
-            }
+//            }
 
             if (element.next() == null) {
                 return null;
@@ -59,7 +59,7 @@ public class Ray extends VectorLine3D {
             toCenter = position.subtract(element.value().getCenter());
             amountInDirec = getDirection().dotProduct(toCenter);
 
-            if (amountInDirec < 0.5 && toCenter.magnitude() - element.value().getRange() < closestDist) {
+            if (/*amountInDirec < 0 &&*/ toCenter.magnitude() - element.value().getRange() < closestDist) {
                 newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
@@ -86,17 +86,17 @@ public class Ray extends VectorLine3D {
 //
 //            toCenter = position.subtract(element.value().getCenter());
 //            amountInDirec = getDirection().dotProduct(toCenter);
-//            if (amountInDirec < 0.5 && toCenter.magnitude() - element.value().getRange() < closestDist) {
+////            if (amountInDirec < 0.5 && toCenter.magnitude() - element.value().getRange() < closestDist) {
 //                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
 //                if (newDistance >= 0 && newDistance < closestDist) {
 //                    closestDist = newDistance;
 //                    closest = element.value();
 //                }
-//            }
+////            }
 //        }
 //
 //        if (closest != null) {
-//            position = position.addMultiplied(direction,closestDist - 0.01);
+//            position = position.addMultiplied(getDirection(),closestDist - 0.01);
 //        }
 //
 //        return closest;

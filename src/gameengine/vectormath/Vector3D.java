@@ -60,7 +60,7 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
-        this.magnitude = vector.magnitude();
+//        this.magnitude = vector.magnitude();
     }
 
     public Vector3D() {
@@ -435,7 +435,7 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
                 ThreadLocalRandom.current().nextGaussian(model.x, range),
                 ThreadLocalRandom.current().nextGaussian(model.y, range),
                 ThreadLocalRandom.current().nextGaussian(model.z, range)
-        );
+        ).unitVector();
     }
 
     public Vector3D blendWithA(Vector3D other, double interpolationStrength) {

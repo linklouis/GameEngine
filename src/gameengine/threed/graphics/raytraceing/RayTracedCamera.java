@@ -356,30 +356,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      * @return The average color of each ray to measure based on
      * {@link #raysPerPixel}.
      */
-//    protected Color calculatePixelColor(final LightRay startRay,
-//                                      final RayIntersectableList objectsInField) {
-//        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
-//
-//        if (firstCollision == null) {
-//            return Color.BLACK;
-//        }
-//        if (firstCollision.getTexture().getColor().equals(Color.BLACK)
-//                || firstCollision.getTexture().isLightSource()) {
-//            return firstCollision.getColor();
-//        }
-//
-//        Vector3D averageColor = new Vector3D();
-//        for (int i = 0; i < raysPerPixel; i++) {
-//            averageColor.addMutable(
-//                    RayPathTracer.getColor(
-//                            startRay.getReflected(firstCollision),
-//                            maxBounces,
-//                            objectsInField, 2));
-//        }
-//
-//        return averageColor.scalarDivide(raysPerPixel).toColor();
-//    }
-
     private byte[] calculatePixelColorBytes(final LightRay startLightRay,
                                       final RayIntersectableList objectsInField) {
         RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
@@ -393,12 +369,6 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         }
 
         Vector3D averageColor = new Vector3D(0);
-//        IntStream.range(0, raysPerPixel).forEach(ray ->
-//                averageColor.addMutable(
-//                        RayPathTracer.getColor(
-//                                startLightRay.getReflected(firstCollision),
-//                                maxBounces,
-//                                objectsInField)));
 
         for (int i = 0; i < raysPerPixel; i++) {
             averageColor.addMutable(
