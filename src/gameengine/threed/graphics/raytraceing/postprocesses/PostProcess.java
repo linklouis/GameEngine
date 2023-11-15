@@ -1,4 +1,4 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.graphics.raytraceing.postprocesses;
 
 import javafx.scene.image.WritableImage;
 

@@ -21,29 +21,6 @@ public final class RayIntersectableList {
     private Element head;
     private final Vector3D relativeTo;
 
-    /**
-     * Creates a new {@code RayIntersectableList} with no elements and a null
-     * {@code head}.
-     */
-//    public RayIntersectableList() {
-//        head = null;
-//        relativeTo = new Vector3D();
-//    }
-
-    /**
-     * Creates a new {@code RayIntersectableList} with matching elements to the
-     * passed array.
-     *
-     * @param items An array of {@link RayIntersectable} to initialize the values in
-     *              the list.
-     */
-//    public RayIntersectableList(final RayIntersectable[] items) {
-//        relativeTo = new Vector3D();
-//        for (int i = items.length - 1; i >=0; i--) {
-//            add(items[i]);
-//        }
-//    }
-
     public RayIntersectableList(final RayIntersectable[] items, final Vector3D pointRelativeTo) {
         relativeTo = pointRelativeTo;
         for (int i = items.length - 1; i >=0; i--) {
@@ -51,7 +28,15 @@ public final class RayIntersectableList {
         }
     }
 
-    public record Element(RayIntersectable value, Element next, double dist) { }
+    public record Element(RayIntersectable value, Element next, double dist) {
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        public boolean isLast() {
+            return next == null;
+        }
+    }
 
     /**
      * Adds a new item at the head of the list.

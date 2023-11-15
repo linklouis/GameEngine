@@ -4,6 +4,7 @@ import gameengine.threed.graphics.raytraceing.*;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
+import gameengine.threed.graphics.raytraceing.postprocesses.FillIn;
 import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
@@ -50,7 +51,7 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-        mainCam.newPostProcess(new FillIn());
+//        mainCam.newPostProcess(new FillIn());
         mainCam.setDirection(new Vector3D(1, 4, 3));
 
 //        colorSpace();

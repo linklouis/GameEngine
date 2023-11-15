@@ -34,9 +34,12 @@ public class Ray extends VectorLine3D {
         if (element == null) {
             return null;
         }
+        // Set the closest distance to the distance of the first object.
         double closestDist = element.value().distanceToCollide(this,
                 getDirection().dotWithSubtracted(position, element.value().getCenter()));
 
+        // While the distance of the closest collision either doesn't exist or is behind the ray,
+        // keep finding the next distance.
         while (Double.isNaN(closestDist) || closestDist < 0) {
             if (element.next() == null) {
                 return null;
@@ -46,16 +49,20 @@ public class Ray extends VectorLine3D {
                     getDirection().dotWithSubtracted(position, element.value().getCenter()));
         }
 
-        RayIntersectable closest = element.value();
-        if (element.next() == null) {
+        // If the current element is the last one, early exit.
+        if (element.isLast()) {
             toDistance(closestDist - 0.01);
             return element.value();
         }
+        RayIntersectable closest = element.value();
         element = element.next();
         double newDistance;
         Vector3D toCenter;
 
-        do {
+        // While there are more objects in the scene,
+        // if that object is closer than the current closest distance, check the distance it collides at,
+        // and if that's also closer, take this object instead.
+        while (true) {
             toCenter = position.subtract(element.value().getCenter());
 
             if (toCenter.magnitude() - element.value().getRange() < closestDist) {
@@ -67,11 +74,12 @@ public class Ray extends VectorLine3D {
                 }
             }
 
+            if (element.isLast()) {
+                toDistance(closestDist - 0.01);
+                return closest;
+            }
             element = element.next();
-        } while (element != null);
-
-        toDistance(closestDist - 0.01);
-        return closest;
+        }
     }
 
 //    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {

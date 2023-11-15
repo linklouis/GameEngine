@@ -1,5 +1,6 @@
-package gameengine.threed.graphics.raytraceing;
+package gameengine.threed.graphics.raytraceing.postprocesses;
 
+import gameengine.threed.graphics.raytraceing.postprocesses.PostProcess;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;

@@ -1,6 +1,6 @@
 package gameengine.threed.graphics;
 
-import gameengine.threed.graphics.raytraceing.PostProcess;
+import gameengine.threed.graphics.raytraceing.postprocesses.PostProcess;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
