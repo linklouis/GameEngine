@@ -24,7 +24,7 @@ public class RayTracing extends GameDriver3D {
     private final static int SIZE = 400;
     private int renders = 0;
     private long avTime = 0;
-    private final int NUM_TO_TEST = 1;
+    private final int NUM_TO_TEST = 20;
     private final double PERCENT_TO_TAKE = 0.4;
     private long minTime = Long.MAX_VALUE;
     private RayTracedCamera mainCam;
@@ -37,8 +37,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                                new Vector2D(/*2000, 2000*/1000, 1000/*700, 700*//*1280, 720*//*1920.0, 1080.0*/),
-                                6, 3000, true, 70/*180*/)),
+                                new Vector2D(/*2000, 2000*//*1000, 1000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
+                                10, 10, true, 70/*180*/)),
                 new PhysicsEngine3D());
     }
 
@@ -53,9 +53,9 @@ public class RayTracing extends GameDriver3D {
         mainCam.setDirection(new Vector3D(1, 4, 3));
 
 //        colorSpace();
-        ballReflectionTests();
+//        ballReflectionTests();
 //        sphereDistTest();
-//        setupScene1();
+        setupScene1();
 //        setupGrassScene();
 
 
@@ -112,7 +112,7 @@ public class RayTracing extends GameDriver3D {
     }
 
     private void setupScene1() {
-        TextureHelper.setReflectivity(0.1);
+        TextureHelper.setReflectivity(0.5);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -256,7 +256,7 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(3, -3 * r - padding * 2, 0, 2,
                 new ReflectingTexture(Color.WHITE, 0, 0.2)));
         newObject(new Sphere(3, -r - padding * 0.5, 0, 2,
-                new ReflectingTexture(Color.WHITE, 0, 0.6)));
+                new ReflectingTexture(Color.WHITE, 0, 0.5)));
         newObject(new Sphere(3, r + padding * 0.5, 0, 2,
                 new ReflectingTexture(Color.WHITE, 0, 0.8)));
         newObject(new Sphere(3, 3 * r + padding * 1.5, 0, 2,
@@ -298,39 +298,6 @@ public class RayTracing extends GameDriver3D {
         newObject(new Quad(new Vector3D(0, 0, hWallSize - 0.1),
                 new Vector2D(wallSize/8, wallSize/4), Vector3D.K,
                 new ReflectingTexture(Color.BLACK, 30, Color.WHITE, reflectivity)));
-
-
-//        // Back
-////        newObject(new Quad(new Vector3D(hWallSize, -hYWallSize, -hWallSize),
-////                new Vector2D(yWallSize, wallSize), new Vector3D(1, 0, 0),
-////                new ReflectingTexture(Color.WHITE, emission, Color.WHITE, reflectivity)));
-//        // Front
-//        new QuadRectangle(-hWallSize, -hYWallSize, -hWallSize,
-//                new Vector3D(0, yWallSize, wallSize),
-//                new ReflectingTexture(Color.WHITE, emission, Color.WHITE, reflectivity)
-//                /*TextureHelper.newReflecting(Color.RED)*/).initiate(this);
-//        // Left
-//        newObject(new Quad(new Vector3D(-hWallSize, -hYWallSize, -hWallSize),
-//                new Vector2D(wallSize, wallSize), new Vector3D(0, 1, 0),
-//                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)
-//                /*TextureHelper.newReflecting(Color.BLUE)*/));
-//        // Right
-//        newObject(new Quad(new Vector3D(-0, hYWallSize, -0),
-//                new Vector2D(wallSize, wallSize), Vector3D.J,
-//                new ReflectingTexture(Color.GREEN, emission, Color.WHITE, reflectivity)));
-//        // Bottom
-//        newObject(new Quad(new Vector3D(-0, -0, -hWallSize),
-//                new Vector2D(wallSize, yWallSize), Vector3D.K,
-//                new ReflectingTexture(Color.GRAY, emission, Color.WHITE, reflectivity)));
-//        // Top
-//        newObject(new Quad(new Vector3D(-0, -0, hWallSize),
-//                new Vector2D(wallSize, yWallSize), Vector3D.K,
-//                new ReflectingTexture(Color.GRAY, emission, Color.WHITE, reflectivity)));
-//
-//        // Light
-//        newObject(new Quad(new Vector3D(-hWallSize/8, -hWallSize/4, hWallSize - 0.1),
-//                new Vector2D(wallSize/8, wallSize/4), Vector3D.K,
-//                new ReflectingTexture(Color.BLACK, 30, Color.WHITE, reflectivity)));
     }
 
     private void setupGrassScene() {

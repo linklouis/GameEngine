@@ -29,38 +29,38 @@ public class Ray extends VectorLine3D {
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
     public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-        double newDistance;
-        double amountInDirec;
-        double closestDist = Double.MAX_VALUE;
-        RayIntersectable closest;
         RayIntersectableList.Element element = objectsInField.getHead();
 
-        while (true) {
-            amountInDirec = getDirection().dotWithSubtracted(position, element.value().getCenter());
+        if (element == null) {
+            return null;
+        }
+        double closestDist = element.value().distanceToCollide(this,
+                getDirection().dotWithSubtracted(position, element.value().getCenter()));
 
-//            if (amountInDirec < 0) {
-                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-                if (newDistance > 0) {
-                    closestDist = newDistance;
-                    closest = element.value();
-                    break;
-                }
-//            }
-
+        while (Double.isNaN(closestDist) || closestDist < 0) {
             if (element.next() == null) {
                 return null;
             }
             element = element.next();
+            closestDist = element.value().distanceToCollide(this,
+                    getDirection().dotWithSubtracted(position, element.value().getCenter()));
         }
 
+        RayIntersectable closest = element.value();
+        if (element.next() == null) {
+            toDistance(closestDist - 0.01);
+            return element.value();
+        }
+        element = element.next();
+        double newDistance;
         Vector3D toCenter;
 
-        while (element != null) {
+        do {
             toCenter = position.subtract(element.value().getCenter());
-            amountInDirec = getDirection().dotProduct(toCenter);
 
-            if (/*amountInDirec < 0 &&*/ toCenter.magnitude() - element.value().getRange() < closestDist) {
-                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
+            if (toCenter.magnitude() - element.value().getRange() < closestDist) {
+                newDistance = element.value().distanceToCollide(this, closestDist,
+                        getDirection().dotProduct(toCenter));
                 if (newDistance >= 0 && newDistance < closestDist) {
                     closestDist = newDistance;
                     closest = element.value();
@@ -68,11 +68,53 @@ public class Ray extends VectorLine3D {
             }
 
             element = element.next();
-        }
+        } while (element != null);
 
         toDistance(closestDist - 0.01);
         return closest;
     }
+
+//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
+//        double newDistance;
+//        double closestDist = Double.MAX_VALUE;
+//        RayIntersectable closest;
+//        RayIntersectableList.Element element = objectsInField.getHead();
+//
+//        while (true) {
+//            newDistance = element.value().distanceToCollide(this, closestDist,
+//                    getDirection().dotWithSubtracted(position, element.value().getCenter()));
+//            if (newDistance > 0) {
+//                closestDist = newDistance;
+//                closest = element.value();
+//                break;
+//            }
+//
+//            if (element.next() == null) {
+//                return null;
+//            }
+//            element = element.next();
+//        }
+//
+//        Vector3D toCenter;
+//
+//        while (element != null) {
+//            toCenter = position.subtract(element.value().getCenter());
+//
+//            if (toCenter.magnitude() - element.value().getRange() < closestDist) {
+//                newDistance = element.value().distanceToCollide(this, closestDist,
+//                        getDirection().dotProduct(toCenter));
+//                if (newDistance >= 0 && newDistance < closestDist) {
+//                    closestDist = newDistance;
+//                    closest = element.value();
+//                }
+//            }
+//
+//            element = element.next();
+//        }
+//
+//        toDistance(closestDist - 0.01);
+//        return closest;
+//    }
 
 //    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
 //        double closestDist = Double.MAX_VALUE;
