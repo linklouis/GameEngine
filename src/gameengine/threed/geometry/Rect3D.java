@@ -11,12 +11,9 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
     public Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vector3D vertex4) {
         this(
                 vertex1, vertex2, vertex3, vertex4,
-                vertex2.subtract(vertex1), vertex4.subtract(vertex1),
-//                new Rect(vertex1.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
-//                        vertex3.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
-//                        true),
-                new Rect(vertex1.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
-                        vertex3.projectToPlane(vertex2.subtract(vertex1), vertex4.subtract(vertex1)),
+                vertex2.subtract(vertex1).unitVector(), vertex4.subtract(vertex1).unitVector(),
+                new Rect(vertex1.projectToPlane(vertex2.subtract(vertex1).unitVector(), vertex4.subtract(vertex1).unitVector()),
+                        vertex3.projectToPlane(vertex2.subtract(vertex1).unitVector(), vertex4.subtract(vertex1).unitVector()),
                         true),
                 vertex2.subtract(vertex1).crossProduct(vertex4.subtract(vertex1)).unitVector(),
                 Vector3D.average(vertex1, vertex2, vertex3, vertex4),

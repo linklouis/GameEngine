@@ -365,8 +365,8 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
 //                dotProduct(planeX),
 //                dotProduct(planeY)
 //        );
-        planeX = planeX.unitVector();
-        planeY = planeY.unitVector();
+//        planeX = planeX.unitVector();
+//        planeY = planeY.unitVector();
         return new Vector2D(
                 x * planeX.x + y * planeX.y + z * planeX.z,
                 x * planeY.x + y * planeY.y + z * planeY.z
@@ -374,8 +374,8 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
     }
 
     public Vector2D projectToPlane(Vector3D planeX, Vector3D planeY, Vector3D direction, double distance) {
-        planeX = planeX.unitVector();
-        planeY = planeY.unitVector();
+//        planeX = planeX.unitVector();
+//        planeY = planeY.unitVector();
         return new Vector2D(
                 (x + direction.x * distance) * planeX.x
                         + (y + direction.y * distance) * planeX.y

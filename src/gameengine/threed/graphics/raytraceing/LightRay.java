@@ -70,7 +70,6 @@ public class LightRay extends Ray {
             collision = (RayTraceable) firstCollision(objectsInField);
 
             if (collision == null) {
-//                System.out.println("a");
                 return getIncomingLight();//.add(getSkyColor(getDirection()));
             }
 
