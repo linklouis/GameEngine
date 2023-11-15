@@ -38,6 +38,11 @@ public record Rect3D(Vector3D vertex1, Vector3D vertex2, Vector3D vertex3, Vecto
     }
 
     public boolean contains(final VectorLine3D line, double distance) {
+//        Vector3D point = line.pointAtDistance(distance);
+//        if (point.distance(vertex1) > range) {
+//            return false;
+//        }
+//        return planeCoords.contains(onPlane(point));
         return planeCoords.contains(onPlane(line, distance));
     }
 

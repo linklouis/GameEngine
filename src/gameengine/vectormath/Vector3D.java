@@ -127,13 +127,38 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
     public double distToCollidePlane(final Vector3D vertex, final Vector3D position, final Vector3D direction) {
 //        normal.dotWithSubtracted(vertex1, ray.getPosition())
 //                / normal.dotWithUnitOf(ray.getDirection())
+//        return (  x * (vertex.x - position.x)
+//                + y * (vertex.y - position.y)
+//                + z * (vertex.z - position.z))
+//                /
+//                (  x * direction.x
+//                 + y * direction.y
+//                 + z * direction.z);
+        double denominator = dotProduct(direction);
+
+        // Check if the ray is parallel to the plane
+        if (Math.abs(denominator) < 1e-6) {
+            // Ray is parallel to the plane, no intersection
+            return Double.NaN;
+        }
+
         return (  x * (vertex.x - position.x)
                 + y * (vertex.y - position.y)
                 + z * (vertex.z - position.z))
-                /
-                (  x * direction.x
-                 + y * direction.y
-                 + z * direction.z);
+                / denominator;
+
+//        double numerator = dotProduct(vertex.subtract(position));
+//
+//        // Calculate the parameter along the ray
+//        double t = numerator / denominator;
+//
+//        // Check if the intersection point is in the valid range along the ray
+//        if (t >= 0) {
+//            return t;
+//        } else {
+//            // Intersection point is behind the ray origin, no intersection
+//            return Double.POSITIVE_INFINITY;
+//        }
     }
 
     public Vector3D addAtMagnitude(final Vector3D other, final double newMagnitude) {

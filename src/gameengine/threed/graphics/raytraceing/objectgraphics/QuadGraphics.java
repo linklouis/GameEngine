@@ -83,6 +83,9 @@ public class QuadGraphics extends RayTraceable {
     @Override
     public double distanceToCollide(final Ray ray, final double curSmallestDist, double amountInDirection) {
         double distance = rect.distanceToCollide(ray);
+//        if (Double.isNaN(distance)) {
+//            return distance;
+//        }
         return rect.contains(ray, distance) ? distance : Double.NaN;
     }
 
@@ -99,7 +102,6 @@ public class QuadGraphics extends RayTraceable {
     @Override
     public Vector3D getCenter() {
         return rect.vertex1();
-//                rect.center();
     }
 
     public Vector3D getVertex1() {
