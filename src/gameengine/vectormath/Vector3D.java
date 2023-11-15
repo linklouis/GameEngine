@@ -509,6 +509,23 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         return ((255 << 24) | ((int) (color.getRed() * 255) << 16) | ((int) (color.getGreen() * 255) << 8) | (int) (color.getBlue() * 255));
     }
 
+    public static int average(int a, int b) {
+        Vector3D av = new Vector3D(
+                (a >> 16) & 0xFF,
+                (a >> 8) & 0xFF,
+                a & 0xFF
+
+        );
+        Vector3D bv = new Vector3D(
+                (b >> 16) & 0xFF,
+                (b >> 8) & 0xFF,
+                b & 0xFF
+
+        );
+
+        return av.add(bv).scalarDivide(2).oneInt();
+    }
+
 
     public static Vector3D average(Vector3D a, Vector3D b, Vector3D c) {
         return new Vector3D(
