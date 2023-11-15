@@ -1,6 +1,6 @@
 package gameengine.threed.graphics;
 
-import gameengine.experimental.PostProcess;
+import gameengine.threed.graphics.raytraceing.PostProcess;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
@@ -48,6 +48,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     private final List<PostProcess> postProcesses = new ArrayList<>();
 
     private final Class<? extends VisualType> visualType;
+
 
 
     /*

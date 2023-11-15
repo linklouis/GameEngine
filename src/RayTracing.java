@@ -50,6 +50,7 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
+        mainCam.newPostProcess(new FillIn());
         mainCam.setDirection(new Vector3D(1, 4, 3));
 
 //        colorSpace();
