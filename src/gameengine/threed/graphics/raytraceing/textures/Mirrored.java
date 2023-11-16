@@ -15,6 +15,8 @@ public class Mirrored extends RayTracingTexture {
      * 1: All {@code Rays} reflect.
      */
     private final double reflectivity;
+    private final double specularProbability;
+
 
     /**
      * Creates a new {@code Metallic} with a default absorption value
@@ -32,6 +34,7 @@ public class Mirrored extends RayTracingTexture {
                     final double reflectivity) {
         super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
+        specularProbability = 0;
     }
 
     public Mirrored(final Color color,
@@ -40,6 +43,7 @@ public class Mirrored extends RayTracingTexture {
                     final double reflectivity) {
         super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
+        specularProbability = 0;
     }
 
     public Mirrored(final Color color,
@@ -47,6 +51,36 @@ public class Mirrored extends RayTracingTexture {
                     final double reflectivity) {
         super(color, emissionStrength, new Vector3D(1));
         this.reflectivity = reflectivity;
+        specularProbability = 0;
+    }
+
+    public Mirrored(final Color color,
+                    final double emissionStrength,
+                    final Vector3D emissionColor,
+                    final double reflectivity,
+                    final double specularProbability) {
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.specularProbability = specularProbability;
+    }
+
+    public Mirrored(final Color color,
+                    final double emissionStrength,
+                    final Color emissionColor,
+                    final double reflectivity,
+                    final double specularProbability) {
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.specularProbability = specularProbability;
+    }
+
+    public Mirrored(final Color color,
+                    final double emissionStrength,
+                    final double reflectivity,
+                    final double specularProbability) {
+        super(color, emissionStrength, new Vector3D(1));
+        this.reflectivity = reflectivity;
+        this.specularProbability = specularProbability;
     }
 
 
@@ -67,6 +101,11 @@ public class Mirrored extends RayTracingTexture {
     @Override
     public Reflection reflection(final LightRay lightRay,
                                  final Vector3D surfaceNormal) {
+        if (ExtraMath.selectRandom(() -> true, () -> false, specularProbability)) {
+            return new Reflection(
+                    reflectRay(lightRay.getDirection(), surfaceNormal),
+                    lightRay.getColor());
+        }
         return new Reflection(
                 ExtraMath.selectRandom(() -> reflectRay(lightRay.getDirection(), surfaceNormal), () -> scatterRay(surfaceNormal), reflectivity),
                 defaultColorUpdate(lightRay.getColor()));

@@ -16,6 +16,7 @@ public class RoughMirror extends RayTracingTexture {
      */
     private final double reflectivity;
     private final double smoothness;
+    private final double specularProbability;
 
     /**
      * Creates a new {@code Metallic} with a default absorption value
@@ -35,6 +36,7 @@ public class RoughMirror extends RayTracingTexture {
         super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
         this.smoothness = smoothness;
+        specularProbability = 0;
     }
 
     public RoughMirror(final Color color,
@@ -45,6 +47,7 @@ public class RoughMirror extends RayTracingTexture {
         super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
         this.smoothness = smoothness;
+        specularProbability = 0;
     }
 
     public RoughMirror(final Color color,
@@ -54,6 +57,42 @@ public class RoughMirror extends RayTracingTexture {
         super(color, emissionStrength, new Vector3D(1));
         this.reflectivity = reflectivity;
         this.smoothness = smoothness;
+        specularProbability = 0;
+    }
+
+    public RoughMirror(final Color color,
+                       final double emissionStrength,
+                       final Vector3D emissionColor,
+                       final double reflectivity,
+                       final double smoothness,
+                       final double specularProbability) {
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.smoothness = smoothness;
+        this.specularProbability = specularProbability;
+    }
+
+    public RoughMirror(final Color color,
+                       final double emissionStrength,
+                       final Color emissionColor,
+                       final double reflectivity,
+                       final double smoothness,
+                       final double specularProbability) {
+        super(color, emissionStrength, emissionColor);
+        this.reflectivity = reflectivity;
+        this.smoothness = smoothness;
+        this.specularProbability = specularProbability;
+    }
+
+    public RoughMirror(final Color color,
+                       final double emissionStrength,
+                       final double reflectivity,
+                       final double smoothness,
+                       final double specularProbability) {
+        super(color, emissionStrength, new Vector3D(1));
+        this.reflectivity = reflectivity;
+        this.smoothness = smoothness;
+        this.specularProbability = specularProbability;
     }
 
 
