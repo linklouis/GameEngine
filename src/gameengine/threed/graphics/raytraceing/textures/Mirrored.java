@@ -2,19 +2,11 @@ package gameengine.threed.graphics.raytraceing.textures;
 
 import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.Reflection;
+import gameengine.utilities.ExtraMath;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
-/**
- * A basic implementation of {@link RayTracingTexture} that chooses randomly
- * whether to scatter or reflect a light ray, and, if reflected, whether to
- * impact the color of that ray, which provides a variable reflectivity and a
- * basic imitation of subsurface scattering.
- *
- * @author Louis Link
- * @since 1.0
- */
-public class ReflectingTexture extends RayTracingTexture {
+public class Mirrored extends RayTracingTexture {
     /**
      * The likelihood for a {@code LightRay} to reflect.
      * <p></p>
@@ -25,7 +17,7 @@ public class ReflectingTexture extends RayTracingTexture {
     private final double reflectivity;
 
     /**
-     * Creates a new {@code ReflectingTexture} with a default absorption value
+     * Creates a new {@code Metallic} with a default absorption value
      * of 0.1.
      *
      * @param color         The color for the {@code RayTracingTexture} to be.
@@ -34,25 +26,25 @@ public class ReflectingTexture extends RayTracingTexture {
      * @param reflectivity  How likely light hitting the
      *                      {@code RayTracingTexture} should be to not scatter.
      */
-    public ReflectingTexture(final Color color,
-                             final double emissionStrength,
-                             final Vector3D emissionColor,
-                             final double reflectivity) {
+    public Mirrored(final Color color,
+                    final double emissionStrength,
+                    final Vector3D emissionColor,
+                    final double reflectivity) {
         super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
     }
 
-    public ReflectingTexture(final Color color,
-                             final double emissionStrength,
-                             final Color emissionColor,
-                             final double reflectivity) {
+    public Mirrored(final Color color,
+                    final double emissionStrength,
+                    final Color emissionColor,
+                    final double reflectivity) {
         super(color, emissionStrength, emissionColor);
         this.reflectivity = reflectivity;
     }
 
-    public ReflectingTexture(final Color color,
-                             final double emissionStrength,
-                             final double reflectivity) {
+    public Mirrored(final Color color,
+                    final double emissionStrength,
+                    final double reflectivity) {
         super(color, emissionStrength, new Vector3D(1));
         this.reflectivity = reflectivity;
     }
@@ -76,7 +68,7 @@ public class ReflectingTexture extends RayTracingTexture {
     public Reflection reflection(final LightRay lightRay,
                                  final Vector3D surfaceNormal) {
         return new Reflection(
-                scatterRay(surfaceNormal).blendWith(reflectRay(lightRay.getDirection(), surfaceNormal), reflectivity),
+                ExtraMath.selectRandom(() -> reflectRay(lightRay.getDirection(), surfaceNormal), () -> scatterRay(surfaceNormal), reflectivity),
                 defaultColorUpdate(lightRay.getColor()));
     }
 
@@ -86,7 +78,7 @@ public class ReflectingTexture extends RayTracingTexture {
 
     @Override
     public String toString() {
-        return "ReflectingTexture: "
+        return "Mirrored: "
                 + getColor()
                 + ", " + getEmissionColor()
                 + ", " + getEmissionStrength()

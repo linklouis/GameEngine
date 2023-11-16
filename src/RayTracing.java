@@ -4,10 +4,9 @@ import gameengine.threed.graphics.raytraceing.*;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
-import gameengine.threed.graphics.raytraceing.postprocesses.FillIn;
 import gameengine.threed.graphics.raytraceing.textures.BaseTexture;
+import gameengine.threed.graphics.raytraceing.textures.Metallic;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.prebuilt.gameobjects.*;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
 import gameengine.threed.drivers.GraphicsDriver3D;
@@ -80,10 +79,10 @@ public class RayTracing extends GameDriver3D {
         mainCam.setLocation(new Vector3D(0, 0, 1));
 
 //        newObject(new Sphere(new Vector3D(50, 0, 0), 5,
-//                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)));
+//                new Metallic(Color.WHITE, 30, Color.WHITE, 0, 1)));
         newObject(new Sphere(new Vector3D(-10, 2, 10).scalarMultiply(3.8), 7 * 5/*140*/,
-                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0)));
-        newObject(new Quad(new Vector3D(0, -5, 0), new Vector2D(5, 10), new Vector3D(0, 0, 1), new ReflectingTexture(Color.RED, 0, 0)));
+                new Metallic(Color.WHITE, 30, Color.WHITE, 0)));
+        newObject(new Quad(new Vector3D(0, -5, 0), new Vector2D(5, 10), new Vector3D(0, 0, 1), new Metallic(Color.RED, 0, 0)));
     }
 
     private void rectDirTests() {
@@ -95,7 +94,7 @@ public class RayTracing extends GameDriver3D {
                 mainCam.getLocation().scalarMultiply(-1)
         );
 
-        newObject(new Quad(new Vector3D(0, 0, 0), new Vector2D(1, 1), new Vector3D(0, 1, 1), new ReflectingTexture(Color.RED, 0, 0)));
+        newObject(new Quad(new Vector3D(0, 0, 0), new Vector2D(1, 1), new Vector3D(0, 1, 1), new Metallic(Color.RED, 0, 0)));
         newObject(new Sphere(0, 0, -11, 10, new BaseTexture(Color.GRAY, 0)));
         newObject(new Sphere(0, 0, 30, 5, new BaseTexture(Color.GRAY, 40)));
     }
@@ -114,7 +113,7 @@ public class RayTracing extends GameDriver3D {
     }
 
     private void setupScene1() {
-        TextureHelper.setReflectivity(0.5);
+        TextureHelper.setReflectivity(/*0.5*/0.9);
         mainCam.setLocation(mainCam.getLocation().add(mainCam.getDirection().scalarMultiply(-2.5)));
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
@@ -127,7 +126,7 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(0, 0, 100, 100,
                 TextureHelper.newReflecting(Color.BROWN)));
 
-        newObject(new Sphere(-10, 2, -10, 7, new ReflectingTexture(Color.WHITE, 3, Color.WHITE, 0)));
+        newObject(new Sphere(-10, 2, -10, 7, new Metallic(Color.BLACK, 3, Color.WHITE, 0)));
     }
 
     private void setupScene1_5() {
@@ -136,7 +135,7 @@ public class RayTracing extends GameDriver3D {
 
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 TextureHelper.newReflecting(Color.AZURE)).initiate(this);
-//        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new ReflectingTexture(Color.AZURE, false, reflectivity)));
+//        newObject(new Sphere(0, -1, -2, new Vector3D(1,1, 1).magnitude(), new Metallic(Color.AZURE, false, reflectivity)));
 
         newObject(new Sphere(3, -1, -2, 2,
                 TextureHelper.newReflecting(Color.AQUA)));
@@ -146,9 +145,9 @@ public class RayTracing extends GameDriver3D {
                 TextureHelper.newReflecting(Color.BROWN)));
 
 //        new QuadRectangle(new Vector3D(-10, 2, -10).scalarMultiply(4), new Vector3D(1, 1, 1).scalarMultiply(7*5/2.0),
-//                new ReflectingTexture(Color.WHITE, 30, Color.WHITE, 0, 1)).initiate(this);
+//                new Metallic(Color.WHITE, 30, Color.WHITE, 0, 1)).initiate(this);
         newObject(new Sphere(new Vector3D(-10, 2, -10).scalarMultiply(7), 7 * 5/*140*/,
-                new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
+                new Metallic(Color.WHITE, 10, Color.WHITE, 0)));
     }
 
     private void setupScene1_6() {
@@ -159,7 +158,7 @@ public class RayTracing extends GameDriver3D {
                 TextureHelper.newReflecting(Color.GREEN)));
 
         newObject(new Sphere(new Vector3D(-10, 2, -10).scalarMultiply(7), 7 * 5/*140*/,
-                new ReflectingTexture(Color.WHITE, 10, Color.WHITE, 0)));
+                new Metallic(Color.WHITE, 10, Color.WHITE, 0)));
     }
 
     private void setupScene2() {
@@ -168,7 +167,7 @@ public class RayTracing extends GameDriver3D {
 
         // Center Sphere
         newObject(new Sphere(3, 0, 0, 2,
-                new ReflectingTexture(Color.WHITE, 1, 0.9)));
+                new Metallic(Color.WHITE, 1, 0.9)));
 
         setupBoundingBox(40);
 
@@ -207,7 +206,7 @@ public class RayTracing extends GameDriver3D {
 
         // Center Sphere
         newObject(new Sphere(3, 0, 0, 2,
-                new ReflectingTexture(Color.WHITE, 0, 0.9)));
+                new Metallic(Color.WHITE, 0, 0.9)));
 
         setupBoundingBox(40);
 
@@ -220,27 +219,27 @@ public class RayTracing extends GameDriver3D {
         // Back
         new RectPlane(hWallSize, -hWallSize, -hWallSize,
                 new Vector3D(0, wallSize, wallSize),
-                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)
+                new Metallic(Color.RED, emission, Color.WHITE, reflectivity)
                 /*TextureHelper.newReflecting(Color.RED)*/).initiate(this);
         // Left
         new RectPlane(-hWallSize, -hWallSize, -hWallSize,
                 new Vector3D(wallSize, 0, wallSize),
-                new ReflectingTexture(Color.BLUE, emission, Color.WHITE, reflectivity)
+                new Metallic(Color.BLUE, emission, Color.WHITE, reflectivity)
                 /*TextureHelper.newReflecting(Color.BLUE)*/).initiate(this);
         // Right
         new RectPlane(-hWallSize, hWallSize, -hWallSize,
                 new Vector3D(wallSize, 0, wallSize),
-                new ReflectingTexture(Color.BLUE, emission, Color.WHITE, reflectivity)
+                new Metallic(Color.BLUE, emission, Color.WHITE, reflectivity)
                 /*TextureHelper.newReflecting(Color.BLUE)*/).initiate(this);
         // Bottom
         new RectPlane(-hWallSize, -hWallSize, -hWallSize,
                 new Vector3D(wallSize, wallSize, 0),
-                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)
+                new Metallic(Color.RED, emission, Color.WHITE, reflectivity)
                 /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
         // Top
         new RectPlane(-hWallSize, -hWallSize, hWallSize,
                 new Vector3D(wallSize, wallSize, 0),
-                new ReflectingTexture(Color.GREEN, emission, Color.WHITE, reflectivity)
+                new Metallic(Color.GREEN, emission, Color.WHITE, reflectivity)
                 /*TextureHelper.newReflecting(Color.GREEN)*/).initiate(this);
 
         // Backlight
@@ -256,13 +255,13 @@ public class RayTracing extends GameDriver3D {
         double padding = 1;
         // Center Spheres
         newObject(new Sphere(3, -3 * r - padding * 2, 0, 2,
-                new ReflectingTexture(Color.WHITE, 0, 0.2)));
+                new Metallic(Color.WHITE, 0, 0.2)));
         newObject(new Sphere(3, -r - padding * 0.5, 0, 2,
-                new ReflectingTexture(Color.WHITE, 0, 0.5)));
+                new Metallic(Color.WHITE, 0, 0.5)));
         newObject(new Sphere(3, r + padding * 0.5, 0, 2,
-                new ReflectingTexture(Color.WHITE, 0, 0.8)));
+                new Metallic(Color.WHITE, 0, 0.8)));
         newObject(new Sphere(3, 3 * r + padding * 1.5, 0, 2,
-                new ReflectingTexture(Color.WHITE, 0, 1)));
+                new Metallic(Color.WHITE, 0, 1)));
 
         // Walls:
         double reflectivity = 0;
@@ -274,32 +273,32 @@ public class RayTracing extends GameDriver3D {
         // Back
         newObject(new Quad(new Vector3D(hWallSize, 0, 0),
                 new Vector2D(wallSize, yWallSize), Vector3D.I,
-                new ReflectingTexture(Color.WHITE, emission, Color.WHITE, reflectivity)));
+                new Metallic(Color.WHITE, emission, Color.WHITE, reflectivity)));
         // Front
         newObject(new Quad(new Vector3D(-hYWallSize, 0, 0),
                 new Vector2D(wallSize, yWallSize), Vector3D.I,
-                new ReflectingTexture(Color.WHITE, emission, Color.WHITE, reflectivity)));
+                new Metallic(Color.WHITE, emission, Color.WHITE, reflectivity)));
         // Left
         newObject(new Quad(new Vector3D(0, -hYWallSize, 0),
                 new Vector2D(yWallSize, wallSize), Vector3D.J,
-                new ReflectingTexture(Color.RED, emission, Color.WHITE, reflectivity)));
+                new Metallic(Color.RED, emission, Color.WHITE, reflectivity)));
         // Right
         newObject(new Quad(new Vector3D(-0, hYWallSize, -0),
                 new Vector2D(yWallSize, wallSize), Vector3D.J,
-                new ReflectingTexture(Color.GREEN, emission, Color.WHITE, reflectivity)));
+                new Metallic(Color.GREEN, emission, Color.WHITE, reflectivity)));
         // Bottom
         newObject(new Quad(new Vector3D(-0, -0, -hWallSize),
                 new Vector2D(yWallSize, yWallSize), Vector3D.K,
-                new ReflectingTexture(Color.GRAY, emission, Color.WHITE, reflectivity)));
+                new Metallic(Color.GRAY, emission, Color.WHITE, reflectivity)));
         // Top
         newObject(new Quad(new Vector3D(-0, -0, hWallSize),
                 new Vector2D(yWallSize, yWallSize), Vector3D.K,
-                new ReflectingTexture(Color.GRAY, emission, Color.WHITE, reflectivity)));
+                new Metallic(Color.GRAY, emission, Color.WHITE, reflectivity)));
 
         // Light
         newObject(new Quad(new Vector3D(0, 0, hWallSize - 0.1),
                 new Vector2D(wallSize/8, wallSize/4), Vector3D.K,
-                new ReflectingTexture(Color.BLACK, 30, Color.WHITE, reflectivity)));
+                new Metallic(Color.BLACK, 30, Color.WHITE, reflectivity)));
     }
 
     private void setupGrassScene() {
@@ -352,7 +351,7 @@ public class RayTracing extends GameDriver3D {
 
         // Light
         newObject(new Sphere(0, 0, 18, 7,
-                new ReflectingTexture(Color.WHITE, 1, 0)));
+                new Metallic(Color.WHITE, 1, 0)));
     }
 
     private void setupScene4() {
@@ -361,37 +360,37 @@ public class RayTracing extends GameDriver3D {
         mainCam.setDirection(new Vector3D(-0.5, -0.5, -1));
         mainCam.setLocation(new Vector3D(5, 5, 10));
 
-        newObject(new Sphere(0, 0, 18, 7, new ReflectingTexture(Color.WHITE, 1, 0)));
+        newObject(new Sphere(0, 0, 18, 7, new Metallic(Color.WHITE, 1, 0)));
 
-        new TriRectangle(0, 0, 0, new Vector3D(2, 3, 4), new ReflectingTexture(Color.RED, 1, reflectivity)).initiate(this);
+        new TriRectangle(0, 0, 0, new Vector3D(2, 3, 4), new Metallic(Color.RED, 1, reflectivity)).initiate(this);
 
 //        for (Visual3D collider : getGraphicsDriver().getVisualObjects()) {
 //            System.out.println(collider.getFromParent(Collider3D.class).getAppearance());
 //        }
 
-//        newObject(new Sphere(0, 0, 0, 1, new ReflectingTexture(Color.WHITE, true, 0)));
+//        newObject(new Sphere(0, 0, 0, 1, new Metallic(Color.WHITE, true, 0)));
 
-//        newObject(new Sphere(0, 0, -13, -10, new ReflectingTexture(Color.BROWN, false, 0)));
+//        newObject(new Sphere(0, 0, -13, -10, new Metallic(Color.BROWN, false, 0)));
 //        double dist = 10;
 //        Vector3D p1 = new Vector3D(3, 0, 0)/*new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0)*/;
 //        Vector3D p2 = new Vector3D(3, 2, 0)/*new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0)*/;
 //        Vector3D p3 = new Vector3D(3, 2, 2)/*new Vector3D(Math.random() * dist - dist/2, Math.random() * dist - dist/2, 0)*/;
 //
 //        newObject(new Tri(p1, p2, p3,
-//                new ReflectingTexture(Color.RED, true, reflectivity)));
+//                new Metallic(Color.RED, true, reflectivity)));
 //
 ////        newObject(new Tri(
 ////                new Vector3D(2, 0, 0),
 ////                new Vector3D(2, 0, 1),
-////                new Vector3D(2, 1, 1), new ReflectingTexture(Color.WHITE, true, 0)));
+////                new Vector3D(2, 1, 1), new Metallic(Color.WHITE, true, 0)));
 //
-////        newObject(new Sphere(0, 0, 0, 10, new ReflectingTexture(Color.BROWN, true, 0)));
+////        newObject(new Sphere(0, 0, 0, 10, new Metallic(Color.BROWN, true, 0)));
 //
 //
 //        double r = 0.2;
-//        newObject(new Sphere(p1, r, new ReflectingTexture(Color.RED, true, 0)));
-//        newObject(new Sphere(p2, r, new ReflectingTexture(Color.GREEN, true, 0)));
-//        newObject(new Sphere(p3, r, new ReflectingTexture(Color.BLUE, true, 0)));
+//        newObject(new Sphere(p1, r, new Metallic(Color.RED, true, 0)));
+//        newObject(new Sphere(p2, r, new Metallic(Color.GREEN, true, 0)));
+//        newObject(new Sphere(p3, r, new Metallic(Color.BLUE, true, 0)));
     }
 
     private void scene5RandomRects() {
@@ -399,7 +398,7 @@ public class RayTracing extends GameDriver3D {
         mainCam.setLocation(new Vector3D(5, 5, 10));
 
         newObject(new Sphere(0, 0, 20, 10,
-                new ReflectingTexture(Color.WHITE, 1, 0)));
+                new Metallic(Color.WHITE, 1, 0)));
 
         setupBoundingBox(5);
 
@@ -463,7 +462,7 @@ public class RayTracing extends GameDriver3D {
 
     private void setupBoundingBox(double wallSize) {
         setupBoundingBox(wallSize,
-                new ReflectingTexture(Color.GRAY, 0, 0));
+                new Metallic(Color.GRAY, 0, 0));
     }
 
     private void setupBoundingBox(double wallSize, RayTracingTexture texture) {
@@ -620,20 +619,20 @@ public class RayTracing extends GameDriver3D {
 //            return new SubsurfaceTexture(color, false, minimumReflectingAngle, randomness);
 //        }
 
-        public static ReflectingTexture newReflecting(final Color color) {
-            return new ReflectingTexture(color, 0.0, reflectivity);
+        public static Metallic newReflecting(final Color color) {
+            return new Metallic(color, 0.0, reflectivity);
         }
 
         public static Function<Color, RayTracingTexture>
             reflectingSupplier(final double reflectivity) {
             return (Color color) ->
-                    new ReflectingTexture(color, 0, reflectivity);
+                    new Metallic(color, 0, reflectivity);
         }
 
         public static Function<Color, RayTracingTexture> reflectingSupplier() {
             final double finalReflectivity = reflectivity;
             return (Color color) ->
-                    new ReflectingTexture(color, 0, finalReflectivity);
+                    new Metallic(color, 0, finalReflectivity);
         }
 
         public static BaseTexture newBase(final Color color) {

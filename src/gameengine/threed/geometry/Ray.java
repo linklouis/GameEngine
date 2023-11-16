@@ -82,48 +82,11 @@ public class Ray extends VectorLine3D {
         }
     }
 
-//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-//        double newDistance;
-//        double closestDist = Double.MAX_VALUE;
-//        RayIntersectable closest;
-//        RayIntersectableList.Element element = objectsInField.getHead();
-//
-//        while (true) {
-//            newDistance = element.value().distanceToCollide(this, closestDist,
-//                    getDirection().dotWithSubtracted(position, element.value().getCenter()));
-//            if (newDistance > 0) {
-//                closestDist = newDistance;
-//                closest = element.value();
-//                break;
-//            }
-//
-//            if (element.next() == null) {
-//                return null;
-//            }
-//            element = element.next();
-//        }
-//
-//        Vector3D toCenter;
-//
-//        while (element != null) {
-//            toCenter = position.subtract(element.value().getCenter());
-//
-//            if (toCenter.magnitude() - element.value().getRange() < closestDist) {
-//                newDistance = element.value().distanceToCollide(this, closestDist,
-//                        getDirection().dotProduct(toCenter));
-//                if (newDistance >= 0 && newDistance < closestDist) {
-//                    closestDist = newDistance;
-//                    closest = element.value();
-//                }
-//            }
-//
-//            element = element.next();
-//        }
-//
-//        toDistance(closestDist - 0.01);
-//        return closest;
-//    }
-
+    /*
+    Problems with old version:
+        Unnecessary value setting (i.e. closestDist = Double.MAX_VALUE)
+        Unnecessary checks (i.e. is first collision distance less than Double.MAX_VALUE, etc.)
+     */
 //    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
 //        double closestDist = Double.MAX_VALUE;
 //        RayIntersectable closest = null;
@@ -170,25 +133,6 @@ public class Ray extends VectorLine3D {
         }
 
         return map;
-    }
-
-    /**
-     * Finds whether {@code collider} is possible for the {@code LightRay} ray to
-     * hit.
-     *
-     * @param collider The {@link RayTraceable} to check if the {@code LightRay}'s
-     *                 direction lines up with.
-     * @return Whether {@code collider} is within 90 degrees of the direction of
-     * the {@code LightRay} from the {@code LightRay}'s initial position.
-     */
-    public boolean objectIsInDirection(final VectorLineIntersectable collider) {
-        return getDirection().dotWithSubtracted(collider.getCenter(), position) > 0;
-
-//        Vector3D toCenter = position.subtract(collider.getCenter());
-//        return !(getDirection().dotProduct(toCenter) > 0/* && toCenter.magnitudeSquared() < 0.5*/);
-
-//        return !(getDirection().dotWithSubtracted(position, collider.getCenter()) > 0
-//                && Math.abs(position.distance(collider.getCenter())/*toCenter.magnitude()*/) < 1);
     }
 
     /**

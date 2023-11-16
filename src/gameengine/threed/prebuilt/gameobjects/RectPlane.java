@@ -2,8 +2,8 @@ package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.raytraceing.textures.Metallic;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
 import gameengine.vectormath.Vector3D;
@@ -70,7 +70,7 @@ public class RectPlane extends PolyObject<Tri> {
 
     @Override
     protected Tri[] createMesh(Vector3D[] vertices) {
-        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, 1, 0);
+        RayTracingTexture texture = new Metallic(Color.WHITE, 1, 0);
 
         return new Tri[]{
                 new Tri(vertices[0], vertices[1], vertices[2], texture),

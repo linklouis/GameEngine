@@ -2,8 +2,8 @@ package gameengine.threed.prebuilt.gameobjects;
 
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
+import gameengine.threed.graphics.raytraceing.textures.Metallic;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.PolyObject;
 import gameengine.vectormath.Vector3D;
@@ -37,7 +37,7 @@ public class QuadRectangle extends PolyObject<Quad> {
     public QuadRectangle(double x, double y, double z, Vector3D space, Color color,
                         boolean isLightSource) {
         super(generateVertices(x, y, z, space), new Mesh<>(new Quad[0]), new InPlane3D());
-        setTexture(new ReflectingTexture(color, isLightSource ? 1 : 0, 0));
+        setTexture(new Metallic(color, isLightSource ? 1 : 0, 0));
         get(InPlane3D.class).instantiate(this, x, y, z);
     }
 
@@ -87,7 +87,7 @@ public class QuadRectangle extends PolyObject<Quad> {
 
     @Override
     protected Quad[] createMesh(Vector3D[] vertices) {
-        RayTracingTexture texture = new ReflectingTexture(Color.WHITE, 1, 0);
+        RayTracingTexture texture = new Metallic(Color.WHITE, 1, 0);
 
         return new Quad[] {
                 // Front face
@@ -128,7 +128,7 @@ public class QuadRectangle extends PolyObject<Quad> {
 //        int num = 1;
         for (Polygon poly : get(Mesh.class).getPolygons()) {
 //            double col = (double) num / get(Mesh.class).getPolygons().length;
-            poly.get(RayTraceable.class).setTexture(texture);//new ReflectingTexture(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
+            poly.get(RayTraceable.class).setTexture(texture);//new Metallic(new Color(col, col, col, 1), texture.isLightSource(), texture.getReflectivity()));
 //            num++;
         }
     }

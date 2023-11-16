@@ -4,8 +4,8 @@ import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
 import gameengine.threed.graphics.Visual3D;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
+import gameengine.threed.graphics.raytraceing.textures.Metallic;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
-import gameengine.threed.graphics.raytraceing.textures.ReflectingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.threed.prebuilt.objectmovement.collisions.SphereCollider;
 import gameengine.vectormath.Vector3D;
@@ -35,7 +35,7 @@ public class Sphere extends GameObject {
         super(new SphereCollider(), new InPlane3D(), new SphereGraphics(), new Visual3D());
         get(SphereCollider.class).instantiate(this, r);
         get(InPlane3D.class).instantiate(this, x, y, z);
-        get(SphereGraphics.class).instantiate(this, r, new ReflectingTexture(color, isLightSource ? 1 : 0, 0));
+        get(SphereGraphics.class).instantiate(this, r, new Metallic(color, isLightSource ? 1 : 0, 0));
         get(Visual3D.class).instantiate(this, get(SphereGraphics.class));
     }
 

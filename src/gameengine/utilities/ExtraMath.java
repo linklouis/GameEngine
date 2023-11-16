@@ -3,6 +3,9 @@ package gameengine.utilities;
 import gameengine.threed.geometry.Ray;
 import gameengine.vectormath.Vector3D;
 
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
+
 public interface ExtraMath {
     static double min(double a, double b, double c) {
         return Math.min(Math.min(a, b), c);
@@ -28,8 +31,20 @@ public interface ExtraMath {
         return (a + b + c + d) / 4;
     }
 
+    static double clamp(double num) {
+        return Math.min(1, Math.max(0, num));
+    }
+
     static double clamp(double num, double min, double max) {
         return Math.min(max, Math.max(min, num));
+    }
+
+    static <T> T selectRandom(Supplier<T> a, Supplier<T> b, double threshold) {
+        threshold = clamp(threshold, 0, 1);
+        return ThreadLocalRandom.current().nextDouble() > threshold ?
+                b.get()
+                :
+                a.get();
     }
 
     static double distToCollideSphere(Ray lightRay, Vector3D center, double radiusSquared) {
