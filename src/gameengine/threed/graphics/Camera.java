@@ -1,5 +1,6 @@
 package gameengine.threed.graphics;
 
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.postprocesses.PostProcess;
 import gameengine.skeletons.GameObject;
 import gameengine.skeletons.Modifier;
@@ -156,6 +157,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), format, file);
     }
 
+    protected RayTraceable[][] collisionMap;
     /**
      * Applies the {@code Camera}'s post-processing routine to the given
      * {@link WritableImage}.
@@ -167,7 +169,7 @@ public abstract class Camera<VisualType extends GraphicsObject3D> extends GameOb
     public WritableImage applyPostProcessing(WritableImage image) {
         WritableImage currentImage = image;
         for (PostProcess process : postProcesses) {
-            currentImage = process.process(currentImage);
+            currentImage = process.process(currentImage, collisionMap);
         }
         return currentImage;
     }

@@ -1,9 +1,11 @@
 package gameengine.threed.geometry;
 
 import gameengine.threed.graphics.raytraceing.LightRay;
+import gameengine.threed.graphics.raytraceing.objectgraphics.QuadGraphics;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
+import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
@@ -28,7 +30,7 @@ public class Ray extends VectorLine3D {
      *                       potentially collide with.
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
-    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
+    public RayIntersectable firstCollision1(final RayIntersectableList objectsInField) {
         RayIntersectableList.Element element = objectsInField.getHead();
 
         if (element == null) {
@@ -114,6 +116,55 @@ public class Ray extends VectorLine3D {
 //
 //        return closest;
 //    }
+
+    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
+        double closestDist = Double.MAX_VALUE;
+        RayIntersectable closest = null;
+        double newDistance;
+        double amountInDirec;
+        Vector3D toCenter;
+
+        for (RayIntersectableList.Element element = objectsInField.getHead();
+             element != null; element = element.next()) {
+
+            toCenter = position.subtract(element.value().getCenter());
+            if (element.value() instanceof SphereGraphics) {
+               newDistance = distanceToCollideSphere(this, element.value().getCenter(),
+                       ((SphereGraphics) element.value()).getRadius());
+            } else {
+                newDistance = distanceToCollideRect(this, element.value().surfaceNormal(this), ((QuadGraphics) element.value()).getVertex1(),
+                        ((QuadGraphics) element.value()).getPlaneXAxis(), ((QuadGraphics) element.value()).getPlaneYAxis());
+            }
+            if (newDistance >= 0 && newDistance < closestDist) {
+                closestDist = newDistance;
+                closest = element.value();
+            }
+        }
+
+        if (closest != null) {
+            position = position.addMultiplied(getDirection(),closestDist - 0.01);
+        }
+
+        return closest;
+    }
+
+    private static double distanceToCollideRect(Ray ray, Vector3D normal, Vector3D center, Vector3D planeXaxis, Vector3D planeYaxis, Vector2D max, Vector2D min) {
+        double distance = normal.distToCollidePlane(center, ray.getPosition(), ray.getDirection());
+        Vector2D pointOnPlane = ray.getPosition().projectToPlane(planeXaxis, planeYaxis, ray.getDirection(), distance);
+        if (min.getX() < pointOnPlane.getX() && max.getX() > pointOnPlane.getX()
+                && min.getY() < pointOnPlane.getY() && max.getY() > pointOnPlane.getY()) {
+            return distance;
+        }
+        return Double.NaN;
+    }
+
+    private static double distanceToCollideSphere(Ray lightRay, Vector3D center, double radius) {
+        Double amountInDirection = lightRay.getDirection().dotProduct(lightRay.getPosition().subtract(center));
+        if (amountInDirection <= 0) {
+            return -amountInDirection - Math.sqrt(amountInDirection * amountInDirection + radius * radius - lightRay.getPosition().distanceSquared(center));
+        }
+        return Double.NaN;
+    }
 
 
     public LinkedHashMap<RayTraceable, Ray> getCollisions(final int maxBounces,

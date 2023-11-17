@@ -84,6 +84,14 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
         );
     }
 
+    public Vector3D add(Color other) {
+        return new Vector3D(
+                x + other.getRed(),
+                y + other.getGreen(),
+                z + other.getBlue()
+        );
+    }
+
     public Vector3D addMutable(Vector3D other) {
         x += other.x;
         y += other.y;
@@ -549,7 +557,17 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
                 + (z - other.z) * (z - other.z);
     }
 
+    public double distanceSquared(final Color other) {
+        return (x - other.getRed()) * (x - other.getRed())
+                + (y - other.getGreen()) * (y - other.getGreen())
+                + (z - other.getBlue()) * (z - other.getBlue());
+    }
+
     public double distance(Vector3D other) {
+        return Math.sqrt(distanceSquared(other));
+    }
+
+    public double distance(Color other) {
         return Math.sqrt(distanceSquared(other));
     }
 

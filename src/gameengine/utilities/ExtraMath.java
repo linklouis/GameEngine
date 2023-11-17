@@ -47,6 +47,11 @@ public interface ExtraMath {
                 a.get();
     }
 
+    static <T> T selectRandom(T a, T b, double threshold) {
+        threshold = clamp(threshold, 0, 1);
+        return ThreadLocalRandom.current().nextDouble() > threshold ? b : a;
+    }
+
     static double distToCollideSphere(Ray lightRay, Vector3D center, double radiusSquared) {
         double b = -lightRay.getDirection().dotWithSubtracted(lightRay.getPosition(), center);
         return b - Math.sqrt(b * b + radiusSquared - lightRay.getPosition().distanceSquared(center));

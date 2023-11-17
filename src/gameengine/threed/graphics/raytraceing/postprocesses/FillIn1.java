@@ -1,6 +1,6 @@
 package gameengine.threed.graphics.raytraceing.postprocesses;
 
-import gameengine.threed.graphics.raytraceing.postprocesses.PostProcess;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
@@ -9,7 +9,7 @@ import javafx.scene.image.WritableImage;
 import java.nio.IntBuffer;
 import java.util.stream.IntStream;
 
-public class FillIn implements PostProcess {
+public class FillIn1 implements PostProcess {
     private static final int RANGE = 1;
     private static final double ACCEPTABLE_DIFF = 1;
     private static final double MAX_ACCEPTABLE_STDEV = Double.MAX_VALUE;
@@ -47,7 +47,7 @@ public class FillIn implements PostProcess {
 //                buffer, (int) image.getWidth());
 //        return image;
 //    }
-    public WritableImage process(WritableImage image) {
+    public WritableImage process(WritableImage image, RayTraceable[][] collisionMap) {
         for (int i = 0; i < 5; i++) {
             image = processa(image);
         }

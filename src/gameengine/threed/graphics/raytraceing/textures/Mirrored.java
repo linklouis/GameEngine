@@ -6,7 +6,7 @@ import gameengine.utilities.ExtraMath;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
 
-public class Mirrored extends RayTracingTexture {
+public class Mirrored extends SubsurfaceTexture {
     /**
      * The likelihood for a {@code LightRay} to reflect.
      * <p></p>
@@ -15,7 +15,6 @@ public class Mirrored extends RayTracingTexture {
      * 1: All {@code Rays} reflect.
      */
     private final double reflectivity;
-    private final double specularProbability;
 
 
     /**
@@ -32,26 +31,23 @@ public class Mirrored extends RayTracingTexture {
                     final double emissionStrength,
                     final Vector3D emissionColor,
                     final double reflectivity) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, 0);
         this.reflectivity = reflectivity;
-        specularProbability = 0;
     }
 
     public Mirrored(final Color color,
                     final double emissionStrength,
                     final Color emissionColor,
                     final double reflectivity) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, 0);
         this.reflectivity = reflectivity;
-        specularProbability = 0;
     }
 
     public Mirrored(final Color color,
                     final double emissionStrength,
                     final double reflectivity) {
-        super(color, emissionStrength, new Vector3D(1));
+        super(color, emissionStrength, new Vector3D(1), 0);
         this.reflectivity = reflectivity;
-        specularProbability = 0;
     }
 
     public Mirrored(final Color color,
@@ -59,9 +55,8 @@ public class Mirrored extends RayTracingTexture {
                     final Vector3D emissionColor,
                     final double reflectivity,
                     final double specularProbability) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, specularProbability);
         this.reflectivity = reflectivity;
-        this.specularProbability = specularProbability;
     }
 
     public Mirrored(final Color color,
@@ -69,18 +64,16 @@ public class Mirrored extends RayTracingTexture {
                     final Color emissionColor,
                     final double reflectivity,
                     final double specularProbability) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, specularProbability);
         this.reflectivity = reflectivity;
-        this.specularProbability = specularProbability;
     }
 
     public Mirrored(final Color color,
                     final double emissionStrength,
                     final double reflectivity,
                     final double specularProbability) {
-        super(color, emissionStrength, new Vector3D(1));
+        super(color, emissionStrength, new Vector3D(1), specularProbability);
         this.reflectivity = reflectivity;
-        this.specularProbability = specularProbability;
     }
 
 
@@ -99,13 +92,8 @@ public class Mirrored extends RayTracingTexture {
      *          {@link Vector3D}.
      */
     @Override
-    public Reflection reflection(final LightRay lightRay,
-                                 final Vector3D surfaceNormal) {
-        if (ExtraMath.selectRandom(() -> true, () -> false, specularProbability)) {
-            return new Reflection(
-                    reflectRay(lightRay.getDirection(), surfaceNormal),
-                    lightRay.getColor());
-        }
+    public Reflection nonSpecularReflection(final LightRay lightRay,
+                                            final Vector3D surfaceNormal) {
         return new Reflection(
                 ExtraMath.selectRandom(() -> reflectRay(lightRay.getDirection(), surfaceNormal), () -> scatterRay(surfaceNormal), reflectivity),
                 defaultColorUpdate(lightRay.getColor()));

@@ -4,6 +4,9 @@ import gameengine.threed.graphics.raytraceing.*;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
 import gameengine.threed.graphics.raytraceing.objectgraphics.TriGraphics;
+import gameengine.threed.graphics.raytraceing.postprocesses.FillDark;
+import gameengine.threed.graphics.raytraceing.postprocesses.FillIn;
+import gameengine.threed.graphics.raytraceing.postprocesses.Infer;
 import gameengine.threed.graphics.raytraceing.textures.*;
 import gameengine.threed.prebuilt.gameobjects.*;
 import gameengine.threed.prebuilt.objectmovement.physics.PhysicsEngine3D;
@@ -35,8 +38,8 @@ public class RayTracing extends GameDriver3D {
     public RayTracing() {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
-                                new Vector2D(2000, 2000/*1000, 1000*//*700, 700*//*1280, 720*//*1920.0, 1080.0*/),
-                                10, 4000, true, 70/*180*/)),
+                                new Vector2D(/*2000, 2000*//*1000, 1000*/700, 700/*1280, 720*//*1920.0, 1080.0*/),
+                                10, 30, true, 70/*180*/)),
                 new PhysicsEngine3D());
     }
 
@@ -48,17 +51,18 @@ public class RayTracing extends GameDriver3D {
     public void initialize() {
         System.out.println(java.time.LocalDateTime.now());
         mainCam = (RayTracedCamera) getGraphicsDriver().getCamera();
-//        mainCam.newPostProcess(new FillIn());
+//        mainCam.newPostProcess(new Infer());
         mainCam.setDirection(new Vector3D(1, 4, 3));
 
 //        colorSpace();
 //        ballReflectionTests();
-        ballSubsurfaceTests();
+//        ballSubsurfaceTests();
 //        ballReflectionTestsInfinite();
 //        sphereDistTest();
 //        setupScene1();
-//        scene1Subsurface();
+        scene1Subsurface();
 //        setupGrassScene();
+//        ballTextureTests();
 
 
 //        setupRandSphere(100, (color -> new BaseTexture(color, /*Math.random()*/0)), 1);
@@ -143,7 +147,7 @@ public class RayTracing extends GameDriver3D {
         newObject(new Sphere(-1, 2, -3, 3,
                 new Mirrored(Color.GREEN, 0, reflectivity, specularProbability)));
         newObject(new Sphere(0, 0, 100, 100,
-                new RoughMirror(Color.BROWN, 0, reflectivity, reflectivity/2, specularProbability)));
+                new RoughMirror(Color.BROWN, 0, reflectivity, reflectivity, specularProbability)));
 
         newObject(new Sphere(-10, 2, -10, 7, new Metallic(Color.BLACK, 3, Color.WHITE, 0)));
     }
@@ -281,6 +285,63 @@ public class RayTracing extends GameDriver3D {
                 new Metallic(Color.WHITE, 0, 0.8)));
         newObject(new Sphere(3, 3 * r + padding * 1.5, 0, 2,
                 new Metallic(Color.WHITE, 0, 1)));
+
+        // Walls:
+        double reflectivity = 0;
+        double emission = 0;
+        double wallSize = 20;
+        double hWallSize = wallSize / 2;
+        double yWallSize = 30;
+        double hYWallSize = yWallSize / 2;
+        // Back
+        newObject(new Quad(new Vector3D(hWallSize, 0, 0),
+                new Vector2D(wallSize, yWallSize), Vector3D.I,
+                new Metallic(Color.WHITE, emission, Color.WHITE, reflectivity)));
+        // Front
+        newObject(new Quad(new Vector3D(-hYWallSize, 0, 0),
+                new Vector2D(wallSize, yWallSize), Vector3D.I,
+                new Metallic(Color.WHITE, emission, Color.WHITE, reflectivity)));
+        // Left
+        newObject(new Quad(new Vector3D(0, -hYWallSize, 0),
+                new Vector2D(yWallSize, wallSize), Vector3D.J,
+                new Metallic(Color.RED, emission, Color.WHITE, reflectivity)));
+        // Right
+        newObject(new Quad(new Vector3D(-0, hYWallSize, -0),
+                new Vector2D(yWallSize, wallSize), Vector3D.J,
+                new Metallic(Color.GREEN, emission, Color.WHITE, reflectivity)));
+        // Bottom
+        newObject(new Quad(new Vector3D(-0, -0, -hWallSize),
+                new Vector2D(yWallSize, yWallSize), Vector3D.K,
+                new Metallic(Color.GRAY, emission, Color.WHITE, reflectivity)));
+        // Top
+        newObject(new Quad(new Vector3D(-0, -0, hWallSize),
+                new Vector2D(yWallSize, yWallSize), Vector3D.K,
+                new Metallic(Color.GRAY, emission, Color.WHITE, reflectivity)));
+
+        // Light
+        newObject(new Quad(new Vector3D(0, 0, hWallSize - 0.1),
+                new Vector2D(wallSize/8, wallSize/4), Vector3D.K,
+                new Metallic(Color.BLACK, 30, Color.WHITE, reflectivity)));
+    }
+
+    private void ballTextureTests() {
+        mainCam.setDirection(new Vector3D(1, 0, 0));
+        mainCam.setLocation(new Vector3D(-10, 0, 0));
+        mainCam.setFieldOfViewDegrees(100);
+
+        double r = 2;
+        double padding = 1;
+        double specularProbability = 0.3;
+        double ballReflectivity = 0.5;
+        // Center Spheres
+        newObject(new Sphere(3, -3 * r - padding * 2, 0, 2,
+                new Metallic(Color.WHITE, 0, ballReflectivity, specularProbability)));
+        newObject(new Sphere(3, -r - padding * 0.5, 0, 2,
+                new Mirrored(Color.WHITE, 0, ballReflectivity, specularProbability)));
+        newObject(new Sphere(3, r + padding * 0.5, 0, 2,
+                new RoughMirror(Color.WHITE, 0, ballReflectivity, ballReflectivity/2, specularProbability)));
+        newObject(new Sphere(3, 3 * r + padding * 1.5, 0, 2,
+                new MatteSubsurface(Color.WHITE, 0, ballReflectivity, specularProbability)));
 
         // Walls:
         double reflectivity = 0;

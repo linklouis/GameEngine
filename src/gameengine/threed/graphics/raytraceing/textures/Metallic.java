@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
  * @author Louis Link
  * @since 1.0
  */
-public class Metallic extends RayTracingTexture {
+public class Metallic extends SubsurfaceTexture {
     /**
      * The likelihood for a {@code LightRay} to reflect.
      * <p></p>
@@ -24,7 +24,6 @@ public class Metallic extends RayTracingTexture {
      * 1: All {@code Rays} reflect.
      */
     private final double smoothness;
-    private final double specularProbability;
 
     /**
      * Creates a new {@code Metallic} with a default absorption value
@@ -40,52 +39,46 @@ public class Metallic extends RayTracingTexture {
                     final double emissionStrength,
                     final Vector3D emissionColor,
                     final double smoothness) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, 0);
         this.smoothness = smoothness;
-        specularProbability = 0;
     }
 
     public Metallic(final Color color,
                     final double emissionStrength,
                     final Color emissionColor,
                     final double smoothness) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, 0);
         this.smoothness = smoothness;
-        specularProbability = 0;
     }
 
     public Metallic(final Color color,
                     final double emissionStrength,
                     final double smoothness) {
-        super(color, emissionStrength, new Vector3D(1));
+        super(color, emissionStrength, new Vector3D(1), 0);
         this.smoothness = smoothness;
-        specularProbability = 0;
     }
 
     public Metallic(final Color color,
                     final double emissionStrength,
                     final Vector3D emissionColor,
                     final double smoothness, double specularProbability) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, specularProbability);
         this.smoothness = smoothness;
-        this.specularProbability = specularProbability;
     }
 
     public Metallic(final Color color,
                     final double emissionStrength,
                     final Color emissionColor,
                     final double smoothness, double specularProbability) {
-        super(color, emissionStrength, emissionColor);
+        super(color, emissionStrength, emissionColor, specularProbability);
         this.smoothness = smoothness;
-        this.specularProbability = specularProbability;
     }
 
     public Metallic(final Color color,
                     final double emissionStrength,
                     final double smoothness, double specularProbability) {
-        super(color, emissionStrength, new Vector3D(1));
+        super(color, emissionStrength, new Vector3D(1), specularProbability);
         this.smoothness = smoothness;
-        this.specularProbability = specularProbability;
     }
 
 
@@ -104,13 +97,8 @@ public class Metallic extends RayTracingTexture {
      *          {@link Vector3D}.
      */
     @Override
-    public Reflection reflection(final LightRay lightRay,
-                                 final Vector3D surfaceNormal) {
-        if (ExtraMath.selectRandom(() -> true, () -> false, specularProbability)) {
-            return new Reflection(
-                    reflectRay(lightRay.getDirection(), surfaceNormal),
-                    lightRay.getColor());
-        }
+    public Reflection nonSpecularReflection(final LightRay lightRay,
+                                            final Vector3D surfaceNormal) {
         return new Reflection(
                 scatterRay(surfaceNormal).blendWith(reflectRay(lightRay.getDirection(), surfaceNormal), smoothness),
                 defaultColorUpdate(lightRay.getColor()));

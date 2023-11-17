@@ -218,6 +218,8 @@ public class RayTracedCamera extends Camera<RayTraceable> {
                 getLocation()
                 );
 
+        collisionMap = new RayTraceable[getWidth()][getHeight()];
+
         long startTime = System.nanoTime();
 
         if (multiThreaded) {
@@ -266,72 +268,26 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     private void renderThreaded(final PixelWriter writer,
                                 final RayIntersectableList objects) {
         IntStream.range(0, getWidth() * getHeight()).parallel().forEach(pixelIndex -> renderPixel(pixelIndex, objects));
-//        IntStream.range(0, getWidth()).parallel().forEach(x ->
-//                IntStream.range(0, getHeight()).forEach(y ->
-//                        renderPixel(x, y, objects))
-//        );
         updateImage(writer);
-    }
-
-    private void renderThreaded1(final PixelWriter writer,
-                                final RayIntersectableList objects) {
-        int numThreads = Runtime.getRuntime().availableProcessors();
-        ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
-
-        int width = findClosestFactor(getWidth(), 10);
-        int height = findClosestFactor(getHeight(), 10);
-        ByteBuffer buffer = ByteBuffer.allocate(getWidth() * getHeight() * 3);
-
-
-        //   Split the canvas into smaller tasks for multithreading
-        for (int x = 0; x < getWidth(); x += width) {
-            for (int y = 0; y < getHeight(); y += height) {
-                int finalX = x;
-                int finalY = y;
-                threadPool.submit(() -> renderPixels(
-                        finalX, finalY,
-                        width, height,
-                        objects, buffer));
-            }
-        }
-
-        // Make sure all threads are completed before moving forward
-        threadPool.shutdown();
-        try {
-            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getByteRgbInstance(), buffer, getWidth() * 3);
     }
 
     protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
         buffer.put(
                 pixelIndex,
-                calculatePixelColorInt(rayTo(pixelIndex), objects)
+                calculatePixelColorInt(rayTo(pixelIndex), objects,
+                        new Vector2D(pixelIndex % getWidth(), (double) pixelIndex / getWidth()))
         );
     }
 
     private void renderPixel(int x, int y, RayIntersectableList objects) {
         buffer.put(
                 x + y * getWidth(),
-                calculatePixelColorInt(rayTo(x, y), objects)
+                calculatePixelColorInt(rayTo(x, y), objects, new Vector2D(x, y))
         );
     }
 
     protected void updateImage(PixelWriter writer) {
         writer.setPixels(0, 0, getWidth(), getHeight(), PixelFormat.getIntArgbInstance(), buffer, getWidth());
-    }
-
-    private void renderPixels(final int startX, final int startY,
-                              final double width, final double height,
-                              final RayIntersectableList objects,
-                              final ByteBuffer buffer) {
-        for (int x = startX; x < startX + width; x++) {
-            for (int y = startY; y < startY + height; y++) {
-                buffer.put((y * getWidth() + x) * 3, calculatePixelColorBytes(rayTo(x, y), objects));
-            }
-        }
     }
 
     private LightRay rayTo(final double x, final double y) {
@@ -356,37 +312,15 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      * @return The average color of each ray to measure based on
      * {@link #raysPerPixel}.
      */
-    private byte[] calculatePixelColorBytes(final LightRay startLightRay,
-                                      final RayIntersectableList objectsInField) {
-        RayTraceable firstCollision = (RayTraceable) startLightRay.firstCollision(objectsInField);
-
-        if (firstCollision == null) {
-            return BLACK;
-        }
-        if (firstCollision.getTexture().getColor().equals(Color.BLACK)
-                || firstCollision.getTexture().isLightSource()) {
-            return Vector3D.bytes(firstCollision.getColor());
-        }
-
-        Vector3D averageColor = new Vector3D(0);
-
-        for (int i = 0; i < raysPerPixel; i++) {
-            averageColor.addMutable(
-                            startLightRay.getReflected(firstCollision).getColor(
-                            maxBounces,
-                            objectsInField, 2));
-        }
-
-        return averageColor.scalarDivide(raysPerPixel).bytes();
-    }
-
     protected int calculatePixelColorInt(final LightRay startRay,
-                                            final RayIntersectableList objectsInField) {
+                                         final RayIntersectableList objectsInField,
+                                         final Vector2D pixelLocation) {
         RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
             return 0;
         }
+        collisionMap[(int) pixelLocation.getX()][(int) pixelLocation.getY()] = firstCollision;
         if (firstCollision.getTexture().getColor().equals(Color.BLACK)
                 || firstCollision.getTexture().isLightSource()) {
             return startRay.getReflected(firstCollision).getIncomingLight().oneInt();
@@ -394,10 +328,8 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
         Vector3D averageColor = new Vector3D(0);
         for (int i = 0; i < raysPerPixel; i++) {
-            averageColor.addMutable(
-                            startRay.getReflected(firstCollision).getColor(
-                            maxBounces,
-                            objectsInField, 2));
+            averageColor.addMutable(startRay.getReflected(firstCollision)
+                    .getColor(maxBounces, objectsInField, 2));
         }
 
         return averageColor.scalarDivide(raysPerPixel).oneInt();

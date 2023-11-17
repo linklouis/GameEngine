@@ -1,6 +1,6 @@
 package gameengine.threed.graphics.raytraceing.postprocesses;
 
-import gameengine.threed.graphics.raytraceing.postprocesses.PostProcess;
+import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
@@ -14,7 +14,7 @@ public class PixelBloom implements PostProcess {
     private static final double MAX_ACCEPTABLE_STDEV = 8;
 
     @Override
-    public WritableImage process(WritableImage image) {
+    public WritableImage process(WritableImage image, RayTraceable[][] collisionMap) {
         PixelReader reader = image.getPixelReader();
         IntBuffer buffer = IntBuffer.allocate((int) (image.getWidth() * image.getHeight() * Integer.BYTES));
 
