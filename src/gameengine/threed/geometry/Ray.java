@@ -122,19 +122,20 @@ public class Ray extends VectorLine3D {
         for (RayIntersectableList.Element element = objectsInField.getHead();
              element != null; element = element.next()) {
 
-
-            if (element.value() instanceof SphereGraphics) {
-               newDistance = distanceToCollideSphere(this, element.value().getCenter(),
-                       ((SphereGraphics) element.value()).getRadius());
-            } else if (element.value() instanceof QuadGraphics) {
-                newDistance = distanceToCollideRect(this, element.value().surfaceNormal(this), ((QuadGraphics) element.value()).getVertex1(),
-                        ((QuadGraphics) element.value()).getPlaneXAxis(), ((QuadGraphics) element.value()).getPlaneYAxis(),
-                        ((QuadGraphics) element.value()).getOnPlaneMax(), ((QuadGraphics) element.value()).getOnPlaneMin());
-            } else {
-                TriGraphics tri = (TriGraphics) element.value();
-                newDistance = distanceToCollideTri(this, closestDist, tri.surfaceNormal(this), tri.v0(),
+            if (element.value() instanceof QuadGraphics quad) {
+                newDistance = distanceToCollideRect(getDirection(), getPosition(),
+                        quad.surfaceNormal(this), quad.getVertex1(),
+                        quad.getPlaneXAxis(), quad.getPlaneYAxis(),
+                        quad.getOnPlaneMax(), quad.getOnPlaneMin());
+            } else if (element.value() instanceof TriGraphics tri) {
+                newDistance = distanceToCollideTri(getDirection(), getPosition(),
+                        closestDist, tri.surfaceNormal(this), tri.v0(),
                         tri.v1(), tri.getVertex1(), tri.dot00(), tri.dot01(), tri.dot11(), tri.invDenom());
+            } else {
+                newDistance = distanceToCollideSphere(getDirection(), getPosition(), element.value().getCenter(),
+                        ((SphereGraphics) element.value()).getRadius());
             }
+
             if (newDistance >= 0 && newDistance < closestDist) {
                 closestDist = newDistance;
                 closest = element.value();
@@ -148,16 +149,16 @@ public class Ray extends VectorLine3D {
         return closest;
     }
 
-    private static double distanceToCollideTri(Ray ray, double curSmallestDist, Vector3D normal,
+    private static double distanceToCollideTri(Vector3D rayDir, Vector3D rayPos, double curSmallestDist, Vector3D normal,
                                                Vector3D v0, Vector3D v1, Vector3D vertex1,
                                                double dot00, double dot01, double dot11, double invDenom) {
-        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
+        double distance = normal.distToCollidePlane(vertex1, rayPos, rayDir);
 
         if (distance <= 0 || distance >= curSmallestDist) {
             return Double.NaN;
         }
 
-        Vector3D point = ray.position.add(ray.getDirection().scalarMultiply(distance));
+        Vector3D point = rayPos.add(rayDir.scalarMultiply(distance));
         double dot02 = v0.dotWithSubtracted(point, vertex1);
         double dot12 = v1.dotWithSubtracted(point, vertex1);
         // Compute barycentric coordinates
@@ -170,9 +171,9 @@ public class Ray extends VectorLine3D {
         return Double.NaN;
     }
 
-    private static double distanceToCollideRect(Ray ray, Vector3D normal, Vector3D center, Vector3D planeXaxis, Vector3D planeYaxis, Vector2D max, Vector2D min) {
-        double distance = normal.distToCollidePlane(center, ray.getPosition(), ray.getDirection());
-        Vector2D pointOnPlane = ray.getPosition().projectToPlane(planeXaxis, planeYaxis, ray.getDirection(), distance);
+    private static double distanceToCollideRect(Vector3D rayDir, Vector3D rayPos, Vector3D normal, Vector3D center, Vector3D planeXaxis, Vector3D planeYaxis, Vector2D max, Vector2D min) {
+        double distance = normal.distToCollidePlane(center, rayPos, rayDir);
+        Vector2D pointOnPlane = rayPos.projectToPlane(planeXaxis, planeYaxis, rayDir, distance);
         if (min.getX() < pointOnPlane.getX() && max.getX() > pointOnPlane.getX()
                 && min.getY() < pointOnPlane.getY() && max.getY() > pointOnPlane.getY()) {
             return distance;
@@ -180,10 +181,10 @@ public class Ray extends VectorLine3D {
         return Double.NaN;
     }
 
-    private static double distanceToCollideSphere(Ray lightRay, Vector3D center, double radius) {
-        Double amountInDirection = lightRay.getDirection().dotProduct(lightRay.getPosition().subtract(center));
+    private static double distanceToCollideSphere(Vector3D rayDir, Vector3D rayPos, Vector3D center, double radius) {
+        Double amountInDirection = rayDir.dotProduct(rayPos.subtract(center));
         if (amountInDirection <= 0) {
-            return -amountInDirection - Math.sqrt(amountInDirection * amountInDirection + radius * radius - lightRay.getPosition().distanceSquared(center));
+            return -amountInDirection - Math.sqrt(amountInDirection * amountInDirection + radius * radius - rayPos.distanceSquared(center));
         }
         return Double.NaN;
     }
