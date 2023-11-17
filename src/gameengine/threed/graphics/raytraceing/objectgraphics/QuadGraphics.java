@@ -7,6 +7,7 @@ import gameengine.threed.geometry.Rect3D;
 import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 
 import java.util.List;
@@ -123,6 +124,14 @@ public class QuadGraphics extends RayTraceable {
 
     public Vector3D getPlaneYAxis() {
         return rect.planeYaxis();
+    }
+
+    public Vector2D getOnPlaneMin() {
+        return rect.planeCoords().min();
+    }
+
+    public Vector2D getOnPlaneMax() {
+        return rect.planeCoords().max();
     }
 
     private void setVertices(Vector3D[] vertices) {

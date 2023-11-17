@@ -1,10 +1,7 @@
 package gameengine.threed.geometry;
 
 import gameengine.threed.graphics.raytraceing.LightRay;
-import gameengine.threed.graphics.raytraceing.objectgraphics.QuadGraphics;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.threed.graphics.raytraceing.objectgraphics.SphereGraphics;
+import gameengine.threed.graphics.raytraceing.objectgraphics.*;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
@@ -121,19 +118,22 @@ public class Ray extends VectorLine3D {
         double closestDist = Double.MAX_VALUE;
         RayIntersectable closest = null;
         double newDistance;
-        double amountInDirec;
-        Vector3D toCenter;
 
         for (RayIntersectableList.Element element = objectsInField.getHead();
              element != null; element = element.next()) {
 
-            toCenter = position.subtract(element.value().getCenter());
+
             if (element.value() instanceof SphereGraphics) {
                newDistance = distanceToCollideSphere(this, element.value().getCenter(),
                        ((SphereGraphics) element.value()).getRadius());
-            } else {
+            } else if (element.value() instanceof QuadGraphics) {
                 newDistance = distanceToCollideRect(this, element.value().surfaceNormal(this), ((QuadGraphics) element.value()).getVertex1(),
-                        ((QuadGraphics) element.value()).getPlaneXAxis(), ((QuadGraphics) element.value()).getPlaneYAxis());
+                        ((QuadGraphics) element.value()).getPlaneXAxis(), ((QuadGraphics) element.value()).getPlaneYAxis(),
+                        ((QuadGraphics) element.value()).getOnPlaneMax(), ((QuadGraphics) element.value()).getOnPlaneMin());
+            } else {
+                TriGraphics tri = (TriGraphics) element.value();
+                newDistance = distanceToCollideTri(this, closestDist, tri.surfaceNormal(this), tri.v0(),
+                        tri.v1(), tri.getVertex1(), tri.dot00(), tri.dot01(), tri.dot11(), tri.invDenom());
             }
             if (newDistance >= 0 && newDistance < closestDist) {
                 closestDist = newDistance;
@@ -146,6 +146,28 @@ public class Ray extends VectorLine3D {
         }
 
         return closest;
+    }
+
+    private static double distanceToCollideTri(Ray ray, double curSmallestDist, Vector3D normal,
+                                               Vector3D v0, Vector3D v1, Vector3D vertex1,
+                                               double dot00, double dot01, double dot11, double invDenom) {
+        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
+
+        if (distance <= 0 || distance >= curSmallestDist) {
+            return Double.NaN;
+        }
+
+        Vector3D point = ray.position.add(ray.getDirection().scalarMultiply(distance));
+        double dot02 = v0.dotWithSubtracted(point, vertex1);
+        double dot12 = v1.dotWithSubtracted(point, vertex1);
+        // Compute barycentric coordinates
+        double u = (dot11 * dot02 - dot01 * dot12);
+        double v = (dot00 * dot12 - dot01 * dot02);
+        // Check if the point is inside the triangle
+        if ((u >= 0) && (v >= 0) && ((u + v) <= invDenom)) {
+            return distance;
+        }
+        return Double.NaN;
     }
 
     private static double distanceToCollideRect(Ray ray, Vector3D normal, Vector3D center, Vector3D planeXaxis, Vector3D planeYaxis, Vector2D max, Vector2D min) {
@@ -165,6 +187,32 @@ public class Ray extends VectorLine3D {
         }
         return Double.NaN;
     }
+
+
+//    private static double distanceToCollideTri(Ray ray, double curSmallestDist, Vector3D normal,
+//                                               Vector3D v0, Vector3D v1, Vector3D vertex1,
+//                                               double dot00, double dot01, double dot11, double invDenom) {
+//        double distance = normal.distToCollidePlane(vertex1, ray.getPosition(), ray.getDirection());
+//
+//        if (distance <= 0 || distance >= curSmallestDist || !inRange(ray.position.add(ray.getDirection().scalarMultiply(distance)), v0, v1, vertex1, dot00, dot01, dot11, invDenom)) {
+//            return Double.NaN;
+//        }
+//
+//        return distance;
+//    }
+//
+//    private static boolean inRange(Vector3D point, Vector3D v0, Vector3D v1, Vector3D vertex1, double dot00, double dot01, double dot11, double invDenom) {
+//        // ChatGPT
+//        double dot02 = v0.dotWithSubtracted(point, vertex1);
+//        double dot12 = v1.dotWithSubtracted(point, vertex1);
+//
+//        // Compute barycentric coordinates
+//        double u = (dot11 * dot02 - dot01 * dot12);
+//        double v = (dot00 * dot12 - dot01 * dot02);
+//
+//        // Check if the point is inside the triangle
+//        return (u >= 0) && (v >= 0) && ((u + v) <= invDenom);
+//    }
 
 
     public LinkedHashMap<RayTraceable, Ray> getCollisions(final int maxBounces,

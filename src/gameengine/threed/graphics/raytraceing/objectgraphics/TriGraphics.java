@@ -130,6 +130,30 @@ public class TriGraphics extends RayTraceable {
         return triData.vertex3();
     }
 
+    public Vector3D v0() {
+        return triData.v0();
+    }
+
+    public Vector3D v1() {
+        return triData.v1();
+    }
+
+    public double dot00() {
+        return triData.dot00();
+    }
+
+    public double dot01() {
+        return triData.dot01();
+    }
+
+    public double dot11() {
+        return triData.dot01();
+    }
+
+    public double invDenom() {
+        return triData.invDenom();
+    }
+
     protected void setVertices(Vector3D[] vertices) {
         triData = Triangle3D.computeValues(vertices[0], vertices[1], vertices[2]);
         normal = triData.normal();
