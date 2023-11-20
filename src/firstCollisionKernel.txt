@@ -1,0 +1,22 @@
+typedef struct
+{
+    float x;
+    float y;
+} Vector2D;
+
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+} Vector3D;
+
+__kernel float dotProduct(__global Vector3D *v1, __global Vector3D *v2, __global float *result)
+{
+    int gid = get_global_id(0);
+    result[gid] =  v1[gid].x * v2[gid].x + v1[gid].y * v2[gid].y + v1[gid].z * v2[gid].z;
+}
+
+inline Vector2D add(Vector2D a, Vector2D b) {
+    return new Vector2D(a.x + b.x, a.y + b.y);
+}

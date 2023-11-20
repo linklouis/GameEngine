@@ -4,9 +4,25 @@ import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
+import org.jocl.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import static org.jocl.CL.*;
+import static org.jocl.CL.clCreateKernel;
+import org.jocl.struct.CLTypes.cl_float4;
+import org.jocl.struct.CLTypes.cl_float2;
 
 public class Ray extends VectorLine3D {
+    // CL state
+    private static cl_context context;
+    private static cl_command_queue commandQueue;
+    private static cl_kernel kernel;
+    private static cl_program firstCollisionProgram;
 
+    private static String firstCollisionCode = "firstCollisionKernel.txt";
 
     public Ray(final Vector3D startPosition, final Vector3D direction) {
         super(startPosition, direction);
@@ -17,120 +33,95 @@ public class Ray extends VectorLine3D {
     }
 
     /**
-     * Finds the first {@link RayTraceable} in {@code objectsInField} that the
-     * {@code LightRay} will hit.
-     *
-     * @param objectsInField The {@link RayTraceable}s that the {@code LightRay} can
-     *                       potentially collide with.
-     * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
+     * Default initialization of the context, command queue, kernel
+     * and program
      */
-//    public RayIntersectable firstCollision1(final RayIntersectableList objectsInField) {
-//        RayIntersectableList.Element element = objectsInField.getHead();
-//
-//        if (element == null) {
-//            return null;
-//        }
-//        // Set the closest distance to the distance of the first object.
-//        double closestDist = element.value().distanceToCollide(this,
-//                getDirection().dotWithSubtracted(position, element.value().getCenter()));
-//
-//        // While the distance of the closest collision either doesn't exist or is behind the ray,
-//        // keep finding the next distance.
-//        while (Double.isNaN(closestDist) || closestDist < 0) {
-//            if (element.next() == null) {
-//                return null;
-//            }
-//            element = element.next();
-//            closestDist = element.value().distanceToCollide(this,
-//                    getDirection().dotWithSubtracted(position, element.value().getCenter()));
-//        }
-//
-//        // If the current element is the last one, early exit.
-//        if (element.isLast()) {
-//            toDistance(closestDist - 0.01);
-//            return element.value();
-//        }
-//        RayIntersectable closest = element.value();
-//        element = element.next();
-//        double newDistance;
-//        Vector3D toCenter;
-//
-//        // While there are more objects in the scene,
-//        // if that object is closer than the current closest distance, check the distance it collides at,
-//        // and if that's also closer, take this object instead.
-//        while (true) {
-//            toCenter = position.subtract(element.value().getCenter());
-//
-//            if (toCenter.magnitude() - element.value().getRange() < closestDist) {
-//                newDistance = element.value().distanceToCollide(this, closestDist,
-//                        getDirection().dotProduct(toCenter));
-//                if (newDistance >= 0 && newDistance < closestDist) {
-//                    closestDist = newDistance;
-//                    closest = element.value();
-//                }
-//            }
-//
-//            if (element.isLast()) {
-//                toDistance(closestDist - 0.01);
-//                return closest;
-//            }
-//            element = element.next();
-//        }
-//    }
+    private static void defaultInitialization()
+    {
+        // Obtain the platform IDs and initialize the context properties
+        cl_platform_id platforms[] = new cl_platform_id[1];
+        clGetPlatformIDs(platforms.length, platforms, null);
+        cl_context_properties contextProperties = new cl_context_properties();
+        contextProperties.addProperty(CL_CONTEXT_PLATFORM, platforms[0]);
 
-    /*
-    Problems with old version:
-        Unnecessary value setting (i.e. closestDist = Double.MAX_VALUE)
-        Unnecessary checks (i.e. is first collision distance less than Double.MAX_VALUE, etc.)
-     */
-//    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-//        double closestDist = Double.MAX_VALUE;
-//        RayIntersectable closest = null;
-//        double newDistance;
-//        double amountInDirec;
-//        Vector3D toCenter;
-//
-//        for (RayIntersectableList.Element element = objectsInField.getHead();
-//             element != null; element = element.next()) {
-//
-//            toCenter = position.subtract(element.value().getCenter());
-//            amountInDirec = getDirection().dotProduct(toCenter);
-////            if (amountInDirec < 0.5 && toCenter.magnitude() - element.value().getRange() < closestDist) {
-//                newDistance = element.value().distanceToCollide(this, closestDist, amountInDirec);
-//                if (newDistance >= 0 && newDistance < closestDist) {
-//                    closestDist = newDistance;
-//                    closest = element.value();
-//                }
-////            }
-//        }
-//
-//        if (closest != null) {
-//            position = position.addMultiplied(getDirection(),closestDist - 0.01);
-//        }
-//
-//        return closest;
-//    }
+        // Create an OpenCL context on a GPU device
+        context = clCreateContextFromType(
+                contextProperties, CL_DEVICE_TYPE_GPU, null, null, null);
+        if (context == null)
+        {
+            // If no context for a GPU device could be created,
+            // try to create one for a CPU device.
+            context = clCreateContextFromType(
+                    contextProperties, CL_DEVICE_TYPE_CPU, null, null, null);
 
-    private static Vector3D.V3Struct add(Vector3D.V3Struct a, Vector3D.V3Struct b) {
-        return new Vector3D.V3Struct(a.x + b.x, a.y + b.y, a.z + b.z);
+            if (context == null)
+            {
+                System.out.println("Unable to create a context");
+                return;
+            }
+        }
+
+        // Enable exceptions and subsequently omit error checks in this sample
+        CL.setExceptionsEnabled(true);
+
+        // Get the list of GPU devices associated with the context
+        long numBytes[] = new long[1];
+        clGetContextInfo(context, CL_CONTEXT_DEVICES, 0, null, numBytes);
+
+        // Obtain the cl_device_id for the first device
+        int numDevices = (int) numBytes[0] / Sizeof.cl_device_id;
+        cl_device_id devices[] = new cl_device_id[numDevices];
+        clGetContextInfo(context, CL_CONTEXT_DEVICES, numBytes[0],
+                Pointer.to(devices), null);
+
+        // Create a command-queue
+        commandQueue =
+                clCreateCommandQueue(context, devices[0], 0, null);
+
+        // Create the program from the source code
+        firstCollisionProgram = clCreateProgramWithSource(context,
+                1, new String[]{ readKernelSource(firstCollisionCode) }, null, null);
+
+        // Build the program
+        clBuildProgram(firstCollisionProgram, 0, null, null, null, null);
+
+        // Create the kernel
+        kernel = clCreateKernel(firstCollisionProgram, "dotProduct", null);
     }
 
-    private static Vector3D.V3Struct subtract(Vector3D.V3Struct a, Vector3D.V3Struct b) {
-        return new Vector3D.V3Struct(a.x - b.x, a.y - b.y, a.z - b.z);
+    private static String readKernelSource(String filePath) {
+        StringBuilder source = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                source.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return source.toString();
     }
 
-    private static Vector3D.V3Struct scalarMultiply(Vector3D.V3Struct vector, float multiplier) {
-        return new Vector3D.V3Struct(vector.x * multiplier, vector.y * multiplier, vector.z * multiplier);
+    private static cl_float4 add(cl_float4 a, cl_float4 b) {
+        return Vector3D.newFloat4(a.get(0) + b.get(0), a.get(1) + b.get(1), a.get(2) + b.get(2));
     }
 
-    private static float dotProduct(Vector3D.V3Struct a, Vector3D.V3Struct b) {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+    private static cl_float4 subtract(cl_float4 a, cl_float4 b) {
+        return Vector3D.newFloat4(a.get(0) - b.get(0), a.get(1) - b.get(1), a.get(2) - b.get(2));
     }
 
-    private static float distanceSquared(Vector3D.V3Struct a, Vector3D.V3Struct b) {
-        return    (a.x - b.x) * (a.x - b.x)
-                + (a.y - b.y) * (a.y - b.y)
-                + (a.z - b.z) * (a.z - b.z);
+    private static cl_float4 scalarMultiply(cl_float4 vector, float multiplier) {
+        return Vector3D.newFloat4(vector.get(0) * multiplier, vector.get(1) * multiplier, vector.get(2) * multiplier);
+    }
+
+    private static float dotProduct(cl_float4 a, cl_float4 b) {
+        return a.get(0) * b.get(0) + a.get(1) * b.get(1) + a.get(2) * b.get(2);
+    }
+
+    private static float distanceSquared(cl_float4 a, cl_float4 b) {
+        return    (a.get(0) - b.get(0)) * (a.get(0) - b.get(0))
+                + (a.get(1) - b.get(1)) * (a.get(1) - b.get(1))
+                + (a.get(2) - b.get(2)) * (a.get(2) - b.get(2));
     }
 
     public static RayTraceable.RayTraceableStruct[] toStructs(RayTraceable[] objects, Ray ray) {
@@ -180,47 +171,47 @@ public class Ray extends VectorLine3D {
         return closest;
     }
 
-    public static Vector2D.V2Struct projectToPlane(Vector3D.V3Struct rayPos,
-                                            Vector3D.V3Struct planeX, Vector3D.V3Struct planeY,
-                                            Vector3D.V3Struct direction, float distance) {
-        return new Vector2D.V2Struct(
-                (rayPos.x + direction.x * distance) * planeX.x
-                        + (rayPos.y + direction.y * distance) * planeX.y
-                        + (rayPos.z + direction.z * distance) * planeX.z,
-                (rayPos.x + direction.x * distance) * planeY.x
-                        + (rayPos.y + direction.y * distance) * planeY.y
-                        + (rayPos.z + direction.z * distance) * planeY.z
+    public static cl_float2 projectToPlane(cl_float4 rayPos,
+                                            cl_float4 planeX, cl_float4 planeY,
+                                            cl_float4 direction, float distance) {
+        return Vector2D.newFloat2(
+                (rayPos.get(0) + direction.get(0) * distance) * planeX.get(0)
+                        + (rayPos.get(1) + direction.get(1) * distance) * planeX.get(1)
+                        + (rayPos.get(2) + direction.get(2) * distance) * planeX.get(2),
+                (rayPos.get(0) + direction.get(0) * distance) * planeY.get(0)
+                        + (rayPos.get(1) + direction.get(1) * distance) * planeY.get(1)
+                        + (rayPos.get(2) + direction.get(2) * distance) * planeY.get(2)
         );
     }
 
-    public static float distToCollidePlane(Vector3D.V3Struct normal,
-                                           Vector3D.V3Struct vertexOrCenter,
-                                           Vector3D.V3Struct rayPos, Vector3D.V3Struct rayDir) {
-        return (  normal.x * (vertexOrCenter.x - rayPos.x)
-                + normal.y * (vertexOrCenter.y - rayPos.y)
-                + normal.z * (vertexOrCenter.z - rayPos.z))
+    public static float distToCollidePlane(cl_float4 normal,
+                                           cl_float4 vertexOrCenter,
+                                           cl_float4 rayPos, cl_float4 rayDir) {
+        return (  normal.get(0) * (vertexOrCenter.get(0) - rayPos.get(0))
+                + normal.get(1) * (vertexOrCenter.get(1) - rayPos.get(1))
+                + normal.get(2) * (vertexOrCenter.get(2) - rayPos.get(2)))
                 /
-                (  normal.x * rayDir.x
-                 + normal.y * rayDir.y
-                 + normal.z * rayDir.z);
+                (  normal.get(0) * rayDir.get(0)
+                 + normal.get(1) * rayDir.get(1)
+                 + normal.get(2) * rayDir.get(2));
     }
 
-    private static float distanceToCollideRect(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
+    private static float distanceToCollideRect(cl_float4 rayDir, cl_float4 rayPos,
                                                RayTraceable.RayTraceableStruct obj
-//                                                Vector3D.V3Struct normal, Vector3D.V3Struct center,
-//                                                Vector3D.V3Struct planeXaxis, Vector3D.V3Struct planeYaxis,
-//                                                Vector2D.V2Struct max, Vector2D.V2Struct min
+//                                                cl_float4 normal, cl_float4 center,
+//                                                cl_float4 planeXaxis, cl_float4 planeYaxis,
+//                                                cl_float2 max, cl_float2 min
     ) {
         float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, rayPos, rayDir);
-        Vector2D.V2Struct pointOnPlane = projectToPlane(rayPos, obj.side1, obj.side2, rayDir, distance);
-        if (obj.min.x < pointOnPlane.x && obj.max.x > pointOnPlane.x
-                && obj.min.y < pointOnPlane.y && obj.max.y > pointOnPlane.y) {
+        cl_float2 pointOnPlane = projectToPlane(rayPos, obj.side1, obj.side2, rayDir, distance);
+        if (obj.min.get(0) < pointOnPlane.get(0) && obj.max.get(0) > pointOnPlane.get(0)
+                && obj.min.get(1) < pointOnPlane.get(1) && obj.max.get(1) > pointOnPlane.get(1)) {
             return distance;
         }
         return Float.NaN;
     }
 
-    private static float distanceToCollideSphere(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
+    private static float distanceToCollideSphere(cl_float4 rayDir, cl_float4 rayPos,
                                                   RayTraceable.RayTraceableStruct obj) {
         float amountInDirection = dotProduct(rayDir, subtract(rayPos, obj.vertexOrCenter));
         if (amountInDirection <= 0) {
@@ -229,7 +220,7 @@ public class Ray extends VectorLine3D {
         return Float.NaN;
     }
 
-    private static float distanceToCollideTri(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
+    private static float distanceToCollideTri(cl_float4 rayDir, cl_float4 rayPos,
                                                double curSmallestDist,
                                                RayTraceable.RayTraceableStruct obj) {
         float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, rayPos, rayDir);
@@ -238,7 +229,7 @@ public class Ray extends VectorLine3D {
             return Float.NaN;
         }
 
-        Vector3D.V3Struct point = add(rayPos, scalarMultiply(rayDir, distance));
+        cl_float4 point = add(rayPos, scalarMultiply(rayDir, distance));
         float dot02 = dotProduct(obj.side1, subtract(point, obj.vertexOrCenter));
         float dot12 = dotProduct(obj.side2, subtract(point, obj.vertexOrCenter));
         // Compute barycentric coordinates

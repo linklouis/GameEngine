@@ -1,5 +1,7 @@
 package gameengine.vectormath;
 
+import org.jocl.struct.CLTypes;
+
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -51,36 +53,25 @@ public class Vector2D implements Vector<Vector2D> {
      * Functionality:
      */
 
-    public static class V2Struct extends org.jocl.struct.Struct {
-        public float x, y;
-
-        public V2Struct() {
-            x = 0;
-            y = 0;
-        }
-
-        public V2Struct(float x, float y){
-            this.x = x;
-            this.y = y;
-        }
-
-        public V2Struct(double x, double y){
-            this.x = (float) x;
-            this.y = (float) y;
-        }
-
-        public float dotProduct(final V2Struct other) {
-            return    x * other.x
-                    + y * other.y;
-        }
+    public CLTypes.cl_float2 toStruct() {
+        CLTypes.cl_float2 float2 = new CLTypes.cl_float2();
+        float2.set(0, (float) x);
+        float2.set(1, (float) y);
+        return float2;
     }
 
-    public V2Struct toStruct() {
-        return new V2Struct(x, y);
+    public static CLTypes.cl_float2 newFloat2(float x, float y) {
+        CLTypes.cl_float2 float2 = new CLTypes.cl_float2();
+        float2.set(0, x);
+        float2.set(1, y);
+        return float2;
     }
 
-    public static V2Struct emptyStruct() {
-        return new V2Struct(0, 0);
+    public static CLTypes.cl_float2 newFloat2(double x, double y) {
+        CLTypes.cl_float2 float2 = new CLTypes.cl_float2();
+        float2.set(0, (float) x);
+        float2.set(1, (float) y);
+        return float2;
     }
 
     @Override

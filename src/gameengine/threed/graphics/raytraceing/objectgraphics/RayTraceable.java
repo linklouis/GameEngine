@@ -16,6 +16,9 @@ import org.jocl.struct.Struct;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jocl.struct.CLTypes.cl_float4;
+import org.jocl.struct.CLTypes.cl_float2;
+
 public sealed abstract class RayTraceable extends GraphicsObject3D implements RayIntersectable
         permits QuadGraphics, SphereGraphics, TriGraphics {
     private RayTracingTexture texture = null;
@@ -53,11 +56,11 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
     public static class RayTraceableStruct extends Struct {
         public final int type; // 0 = Sphere, 1 = Tri, 2 = Rect
 
-        public Vector3D.V3Struct normal;
-        public Vector3D.V3Struct vertexOrCenter;
+        public cl_float4 normal;
+        public cl_float4 vertexOrCenter;
 
-        public Vector3D.V3Struct side1; // v0 for tris, planeXAxis for quads
-        public Vector3D.V3Struct side2; // v1 for tris, planeYAxis for quads
+        public cl_float4 side1; // v0 for tris, planeXAxis for quads
+        public cl_float4 side2; // v1 for tris, planeYAxis for quads
 
         // Tris:
         public float dot00; // Also r for spheres
@@ -66,12 +69,12 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
         public float invDenom;
 
         // Quads:
-        public Vector2D.V2Struct max;
-        public Vector2D.V2Struct min;
+        public cl_float2 max;
+        public cl_float2 min;
 
         // Sphere
-        public RayTraceableStruct(Vector3D.V3Struct normal,
-                                  Vector3D.V3Struct vertexOrCenter,
+        public RayTraceableStruct(cl_float4 normal,
+                                  cl_float4 vertexOrCenter,
                                   double dot00) {
             this.type = 0;
             this.normal = normal;
@@ -99,8 +102,8 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.invDenom = (float) invDenom;
         }
 
-        public RayTraceableStruct(Vector3D.V3Struct normal, Vector3D.V3Struct vertexOrCenter,
-                                  Vector3D.V3Struct side1, Vector3D.V3Struct side2,
+        public RayTraceableStruct(cl_float4 normal, cl_float4 vertexOrCenter,
+                                  cl_float4 side1, cl_float4 side2,
                                   float dot00, float dot01, float dot11, float invDenom) {
             this.type = 1;
             this.normal = normal;
@@ -132,10 +135,10 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
 
         // Other
         public RayTraceableStruct(int type,
-                                  Vector3D.V3Struct normal, Vector3D.V3Struct vertexOrCenter,
-                                  Vector3D.V3Struct side1, Vector3D.V3Struct side2,
+                                  cl_float4 normal, cl_float4 vertexOrCenter,
+                                  cl_float4 side1, cl_float4 side2,
                                   float dot00, float dot01, float dot11, float invDenom,
-                                  Vector2D.V2Struct max, Vector2D.V2Struct min) {
+                                  cl_float2 max, cl_float2 min) {
             this.type = type;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;
@@ -150,10 +153,10 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
         }
 
         public RayTraceableStruct(int type,
-                                  Vector3D.V3Struct normal, Vector3D.V3Struct vertexOrCenter,
-                                  Vector3D.V3Struct side1, Vector3D.V3Struct side2,
+                                  cl_float4 normal, cl_float4 vertexOrCenter,
+                                  cl_float4 side1, cl_float4 side2,
                                   double dot00, double dot01, double dot11, double invDenom,
-                                  Vector2D.V2Struct max, Vector2D.V2Struct min) {
+                                  cl_float2 max, cl_float2 min) {
             this.type = type;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;

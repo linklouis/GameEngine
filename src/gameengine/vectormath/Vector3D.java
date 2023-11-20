@@ -2,6 +2,7 @@ package gameengine.vectormath;
 
 import gameengine.utilities.ExtraMath;
 import javafx.scene.paint.Color;
+import org.jocl.struct.CLTypes;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -74,34 +75,48 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
      * Functionality:
      */
 
-    public static class V3Struct extends org.jocl.struct.Struct {
-        public float x, y, z;
-
-        public V3Struct() {
-            x = 0;
-            y = 0;
-            z = 0;
-        }
-
-        public V3Struct(float x, float y, float z){
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        public V3Struct(double x, double y, double z){
-            this.x = (float) x;
-            this.y = (float) y;
-            this.z = (float) z;
-        }
+    public CLTypes.cl_float4 toStruct() {
+        CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
+        float4.set(0, (float) x);
+        float4.set(1, (float) y);
+        float4.set(2, (float) z);
+        return float4;
     }
 
-    public V3Struct toStruct() {
-        return new V3Struct(x, y, z);
+    public static CLTypes.cl_float4 newFloat4(float x, float y, float z, float w) {
+        CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
+        float4.set(0, x);
+        float4.set(1, y);
+        float4.set(2, z);
+        float4.set(3, w);
+        return float4;
     }
 
-    public static V3Struct emptyStruct() {
-        return new V3Struct(0, 0, 0);
+    public static CLTypes.cl_float4 newFloat4(double x, double y, double z, double w) {
+        CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
+        float4.set(0, (float) x);
+        float4.set(1, (float) y);
+        float4.set(2, (float) z);
+        float4.set(3, (float) w);
+        return float4;
+    }
+
+    public static CLTypes.cl_float4 newFloat4(float x, float y, float z) {
+        CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
+        float4.set(0, x);
+        float4.set(1, y);
+        float4.set(2, z);
+        float4.set(3, 0);
+        return float4;
+    }
+
+    public static CLTypes.cl_float4 newFloat4(double x, double y, double z) {
+        CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
+        float4.set(0, (float) x);
+        float4.set(1, (float) y);
+        float4.set(2, (float) z);
+        float4.set(3, 0);
+        return float4;
     }
 
     @Override
