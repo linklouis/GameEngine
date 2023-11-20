@@ -9,6 +9,7 @@ import org.jocl.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.jocl.CL.*;
 import static org.jocl.CL.clCreateKernel;
@@ -135,40 +136,50 @@ public class Ray extends VectorLine3D {
     }
 
     public RayTraceable firstCollision(RayTraceable.RayTraceableStruct[] objectsInField, RayTraceable[] objs) {
-        float closestDist = Float.MAX_VALUE;
-        RayTraceable closest = null;
-        float newDistance;
+        float[] distances = new float[objs.length];
+        getCollisionDistances(objectsInField, distances);
 
+        int i = 0;
+        while (distances[i] < 0 || Float.isNaN(distances[i])) {
+            i++;
+            if (i == distances.length) {
+                return null;
+            }
+        }
+        int closest = i;
+
+        for (; i < distances.length; i++) {
+            if (distances[i] >= 0 && distances[i] < distances[closest]) {
+                closest = i;
+            }
+        }
+
+        position = position.addMultiplied(getDirection(), distances[closest] - 0.01);
+        return objs[closest];
+    }
+
+    public void getCollisionDistances(RayTraceable.RayTraceableStruct[] objectsInField, float[] distances) {
         for (int gid = 0; gid < objectsInField.length; gid++) {
             if (objectsInField[gid].type == 2) {
                 // Quads
-                newDistance = distanceToCollideRect(
+                distances[gid] = distanceToCollideRect(
                         getDirection().toStruct(), getPosition().toStruct(),
                         objectsInField[gid]);
             } else if (objectsInField[gid].type == 1) {
                 // Tris
-                newDistance = distanceToCollideTri(
+                distances[gid] = distanceToCollideTri(
                         getDirection().toStruct(), getPosition().toStruct(),
-                        closestDist,
                         objectsInField[gid]);
-            } else {
+            } else /*if (objectsInField[gid].type == 0)*/{
                 // Spheres
-                newDistance = distanceToCollideSphere(
+                distances[gid] = distanceToCollideSphere(
                         getDirection().toStruct(), getPosition().toStruct(),
                         objectsInField[gid]);
             }
-
-            if (newDistance >= 0 && newDistance < closestDist) {
-                closestDist = newDistance;
-                closest = objs[gid];
-            }
+//            else {
+//                distances[gid] = 0/0f;
+//            }
         }
-
-        if (closest != null) {
-            position = position.addMultiplied(getDirection(),closestDist - 0.01);
-        }
-
-        return closest;
     }
 
     public static cl_float2 projectToPlane(cl_float4 rayPos,
@@ -221,11 +232,10 @@ public class Ray extends VectorLine3D {
     }
 
     private static float distanceToCollideTri(cl_float4 rayDir, cl_float4 rayPos,
-                                               double curSmallestDist,
                                                RayTraceable.RayTraceableStruct obj) {
         float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, rayPos, rayDir);
 
-        if (distance <= 0 || distance >= curSmallestDist) {
+        if (distance <= 0) {
             return Float.NaN;
         }
 

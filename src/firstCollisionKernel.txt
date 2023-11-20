@@ -11,7 +11,7 @@ typedef struct
     float z;
 } Vector3D;
 
-__kernel float dotProduct(__global Vector3D *v1, __global Vector3D *v2, __global float *result)
+__kernel float dotProduct(__global float4 *v1, __global float4 *v2, __global float *result)
 {
     int gid = get_global_id(0);
     result[gid] =  v1[gid].x * v2[gid].x + v1[gid].y * v2[gid].y + v1[gid].z * v2[gid].z;
