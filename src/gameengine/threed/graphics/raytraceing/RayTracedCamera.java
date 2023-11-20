@@ -1,8 +1,9 @@
 package gameengine.threed.graphics.raytraceing;
 
+import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.Camera;
 import gameengine.threed.graphics.Visual3D;
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
+//import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.timeformatting.TimeConversionFactor;
 import gameengine.timeformatting.TimeFormatter;
@@ -211,12 +212,13 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 //                .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
 //                .toArray(RayTraceable[]::new);
 
-        RayIntersectableList objects = new RayIntersectableList(
-                renderableObjects.stream()
-//                        .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
-                        .toArray(RayTraceable[]::new),
-                getLocation()
-                );
+//        RayIntersectableList objects = new RayIntersectableList(
+//                renderableObjects.stream()
+////                        .sorted(Comparator.comparingDouble((RayTraceable obj) -> obj.closestDistTo(getLocation())))
+//                        .toArray(RayTraceable[]::new),
+//                getLocation()
+//                );
+        RayTraceable[] objects = renderableObjects.toArray(new RayTraceable[0]);
 
         collisionMap = new RayTraceable[getWidth()][getHeight()];
 
@@ -252,13 +254,13 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     }
 
     private void renderUnthreaded(final PixelWriter writer,
-                                  final RayIntersectableList objects) {
+                                  final RayTraceable[] objects) {
         IntStream.range(0, getWidth() * getHeight()).forEach(pixelIndex -> renderPixel(pixelIndex, objects));
         updateImage(writer);
     }
 
     private void renderThreadedCool(final PixelWriter writer,
-                                final RayIntersectableList objects) {
+                                final RayTraceable[] objects) {
         IntStream.range(0, getWidth()/* * getHeight()*/).parallel().forEach(pixelIndex ->
                 IntStream.range(pixelIndex, pixelIndex + getHeight()).forEach(pixInd -> renderPixel(pixInd * pixelIndex, objects))
         );
@@ -266,12 +268,12 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     }
 
     private void renderThreaded(final PixelWriter writer,
-                                final RayIntersectableList objects) {
+                                final RayTraceable[] objects) {
         IntStream.range(0, getWidth() * getHeight()).parallel().forEach(pixelIndex -> renderPixel(pixelIndex, objects));
         updateImage(writer);
     }
 
-    protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
+    protected void renderPixel(int pixelIndex, RayTraceable[] objects) {
         buffer.put(
                 pixelIndex,
                 calculatePixelColorInt(rayTo(pixelIndex), objects,
@@ -279,7 +281,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         );
     }
 
-    private void renderPixel(int x, int y, RayIntersectableList objects) {
+    private void renderPixel(int x, int y, RayTraceable[] objects) {
         buffer.put(
                 x + y * getWidth(),
                 calculatePixelColorInt(rayTo(x, y), objects, new Vector2D(x, y))
@@ -313,9 +315,9 @@ public class RayTracedCamera extends Camera<RayTraceable> {
      * {@link #raysPerPixel}.
      */
     protected int calculatePixelColorInt(final LightRay startRay,
-                                         final RayIntersectableList objectsInField,
+                                         final RayTraceable[] objectsInField,
                                          final Vector2D pixelLocation) {
-        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = startRay.firstCollision(Ray.toStructs(objectsInField, startRay), objectsInField);
 
         if (firstCollision == null) {
             return 0;

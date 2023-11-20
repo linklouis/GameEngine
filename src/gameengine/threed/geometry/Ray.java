@@ -26,59 +26,59 @@ public class Ray extends VectorLine3D {
      *                       potentially collide with.
      * @return The closest {@link RayTraceable} the {@code LightRay} can collide with.
      */
-    public RayIntersectable firstCollision1(final RayIntersectableList objectsInField) {
-        RayIntersectableList.Element element = objectsInField.getHead();
-
-        if (element == null) {
-            return null;
-        }
-        // Set the closest distance to the distance of the first object.
-        double closestDist = element.value().distanceToCollide(this,
-                getDirection().dotWithSubtracted(position, element.value().getCenter()));
-
-        // While the distance of the closest collision either doesn't exist or is behind the ray,
-        // keep finding the next distance.
-        while (Double.isNaN(closestDist) || closestDist < 0) {
-            if (element.next() == null) {
-                return null;
-            }
-            element = element.next();
-            closestDist = element.value().distanceToCollide(this,
-                    getDirection().dotWithSubtracted(position, element.value().getCenter()));
-        }
-
-        // If the current element is the last one, early exit.
-        if (element.isLast()) {
-            toDistance(closestDist - 0.01);
-            return element.value();
-        }
-        RayIntersectable closest = element.value();
-        element = element.next();
-        double newDistance;
-        Vector3D toCenter;
-
-        // While there are more objects in the scene,
-        // if that object is closer than the current closest distance, check the distance it collides at,
-        // and if that's also closer, take this object instead.
-        while (true) {
-            toCenter = position.subtract(element.value().getCenter());
-
-            if (toCenter.magnitude() - element.value().getRange() < closestDist) {
-                newDistance = element.value().distanceToCollide(this, closestDist,
-                        getDirection().dotProduct(toCenter));
-                if (newDistance >= 0 && newDistance < closestDist) {
-                    closestDist = newDistance;
-                    closest = element.value();
-                }
-            }
-
-            if (element.isLast()) {
-                toDistance(closestDist - 0.01);
-                return closest;
-            }
-            element = element.next();
-        }
-    }
+//    public RayIntersectable firstCollision1(final RayIntersectableList objectsInField) {
+//        RayIntersectableList.Element element = objectsInField.getHead();
+//
+//        if (element == null) {
+//            return null;
+//        }
+//        // Set the closest distance to the distance of the first object.
+//        double closestDist = element.value().distanceToCollide(this,
+//                getDirection().dotWithSubtracted(position, element.value().getCenter()));
+//
+//        // While the distance of the closest collision either doesn't exist or is behind the ray,
+//        // keep finding the next distance.
+//        while (Double.isNaN(closestDist) || closestDist < 0) {
+//            if (element.next() == null) {
+//                return null;
+//            }
+//            element = element.next();
+//            closestDist = element.value().distanceToCollide(this,
+//                    getDirection().dotWithSubtracted(position, element.value().getCenter()));
+//        }
+//
+//        // If the current element is the last one, early exit.
+//        if (element.isLast()) {
+//            toDistance(closestDist - 0.01);
+//            return element.value();
+//        }
+//        RayIntersectable closest = element.value();
+//        element = element.next();
+//        double newDistance;
+//        Vector3D toCenter;
+//
+//        // While there are more objects in the scene,
+//        // if that object is closer than the current closest distance, check the distance it collides at,
+//        // and if that's also closer, take this object instead.
+//        while (true) {
+//            toCenter = position.subtract(element.value().getCenter());
+//
+//            if (toCenter.magnitude() - element.value().getRange() < closestDist) {
+//                newDistance = element.value().distanceToCollide(this, closestDist,
+//                        getDirection().dotProduct(toCenter));
+//                if (newDistance >= 0 && newDistance < closestDist) {
+//                    closestDist = newDistance;
+//                    closest = element.value();
+//                }
+//            }
+//
+//            if (element.isLast()) {
+//                toDistance(closestDist - 0.01);
+//                return closest;
+//            }
+//            element = element.next();
+//        }
+//    }
 
     /*
     Problems with old version:
@@ -113,49 +113,6 @@ public class Ray extends VectorLine3D {
 //        return closest;
 //    }
 
-    public RayIntersectable firstCollision(final RayIntersectableList objectsInField) {
-        double closestDist = Double.MAX_VALUE;
-        RayIntersectable closest = null;
-        double newDistance;
-
-        for (RayIntersectableList.Element element = objectsInField.getHead();
-             element != null; element = element.next()) {
-
-            if (element.value() instanceof QuadGraphics quad) {
-                newDistance = distanceToCollideRect(getDirection(), getPosition(),
-                        quad.surfaceNormal(this), quad.getVertex1(),
-                        quad.getPlaneXAxis(), quad.getPlaneYAxis(),
-                        quad.getOnPlaneMax(), quad.getOnPlaneMin());
-            } else if (element.value() instanceof TriGraphics tri) {
-                newDistance = distanceToCollideTri(
-                        getDirection().toStruct(), getPosition().toStruct(),
-                        closestDist,
-                        tri.toStruct(this)
-//                        tri.surfaceNormal(this), closestDist, tri.v0(),
-//                        tri.v1(), tri.getVertex1(), tri.dot00(), tri.dot01(), tri.dot11(), tri.invDenom()
-                        );
-            } else {
-                newDistance = distanceToCollideSphere(
-                        getDirection().toStruct(), getPosition().toStruct(),
-                        ((RayTraceable) element.value()).toStruct(this)
-//                        element.value().getCenter(),
-//                        ((SphereGraphics) element.value()).getRadius()
-                );
-            }
-
-            if (newDistance >= 0 && newDistance < closestDist) {
-                closestDist = newDistance;
-                closest = element.value();
-            }
-        }
-
-        if (closest != null) {
-            position = position.addMultiplied(getDirection(),closestDist - 0.01);
-        }
-
-        return closest;
-    }
-
     private static Vector3D.V3Struct add(Vector3D.V3Struct a, Vector3D.V3Struct b) {
         return new Vector3D.V3Struct(a.x + b.x, a.y + b.y, a.z + b.z);
     }
@@ -178,17 +135,102 @@ public class Ray extends VectorLine3D {
                 + (a.z - b.z) * (a.z - b.z);
     }
 
-    private static double distanceToCollideRect(Vector3D rayDir, Vector3D rayPos,
-                                                Vector3D normal, Vector3D center,
-                                                Vector3D planeXaxis, Vector3D planeYaxis,
-                                                Vector2D max, Vector2D min) {
-        double distance = normal.distToCollidePlane(center, rayPos, rayDir);
-        Vector2D pointOnPlane = rayPos.projectToPlane(planeXaxis, planeYaxis, rayDir, distance);
-        if (min.getX() < pointOnPlane.getX() && max.getX() > pointOnPlane.getX()
-                && min.getY() < pointOnPlane.getY() && max.getY() > pointOnPlane.getY()) {
+    public static RayTraceable.RayTraceableStruct[] toStructs(RayTraceable[] objects, Ray ray) {
+        RayTraceable.RayTraceableStruct[] structs = new RayTraceable.RayTraceableStruct[objects.length];
+
+        for (int gid = 0; gid < objects.length; gid++) {
+            structs[gid] = objects[gid].toStruct(ray);
+        }
+
+        return structs;
+    }
+
+    public RayTraceable firstCollision(RayTraceable.RayTraceableStruct[] objectsInField, RayTraceable[] objs) {
+        double closestDist = Double.MAX_VALUE;
+        RayTraceable closest = null;
+        double newDistance;
+
+        for (int gid = 0; gid < objectsInField.length; gid++) {
+            if (objectsInField[gid].type == 2) {
+                // Quads
+                newDistance = distanceToCollideRect(getDirection().toStruct(), getPosition().toStruct(),
+                        objectsInField[gid]
+//                        quad.surfaceNormal(this), quad.getVertex1(),
+//                        quad.getPlaneXAxis(), quad.getPlaneYAxis(),
+//                        quad.getOnPlaneMax(), quad.getOnPlaneMin()
+                );
+            } else if (objectsInField[gid].type == 1) {
+                // Tris
+                newDistance = distanceToCollideTri(
+                        getDirection().toStruct(), getPosition().toStruct(),
+                        closestDist,
+                        objectsInField[gid]
+//                        tri.surfaceNormal(this), closestDist, tri.v0(),
+//                        tri.v1(), tri.getVertex1(), tri.dot00(), tri.dot01(), tri.dot11(), tri.invDenom()
+                        );
+            } else {
+                // Spheres
+                newDistance = distanceToCollideSphere(
+                        getDirection().toStruct(), getPosition().toStruct(),
+                        objectsInField[gid]
+//                        ((RayTraceable) element.value()).toStruct(this)
+
+//                        element.value().getCenter(),
+//                        ((SphereGraphics) element.value()).getRadius()
+                );
+            }
+
+            if (newDistance >= 0 && newDistance < closestDist) {
+                closestDist = newDistance;
+                closest = objs[gid];
+            }
+        }
+
+        if (closest != null) {
+            position = position.addMultiplied(getDirection(),closestDist - 0.01);
+        }
+
+        return closest;
+    }
+
+    public static Vector2D.V2Struct projectToPlane(Vector3D.V3Struct rayPos,
+                                            Vector3D.V3Struct planeX, Vector3D.V3Struct planeY,
+                                            Vector3D.V3Struct direction, float distance) {
+        return new Vector2D.V2Struct(
+                (rayPos.x + direction.x * distance) * planeX.x
+                        + (rayPos.y + direction.y * distance) * planeX.y
+                        + (rayPos.z + direction.z * distance) * planeX.z,
+                (rayPos.x + direction.x * distance) * planeY.x
+                        + (rayPos.y + direction.y * distance) * planeY.y
+                        + (rayPos.z + direction.z * distance) * planeY.z
+        );
+    }
+
+    public static float distToCollidePlane(Vector3D.V3Struct normal,
+                                           Vector3D.V3Struct vertexOrCenter,
+                                           Vector3D.V3Struct rayPos, Vector3D.V3Struct rayDir) {
+        return (  normal.x * (vertexOrCenter.x - rayPos.x)
+                + normal.y * (vertexOrCenter.y - rayPos.y)
+                + normal.z * (vertexOrCenter.z - rayPos.z))
+                /
+                (  normal.x * rayDir.x
+                 + normal.y * rayDir.y
+                 + normal.z * rayDir.z);
+    }
+
+    private static float distanceToCollideRect(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
+                                               RayTraceable.RayTraceableStruct obj
+//                                                Vector3D.V3Struct normal, Vector3D.V3Struct center,
+//                                                Vector3D.V3Struct planeXaxis, Vector3D.V3Struct planeYaxis,
+//                                                Vector2D.V2Struct max, Vector2D.V2Struct min
+    ) {
+        float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, rayPos, rayDir);
+        Vector2D.V2Struct pointOnPlane = projectToPlane(rayPos, obj.side1, obj.side2, rayDir, distance);
+        if (obj.min.x < pointOnPlane.x && obj.max.x > pointOnPlane.x
+                && obj.min.y < pointOnPlane.y && obj.max.y > pointOnPlane.y) {
             return distance;
         }
-        return Double.NaN;
+        return Float.NaN;
     }
 
     private static double distanceToCollideSphere(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
@@ -256,24 +298,24 @@ public class Ray extends VectorLine3D {
 //    }
 
 
-    public LinkedHashMap<RayTraceable, Ray> getCollisions(final int maxBounces,
-                                                          final RayIntersectableList objectsInField) {
-        LinkedHashMap<RayTraceable, Ray> map = new LinkedHashMap<>(maxBounces);
-        RayTraceable collision;
-
-        for (int bounces = 2; bounces <= maxBounces; bounces++) {
-            collision = (RayTraceable) firstCollision(objectsInField);
-
-            if (collision == null) {
-                return null;
-            }
-
-            map.put(collision, new Ray(this));
-            reflect(collision);
-        }
-
-        return map;
-    }
+//    public LinkedHashMap<RayTraceable, Ray> getCollisions(final int maxBounces,
+//                                                          final RayIntersectableList objectsInField) {
+//        LinkedHashMap<RayTraceable, Ray> map = new LinkedHashMap<>(maxBounces);
+//        RayTraceable collision;
+//
+//        for (int bounces = 2; bounces <= maxBounces; bounces++) {
+//            collision = (RayTraceable) firstCollision(objectsInField);
+//
+//            if (collision == null) {
+//                return null;
+//            }
+//
+//            map.put(collision, new Ray(this));
+//            reflect(collision);
+//        }
+//
+//        return map;
+//    }
 
     /**
      * Updates the {@code Ray}'s direction based on its reflection of off the

@@ -1,6 +1,7 @@
 package gameengine.threed.graphics.raytraceing;
 
-import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
+import gameengine.threed.geometry.Ray;
+//import gameengine.threed.graphics.raytraceing.objectgraphics.RayIntersectableList;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
@@ -173,16 +174,16 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
     private final Vector3D[] colors = new Vector3D[getWidth() * getHeight()];
 
     @Override
-    protected void renderPixel(int pixelIndex, RayIntersectableList objects) {
+    protected void renderPixel(int pixelIndex, RayTraceable[] objects) {
         calculatePixelColorVector(rayTo(pixelIndex), objects, colors[pixelIndex]);
         buffer.put(pixelIndex, colors[pixelIndex].scalarDivide(numRenders).oneInt());
 //        colors[pixelIndex] = color;
     }
 
     protected void calculatePixelColorVector(final LightRay startRay,
-                                                 final RayIntersectableList objectsInField,
+                                                 final RayTraceable[] objectsInField,
                                                  Vector3D averageColor) {
-        RayTraceable firstCollision = (RayTraceable) startRay.firstCollision(objectsInField);
+        RayTraceable firstCollision = startRay.firstCollision(Ray.toStructs(objectsInField, startRay), objectsInField);
 
         if (firstCollision == null) {
 //            averageColor.addMutable(new Vector3D(Color.SKYBLUE));
