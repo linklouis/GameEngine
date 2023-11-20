@@ -11,6 +11,7 @@ import gameengine.threed.geometry.RayIntersectable;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
+import org.jocl.struct.SizeofStruct;
 import org.jocl.struct.Struct;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import org.jocl.struct.CLTypes.cl_float2;
 public sealed abstract class RayTraceable extends GraphicsObject3D implements RayIntersectable
         permits QuadGraphics, SphereGraphics, TriGraphics {
     private RayTracingTexture texture = null;
+    public static final long STRUCT_SIZE = SizeofStruct.sizeof(RayTraceableStruct.class);
 
 
     /*
@@ -54,13 +56,13 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
     public abstract RayTraceableStruct toStruct(Ray perspective);
 
     public static class RayTraceableStruct extends Struct {
-        public final int type; // 0 = Sphere, 1 = Tri, 2 = Rect
+        public int type; // 0 = Sphere, 1 = Tri, 2 = Rect
 
         public cl_float4 normal;
         public cl_float4 vertexOrCenter;
 
-        public cl_float4 side1; // v0 for tris, planeXAxis for quads
-        public cl_float4 side2; // v1 for tris, planeYAxis for quads
+        public cl_float4 side1 = Vector3D.emptyStruct(); // v0 for tris, planeXAxis for quads
+        public cl_float4 side2 = Vector3D.emptyStruct(); // v1 for tris, planeYAxis for quads
 
         // Tris:
         public float dot00; // Also r for spheres
@@ -69,8 +71,8 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
         public float invDenom;
 
         // Quads:
-        public cl_float2 max;
-        public cl_float2 min;
+        public cl_float2 max = Vector2D.emptyStruct();
+        public cl_float2 min = Vector2D.emptyStruct();
 
         // Sphere
         public RayTraceableStruct(cl_float4 normal,
@@ -79,8 +81,6 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.type = 0;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;
-            this.side1 = null;
-            this.side2 = null;
             this.dot00 = (float) dot00;
             this.dot01 = 0;
             this.dot11 = 0;

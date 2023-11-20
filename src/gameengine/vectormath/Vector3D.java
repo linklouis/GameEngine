@@ -75,6 +75,15 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
      * Functionality:
      */
 
+    public static CLTypes.cl_float4 emptyStruct() {
+        CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
+        float4.set(0, 0f);
+        float4.set(1, 0f);
+        float4.set(2, 0f);
+        float4.set(3, 0f);
+        return float4;
+    }
+
     public CLTypes.cl_float4 toStruct() {
         CLTypes.cl_float4 float4 = new CLTypes.cl_float4();
         float4.set(0, (float) x);

@@ -1,0 +1,118 @@
+typedef struct
+{
+    int type; // 0 = Sphere, 1 = Tri, 2 = Rect
+    
+    float4 normal;
+    float4 vertexOrCenter;
+
+    float4 side1; // v0 for tris, planeXAxis for quads
+    float4 side2; // v1 for tris, planeYAxis for quads
+
+    // Tris:
+    float dot00; // Also r for spheres
+    float dot01;
+    float dot11;
+    float invDenom;
+
+    // Quads:
+    float2 max;
+    float2 min;
+} RayTraceable;
+
+typedef struct
+{
+    float4 direction;
+    float4 position;
+} Ray;
+
+inline float dotProduct(float4 v1, float4 v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+inline float distanceSquared(float4 a, float4 b) {
+        return    (a.x - b.x) * (a.x - b.x)
+                + (a.y - b.y) * (a.y - b.y)
+                + (a.z - b.z) * (a.z - b.z);
+}
+
+inline float2 projectToPlane(float4 rayPos,
+                             float4 planeX, float4 planeY,
+                             float4 direction, float distance) {
+    return (float2) (
+            (rayPos.x + direction.x * distance) * planeX.x
+                    + (rayPos.y + direction.y * distance) * planeX.y
+                    + (rayPos.z + direction.z * distance) * planeX.z,
+            (rayPos.x + direction.x * distance) * planeY.x
+                    + (rayPos.y + direction.y * distance) * planeY.y
+                    + (rayPos.z + direction.z * distance) * planeY.z
+    );
+}
+
+inline float distToCollidePlane(float4 normal,
+                                float4 vertexOrCenter,
+                                Ray ray) {
+    return (  normal.x * (vertexOrCenter.x - ray.position.x)
+            + normal.y * (vertexOrCenter.y - ray.position.y)
+            + normal.z * (vertexOrCenter.z - ray.position.z))
+            /
+            (  normal.x * ray.direction.x
+             + normal.y * ray.direction.y
+             + normal.z * ray.direction.z);
+}
+
+inline float distanceToCollideSphere(Ray ray, RayTraceable obj) {
+    float amountInDirection = dotProduct(ray.direction, ray.position - obj.vertexOrCenter);
+    if (amountInDirection <= 0) {
+        return (float) (-amountInDirection - sqrt(amountInDirection * amountInDirection + obj.dot00 * obj.dot00 - distanceSquared(ray.position, obj.vertexOrCenter)));
+    }
+    return 0/0.0f;
+}
+
+inline float distanceToCollideTri(Ray ray, RayTraceable obj) {
+    float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, ray);
+
+    if (distance <= 0) {
+        return 0/0.0f;
+    }
+
+    float4 point = ray.position - ray.direction * distance;
+    float dot02 = dotProduct(obj.side1, point - obj.vertexOrCenter);
+    float dot12 = dotProduct(obj.side2, point - obj.vertexOrCenter);
+    // Compute barycentric coordinates
+    float u = (obj.dot11 * dot02 - obj.dot01 * dot12);
+    float v = (obj.dot00 * dot12 - obj.dot01 * dot02);
+    // Check if the point is inside the triangle
+    if ((u >= 0) && (v >= 0) && ((u + v) <= obj.invDenom)) {
+        return distance;
+    }
+    return 0/0.0f;
+}
+
+inline float distanceToCollideRect(Ray ray,
+                                   RayTraceable obj) {
+    float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, ray);
+    float2 pointOnPlane = projectToPlane(ray.position, obj.side1, obj.side2, ray.direction, distance);
+    if (obj.min.x < pointOnPlane.x && obj.max.x > pointOnPlane.x
+            && obj.min.y < pointOnPlane.y && obj.max.y > pointOnPlane.y) {
+        return distance;
+    }
+    return 0/0.0f;
+}
+
+__kernel void getCollisionDistances(__global RayTraceable* objectsInField, __global float* distances,
+                                    Ray ray) {
+    int gid = get_global_id(0);
+    float distance = -1;
+    if (objectsInField[gid].type == 2) {
+        // Quads
+        distance = distanceToCollideRect(ray, objectsInField[gid]);
+    } else if (objectsInField[gid].type == 1) {
+        // Tris
+        distance = distanceToCollideTri(ray, objectsInField[gid]);
+    } else if (objectsInField[gid].type == 0){
+        // Spheres
+        distance = distanceToCollideSphere(ray, objectsInField[gid]);
+    }
+    distances[gid] = distance;
+}
+    

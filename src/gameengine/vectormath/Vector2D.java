@@ -53,6 +53,13 @@ public class Vector2D implements Vector<Vector2D> {
      * Functionality:
      */
 
+    public static CLTypes.cl_float2 emptyStruct() {
+        CLTypes.cl_float2 float2 = new CLTypes.cl_float2();
+        float2.set(0, 0f);
+        float2.set(1, 0f);
+        return float2;
+    }
+
     public CLTypes.cl_float2 toStruct() {
         CLTypes.cl_float2 float2 = new CLTypes.cl_float2();
         float2.set(0, (float) x);

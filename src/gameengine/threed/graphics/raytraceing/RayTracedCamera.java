@@ -15,12 +15,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 /**
@@ -98,7 +94,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
-        updateScaleX();
+        initialize();
     }
 
     /**
@@ -126,7 +122,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
-        updateScaleX();
+        initialize();
     }
 
     /**
@@ -160,7 +156,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
-        updateScaleX();
+        initialize();
     }
 
     /**
@@ -191,7 +187,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         this.raysPerPixel = raysPerPixel;
         this.multiThreaded = multiThreaded;
         setTargetTileSize(15 / raysPerPixel);
-        updateScaleX();
+        initialize();
     }
 
 
@@ -345,7 +341,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     @Override
     protected void setFieldOfView(final double fieldOfViewDegrees) {
         super.setFieldOfView(fieldOfViewDegrees);
-        updateScaleX();
+        initialize();
     }
 
     public int getRaysPerPixel() {
@@ -393,7 +389,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
         tileDimensions = new Vector2D(
                 findClosestFactor((int) getWidth(), targetTileSize),
                 findClosestFactor((int) getHeight(), targetTileSize));
-        updateScaleX();
+        initialize();
     }
 
     private static int findClosestFactor(int imageSize, int targetTileSize) {
@@ -415,6 +411,11 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     public void updateScaleX() {
         scaleX = Math.tan(Math.toRadians(getFieldOfViewDegrees() / 2.0));
+    }
+
+    private void initialize() {
+        updateScaleX();
+        Ray.defaultInitialization();
     }
 }
 

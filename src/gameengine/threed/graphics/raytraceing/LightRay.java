@@ -5,6 +5,9 @@ import gameengine.threed.geometry.Ray;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
 import gameengine.vectormath.Vector3D;
 import javafx.scene.paint.Color;
+import org.jocl.struct.Buffers;
+
+import java.nio.ByteBuffer;
 
 /**
  * A single ray of light which starts at a point and moves in a direction until
@@ -65,9 +68,16 @@ public class LightRay extends Ray {
     public Vector3D getColor(final int maxBounces,
                              final RayTraceable[] objectsInField, int startingBounce) {
         RayTraceable collision;
+        RayTraceable.RayTraceableStruct[] structs = Ray.toStructs(objectsInField, this);
+        ByteBuffer objectsBuffer = Buffers.allocateBuffer(structs);
+        ByteBuffer rayBuffer = Buffers.allocateBuffer(toStruct());
+
+        Buffers.writeToBuffer(objectsBuffer, structs);
+        Buffers.writeToBuffer(rayBuffer, toStruct());
 
         for (int bounces = startingBounce; bounces <= maxBounces; bounces++) {
-            collision = firstCollision(Ray.toStructs(objectsInField, this), objectsInField);
+//            Ray.defaultInitialization();
+            collision = firstCollision(/*Ray.toStructs(objectsInField, this)*/structs, objectsInField, objectsBuffer, rayBuffer);
 
             if (collision == null) {
                 return getIncomingLight();//.add(getSkyColor(getDirection()));
