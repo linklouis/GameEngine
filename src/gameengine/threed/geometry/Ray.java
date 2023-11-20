@@ -128,12 +128,20 @@ public class Ray extends VectorLine3D {
                         quad.getPlaneXAxis(), quad.getPlaneYAxis(),
                         quad.getOnPlaneMax(), quad.getOnPlaneMin());
             } else if (element.value() instanceof TriGraphics tri) {
-                newDistance = distanceToCollideTri(getDirection(), getPosition(),
-                        closestDist, tri.surfaceNormal(this), tri.v0(),
-                        tri.v1(), tri.getVertex1(), tri.dot00(), tri.dot01(), tri.dot11(), tri.invDenom());
+                newDistance = distanceToCollideTri(
+                        getDirection().toStruct(), getPosition().toStruct(),
+                        closestDist,
+                        tri.toStruct(this)
+//                        tri.surfaceNormal(this), closestDist, tri.v0(),
+//                        tri.v1(), tri.getVertex1(), tri.dot00(), tri.dot01(), tri.dot11(), tri.invDenom()
+                        );
             } else {
-                newDistance = distanceToCollideSphere(getDirection(), getPosition(), element.value().getCenter(),
-                        ((SphereGraphics) element.value()).getRadius());
+                newDistance = distanceToCollideSphere(
+                        getDirection().toStruct(), getPosition().toStruct(),
+                        ((RayTraceable) element.value()).toStruct(this)
+//                        element.value().getCenter(),
+//                        ((SphereGraphics) element.value()).getRadius()
+                );
             }
 
             if (newDistance >= 0 && newDistance < closestDist) {
@@ -149,29 +157,32 @@ public class Ray extends VectorLine3D {
         return closest;
     }
 
-    private static double distanceToCollideTri(Vector3D rayDir, Vector3D rayPos, double curSmallestDist, Vector3D normal,
-                                               Vector3D v0, Vector3D v1, Vector3D vertex1,
-                                               double dot00, double dot01, double dot11, double invDenom) {
-        double distance = normal.distToCollidePlane(vertex1, rayPos, rayDir);
-
-        if (distance <= 0 || distance >= curSmallestDist) {
-            return Double.NaN;
-        }
-
-        Vector3D point = rayPos.add(rayDir.scalarMultiply(distance));
-        double dot02 = v0.dotWithSubtracted(point, vertex1);
-        double dot12 = v1.dotWithSubtracted(point, vertex1);
-        // Compute barycentric coordinates
-        double u = (dot11 * dot02 - dot01 * dot12);
-        double v = (dot00 * dot12 - dot01 * dot02);
-        // Check if the point is inside the triangle
-        if ((u >= 0) && (v >= 0) && ((u + v) <= invDenom)) {
-            return distance;
-        }
-        return Double.NaN;
+    private static Vector3D.Vector3DStruct add(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
+        return new Vector3D.Vector3DStruct(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-    private static double distanceToCollideRect(Vector3D rayDir, Vector3D rayPos, Vector3D normal, Vector3D center, Vector3D planeXaxis, Vector3D planeYaxis, Vector2D max, Vector2D min) {
+    private static Vector3D.Vector3DStruct subtract(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
+        return new Vector3D.Vector3DStruct(a.x - b.x, a.y - b.y, a.z - b.z);
+    }
+
+    private static Vector3D.Vector3DStruct scalarMultiply(Vector3D.Vector3DStruct vector, float multiplier) {
+        return new Vector3D.Vector3DStruct(vector.x * multiplier, vector.y * multiplier, vector.z * multiplier);
+    }
+
+    private static float dotProduct(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    private static float distanceSquared(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
+        return    (a.x - b.x) * (a.x - b.x)
+                + (a.y - b.y) * (a.y - b.y)
+                + (a.z - b.z) * (a.z - b.z);
+    }
+
+    private static double distanceToCollideRect(Vector3D rayDir, Vector3D rayPos,
+                                                Vector3D normal, Vector3D center,
+                                                Vector3D planeXaxis, Vector3D planeYaxis,
+                                                Vector2D max, Vector2D min) {
         double distance = normal.distToCollidePlane(center, rayPos, rayDir);
         Vector2D pointOnPlane = rayPos.projectToPlane(planeXaxis, planeYaxis, rayDir, distance);
         if (min.getX() < pointOnPlane.getX() && max.getX() > pointOnPlane.getX()
@@ -181,10 +192,40 @@ public class Ray extends VectorLine3D {
         return Double.NaN;
     }
 
-    private static double distanceToCollideSphere(Vector3D rayDir, Vector3D rayPos, Vector3D center, double radius) {
-        Double amountInDirection = rayDir.dotProduct(rayPos.subtract(center));
+    private static double distanceToCollideSphere(Vector3D.Vector3DStruct rayDir, Vector3D.Vector3DStruct rayPos,
+                                                  RayTraceable.RayTraceableStruct obj) {
+        float amountInDirection = dotProduct(rayDir, subtract(rayPos, obj.vertexOrCenter));
         if (amountInDirection <= 0) {
-            return -amountInDirection - Math.sqrt(amountInDirection * amountInDirection + radius * radius - rayPos.distanceSquared(center));
+            return -amountInDirection - Math.sqrt(amountInDirection * amountInDirection + obj.dot00 * obj.dot00 - distanceSquared(rayPos, obj.vertexOrCenter));
+        }
+        return Double.NaN;
+    }
+
+    private static double distanceToCollideTri(Vector3D.Vector3DStruct rayDir, Vector3D.Vector3DStruct rayPos,
+                                               double curSmallestDist,
+                                               RayTraceable.RayTraceableStruct obj) {
+        float distance = //obj.normal.distToCollidePlane(obj.vertexOrCenter, rayPos, rayDir);
+                (  obj.normal.x * (obj.vertexOrCenter.x - rayPos.x)
+                        + obj.normal.y * (obj.vertexOrCenter.y - rayPos.y)
+                        + obj.normal.z * (obj.vertexOrCenter.z - rayPos.z))
+                        /
+                        (  obj.normal.x * rayDir.x
+                                + obj.normal.y * rayDir.y
+                                + obj.normal.z * rayDir.z);
+
+        if (distance <= 0 || distance >= curSmallestDist) {
+            return Double.NaN;
+        }
+
+        Vector3D.Vector3DStruct point = add(rayPos, scalarMultiply(rayDir, distance));
+        double dot02 = dotProduct(obj.side1, subtract(point, obj.vertexOrCenter));
+        double dot12 = dotProduct(obj.side2, subtract(point, obj.vertexOrCenter));
+        // Compute barycentric coordinates
+        double u = (obj.dot11 * dot02 - obj.dot01 * dot12);
+        double v = (obj.dot00 * dot12 - obj.dot01 * dot02);
+        // Check if the point is inside the triangle
+        if ((u >= 0) && (v >= 0) && ((u + v) <= obj.invDenom)) {
+            return distance;
         }
         return Double.NaN;
     }

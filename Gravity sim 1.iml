@@ -12,5 +12,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="JavaFX" level="application" />
     <orderEntry type="library" name="Maven: org.jocl:jocl:2.0.4" level="application" />
+    <orderEntry type="library" name="jocl" level="application" />
+    <orderEntry type="library" name="JOCL-structs-0.0.1a-alpha" level="application" />
   </component>
 </module>

@@ -1,5 +1,7 @@
 package gameengine.vectormath;
 
+import org.jocl.struct.Struct;
+
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,6 +52,29 @@ public class Vector2D implements Vector<Vector2D> {
     /*
      * Functionality:
      */
+
+    public static class Vector2DStruct extends Struct {
+        public float x, y;
+
+        public Vector2DStruct(float x, float y){
+            this.x = x;
+            this.y = y;
+        }
+
+        public Vector2DStruct(double x, double y){
+            this.x = (float) x;
+            this.y = (float) y;
+        }
+
+        public float dotProduct(final Vector2D.Vector2DStruct other) {
+            return    x * other.x
+                    + y * other.y;
+        }
+    }
+
+    public Vector2DStruct toStruct() {
+        return new Vector2D.Vector2DStruct(x, y);
+    }
 
     @Override
     public Vector2D add(Vector2D other) {

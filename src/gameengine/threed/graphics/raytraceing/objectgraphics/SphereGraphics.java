@@ -39,6 +39,15 @@ public class SphereGraphics extends RayTraceable {
     }
 
     @Override
+    public RayTraceableStruct toStruct(Ray perspective) {
+        return new RayTraceableStruct(0,
+                surfaceNormal(perspective), getCenter(),
+                null, null,
+                radius, 0, 0, 0,
+                null, null);
+    }
+
+    @Override
     public Vector3D[] getVertices() {
         return new Vector3D[0];
     }

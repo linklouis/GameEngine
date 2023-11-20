@@ -27,6 +27,15 @@ public class QuadGraphics extends RayTraceable {
     }
 
     @Override
+    public RayTraceableStruct toStruct(Ray perspective) {
+        return new RayTraceableStruct(2,
+                surfaceNormal(perspective), rect.vertex1(),
+                rect.planeXaxis(), rect.planeYaxis(),
+                0, 0, 0, 0,
+                rect.planeCoords().max(), rect.planeCoords().min());
+    }
+
+    @Override
     public ArgumentContext[] getArgumentContexts() {
         return new ArgumentContext[] {
                 new ArgumentContext(

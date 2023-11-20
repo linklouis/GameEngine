@@ -26,6 +26,15 @@ public class TriGraphics extends RayTraceable {
     }
 
     @Override
+    public RayTraceableStruct toStruct(Ray perspective) {
+        return new RayTraceableStruct(1,
+                surfaceNormal(perspective), triData.vertex1(),
+                triData.v0(), triData.v1(),
+                triData.dot00(), triData.dot01(), triData.dot11(), triData.invDenom(),
+                null, null);
+    }
+
+    @Override
     public ArgumentContext[] getArgumentContexts() {
         return new ArgumentContext[] {
                 new ArgumentContext(
