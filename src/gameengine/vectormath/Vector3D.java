@@ -1,9 +1,7 @@
 package gameengine.vectormath;
 
 import gameengine.utilities.ExtraMath;
-import gameengine.utilities.Random;
 import javafx.scene.paint.Color;
-import org.jocl.struct.Struct;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -76,30 +74,34 @@ public class Vector3D implements Vector<Vector3D>, Comparable<Vector3D> {
      * Functionality:
      */
 
-    public static class Vector3DStruct extends Struct {
+    public static class V3Struct extends org.jocl.struct.Struct {
         public float x, y, z;
 
-        public Vector3DStruct(float x, float y, float z){
+        public V3Struct() {
+            x = 0;
+            y = 0;
+            z = 0;
+        }
+
+        public V3Struct(float x, float y, float z){
             this.x = x;
             this.y = y;
             this.z = z;
         }
 
-        public Vector3DStruct(double x, double y, double z){
+        public V3Struct(double x, double y, double z){
             this.x = (float) x;
             this.y = (float) y;
             this.z = (float) z;
         }
-
-        public float dotProduct(final Vector3DStruct other) {
-            return    x * other.x
-                    + y * other.y
-                    + z * other.z;
-        }
     }
 
-    public Vector3DStruct toStruct() {
-        return new Vector3DStruct(x, y, z);
+    public V3Struct toStruct() {
+        return new V3Struct(x, y, z);
+    }
+
+    public static V3Struct emptyStruct() {
+        return new V3Struct(0, 0, 0);
     }
 
     @Override

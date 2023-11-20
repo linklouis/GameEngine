@@ -11,7 +11,7 @@ import gameengine.vectormath.Vector3D;
 
 import java.util.List;
 
-public class TriGraphics extends RayTraceable {
+public non-sealed class TriGraphics extends RayTraceable {
     private Triangle3D triData;
     private Vector3D normal;
 
@@ -27,11 +27,10 @@ public class TriGraphics extends RayTraceable {
 
     @Override
     public RayTraceableStruct toStruct(Ray perspective) {
-        return new RayTraceableStruct(1,
+        return new RayTraceableStruct(
                 surfaceNormal(perspective), triData.vertex1(),
                 triData.v0(), triData.v1(),
-                triData.dot00(), triData.dot01(), triData.dot11(), triData.invDenom(),
-                null, null);
+                triData.dot00(), triData.dot01(), triData.dot11(), triData.invDenom());
     }
 
     @Override

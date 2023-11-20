@@ -12,7 +12,7 @@ import gameengine.vectormath.Vector3D;
 
 import java.util.List;
 
-public class QuadGraphics extends RayTraceable {
+public non-sealed class QuadGraphics extends RayTraceable {
     // TODO keep a position variable, and add it to rect's vertices position to not make a new Rect3D for each movement.
     private Rect3D rect;
 
@@ -28,10 +28,9 @@ public class QuadGraphics extends RayTraceable {
 
     @Override
     public RayTraceableStruct toStruct(Ray perspective) {
-        return new RayTraceableStruct(2,
+        return new RayTraceableStruct(
                 surfaceNormal(perspective), rect.vertex1(),
                 rect.planeXaxis(), rect.planeYaxis(),
-                0, 0, 0, 0,
                 rect.planeCoords().max(), rect.planeCoords().min());
     }
 

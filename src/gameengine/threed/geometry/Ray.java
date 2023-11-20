@@ -4,7 +4,6 @@ import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.objectgraphics.*;
 import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
-import javafx.scene.paint.Color;
 
 import java.util.LinkedHashMap;
 
@@ -157,23 +156,23 @@ public class Ray extends VectorLine3D {
         return closest;
     }
 
-    private static Vector3D.Vector3DStruct add(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
-        return new Vector3D.Vector3DStruct(a.x + b.x, a.y + b.y, a.z + b.z);
+    private static Vector3D.V3Struct add(Vector3D.V3Struct a, Vector3D.V3Struct b) {
+        return new Vector3D.V3Struct(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-    private static Vector3D.Vector3DStruct subtract(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
-        return new Vector3D.Vector3DStruct(a.x - b.x, a.y - b.y, a.z - b.z);
+    private static Vector3D.V3Struct subtract(Vector3D.V3Struct a, Vector3D.V3Struct b) {
+        return new Vector3D.V3Struct(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
-    private static Vector3D.Vector3DStruct scalarMultiply(Vector3D.Vector3DStruct vector, float multiplier) {
-        return new Vector3D.Vector3DStruct(vector.x * multiplier, vector.y * multiplier, vector.z * multiplier);
+    private static Vector3D.V3Struct scalarMultiply(Vector3D.V3Struct vector, float multiplier) {
+        return new Vector3D.V3Struct(vector.x * multiplier, vector.y * multiplier, vector.z * multiplier);
     }
 
-    private static float dotProduct(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
+    private static float dotProduct(Vector3D.V3Struct a, Vector3D.V3Struct b) {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    private static float distanceSquared(Vector3D.Vector3DStruct a, Vector3D.Vector3DStruct b) {
+    private static float distanceSquared(Vector3D.V3Struct a, Vector3D.V3Struct b) {
         return    (a.x - b.x) * (a.x - b.x)
                 + (a.y - b.y) * (a.y - b.y)
                 + (a.z - b.z) * (a.z - b.z);
@@ -192,7 +191,7 @@ public class Ray extends VectorLine3D {
         return Double.NaN;
     }
 
-    private static double distanceToCollideSphere(Vector3D.Vector3DStruct rayDir, Vector3D.Vector3DStruct rayPos,
+    private static double distanceToCollideSphere(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
                                                   RayTraceable.RayTraceableStruct obj) {
         float amountInDirection = dotProduct(rayDir, subtract(rayPos, obj.vertexOrCenter));
         if (amountInDirection <= 0) {
@@ -201,7 +200,7 @@ public class Ray extends VectorLine3D {
         return Double.NaN;
     }
 
-    private static double distanceToCollideTri(Vector3D.Vector3DStruct rayDir, Vector3D.Vector3DStruct rayPos,
+    private static double distanceToCollideTri(Vector3D.V3Struct rayDir, Vector3D.V3Struct rayPos,
                                                double curSmallestDist,
                                                RayTraceable.RayTraceableStruct obj) {
         float distance = //obj.normal.distToCollidePlane(obj.vertexOrCenter, rayPos, rayDir);
@@ -217,7 +216,7 @@ public class Ray extends VectorLine3D {
             return Double.NaN;
         }
 
-        Vector3D.Vector3DStruct point = add(rayPos, scalarMultiply(rayDir, distance));
+        Vector3D.V3Struct point = add(rayPos, scalarMultiply(rayDir, distance));
         double dot02 = dotProduct(obj.side1, subtract(point, obj.vertexOrCenter));
         double dot12 = dotProduct(obj.side2, subtract(point, obj.vertexOrCenter));
         // Compute barycentric coordinates

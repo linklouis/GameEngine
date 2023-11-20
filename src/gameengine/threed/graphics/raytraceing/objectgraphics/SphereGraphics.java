@@ -7,12 +7,13 @@ import gameengine.threed.graphics.raytraceing.textures.RayTracingTexture;
 import gameengine.threed.prebuilt.objectmovement.InPlane3D;
 import gameengine.utilities.ArgumentContext;
 import gameengine.utilities.ModifierInstantiateParameter;
+import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SphereGraphics extends RayTraceable {
+public non-sealed class SphereGraphics extends RayTraceable {
     private double radius;
     private double radiusSquared;
     InPlane3D position = null;
@@ -40,11 +41,10 @@ public class SphereGraphics extends RayTraceable {
 
     @Override
     public RayTraceableStruct toStruct(Ray perspective) {
-        return new RayTraceableStruct(0,
-                surfaceNormal(perspective), getCenter(),
-                null, null,
-                radius, 0, 0, 0,
-                null, null);
+        return new RayTraceableStruct(
+                surfaceNormal(perspective).toStruct(),
+                getCenter().toStruct(),
+                radius);
     }
 
     @Override
