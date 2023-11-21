@@ -416,7 +416,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 
     private void initialize() {
         updateScaleX();
-        Ray.defaultInitialization();
+//        Ray.defaultInitialization();
     }
 }
 

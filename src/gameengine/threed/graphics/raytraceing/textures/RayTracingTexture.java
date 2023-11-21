@@ -43,7 +43,7 @@ public abstract class RayTracingTexture {
         public cl_float4 emissionColor;
         public cl_float4 emission;
         @ArrayLength(3)
-        public float[] otherVars;
+        public float otherVars[];
 
         private float[] initOtherVars(float[] others) {
             if (others.length == 3) {

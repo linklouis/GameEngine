@@ -36,6 +36,10 @@ public class Ray extends VectorLine3D {
         super(parent.getPosition(), parent.getDirection());
     }
 
+    static {
+        defaultInitialization();
+    }
+
     /**
      * Default initialization of the context, command queue, kernel
      * and program
@@ -118,7 +122,7 @@ public class Ray extends VectorLine3D {
         }
 
         public String toString() {
-            return "RayStruct[direction=" + direction + "," + "position=" + position + "]";
+            return "RayStruct[position=" + position + ", " + "direction=" + direction + "]";
         }
     }
 
@@ -127,9 +131,13 @@ public class Ray extends VectorLine3D {
     }
 
     public static void sendObjects(RayTraceable.RayTraceableStruct[] objectsInField) {
+        Arrays.stream(objectsInField).forEach(object -> System.out.println(object.normal));
+//        System.out.println();
+//        Arrays.stream(objectsInField).forEach(object -> System.out.println((int) object.type));
         ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
+        Buffers.writeToBuffer(objectsBuffer, objectsInField);
         cl_mem objectMem = clCreateBuffer(context,
-                CL_MEM_READ_WRITE/*CL_MEM_READ_ONLY*/ | CL_MEM_USE_HOST_PTR,
+                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
                 RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
         clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(objectMem));
     }
@@ -140,15 +148,17 @@ public class Ray extends VectorLine3D {
     }
 
     public float[] executeKernel(ByteBuffer rayBuffer, int n) {
+//        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+//        System.out.println(toStruct());
         float[] distances = new float[n];
-        System.out.println("a");
+//        System.out.println("a");
 
 //        rayBuffer.clear();
 //        Buffers.writeToBuffer(rayBuffer, toStruct());
-//
-//        rayMem = clCreateBuffer(context,
-//                CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-//                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
+
+        rayMem = clCreateBuffer(context,
+                CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
 
         // Set the arguments for the kernel
 //        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
@@ -241,8 +251,8 @@ public class Ray extends VectorLine3D {
 
     public RayTraceable firstCollision(RayTraceable.RayTraceableStruct[] objectsInField, RayTraceable[] objs) {
         float[] distances = executeKernel(objectsInField.length);
-
 //        System.out.println(Arrays.toString(distances));
+
         int i = 0;
         while (distances[i] < 0 || Float.isNaN(distances[i])) {
             i++;

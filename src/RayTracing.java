@@ -39,7 +39,7 @@ public class RayTracing extends GameDriver3D {
         super("LightRay Tracing", new GraphicsDriver3D<>(SIZE, SIZE,
                         new RayTracedCamera(-2, -10, -10, new Vector3D(0.8, 3, 1.8),
                                 new Vector2D(/*2000, 2000*//*1000, 1000*//*700, 700*/100, 100/*1280, 720*//*1920.0, 1080.0*/),
-                                10, 1, false, 70/*180*/)),
+                                4, 1, false, 70/*180*/)),
                 new PhysicsEngine3D());
     }
 
@@ -142,14 +142,14 @@ public class RayTracing extends GameDriver3D {
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 new Metallic(Color.AZURE, 0, reflectivity, specularProbability)).initiate(this);
 
-//        newObject(new Sphere(3, -1, -2, 2,
-//                new MatteSubsurface(Color.AQUA, 0, reflectivity, specularProbability)));
-//        newObject(new Sphere(-1, 2, -3, 3,
-//                new Mirrored(Color.GREEN, 0, reflectivity, specularProbability)));
-//        newObject(new Sphere(0, 0, 100, 100,
-//                new RoughMirror(Color.BROWN, 0, reflectivity, reflectivity, specularProbability)));
+        newObject(new Sphere(3, -1, -2, 2,
+                new MatteSubsurface(Color.AQUA, 0, reflectivity, specularProbability)));
+        newObject(new Sphere(-1, 2, -3, 3,
+                new Mirrored(Color.GREEN, 0, reflectivity, specularProbability)));
+        newObject(new Sphere(0, 0, 100, 100,
+                new RoughMirror(Color.BROWN, 0, reflectivity, reflectivity, specularProbability)));
 
-//        newObject(new Sphere(-10, 2, -10, 7, new Metallic(Color.BLACK, 3, Color.WHITE, 0)));
+        newObject(new Sphere(-10, 2, -10, 7, new Metallic(Color.BLACK, 3, Color.WHITE, 0)));
     }
 
     private void setupScene1_5() {

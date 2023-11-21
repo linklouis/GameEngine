@@ -1,6 +1,20 @@
 typedef struct
 {
-    int type; // 0 = Sphere, 1 = Tri, 2 = Rect
+    int type;
+
+    float4 color;
+    float emissionStrength;
+    float4 emissionColor;
+    float4 emission;
+
+    float otherVars[3];
+} Texture;
+
+typedef struct
+{
+    char type; // 0 = Sphere, 1 = Tri, 2 = Rect
+
+    Texture texture;
     
     float4 normal;
     float4 vertexOrCenter;
@@ -104,22 +118,29 @@ inline float distanceToCollideRect(Ray ray, RayTraceable obj) {
 __kernel void getCollisionDistances(__global RayTraceable* objectsInField, __global float* distances,
                                     __global Ray *ray) {
     int gid = get_global_id(0);
+
     //printf("gid: %d, rayPos: %f %f %f %f\n", gid, ray.position.x, ray.position.y, ray.position.z, ray.position.w);
+    //printf("(rayPos: %f, rayDir: %f)", ray[0].position, ray[0].direction);
     //printf("gid: %d, rayDir: %f %f %f %f\n", gid, ray.direction.x, ray.direction.y, ray.direction.z, ray.direction.w);
     //printf("gid: %d, rayDir: %f\n", gid, ray[0].direction);
-    printf("gid: %d, rayDir: %f\n", gid, objectsInField[gid].type);
+
+    //printf("gid: %d, objectType: %f\n", gid, objectsInField[gid].vertexOrCenter);
+    //printf("gid: %d, normal: %f\n", gid, objectsInField[gid].normal);
+    //printf("gid: %d, objectType: %i\n", gid, objectsInField[gid].type);
     if (objectsInField[gid].type == 2) {
         // Quads
         distances[gid] = distanceToCollideRect(ray[0], objectsInField[gid]);
-        printf("b\n");
+        //printf("b\n");
     } else if (objectsInField[gid].type == 1) {
         // Tris
         distances[gid] = distanceToCollideTri(ray[0], objectsInField[gid]);
-        printf("c\n");
+        //printf("c\n");
     } else if (objectsInField[gid].type == 0) {
         // Spheres
         distances[gid] = distanceToCollideSphere(ray[0], objectsInField[gid]);
-        printf("a\n");
+        //printf("a\n");
+    } else {
+        distances[gid] = -2;
     }
 }
     

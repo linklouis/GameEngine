@@ -57,7 +57,7 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
     public abstract RayTraceableStruct toStruct();
 
     public static class RayTraceableStruct extends Struct {
-        public int type; // 0 = Sphere, 1 = Tri, 2 = Rect
+        public char type; // 0 = Sphere, 1 = Tri, 2 = Rect
 
         public RayTracingTexture.TextureStruct texture;
 
