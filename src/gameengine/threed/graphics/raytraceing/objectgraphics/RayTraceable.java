@@ -144,65 +144,65 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.texture = texture;
         }
 
-        // Other
-        public RayTraceableStruct(int type,
-                                  cl_float4 normal, cl_float4 vertexOrCenter,
-                                  cl_float4 side1, cl_float4 side2,
-                                  float dot00, float dot01, float dot11, float invDenom,
-                                  cl_float2 max, cl_float2 min,
-                                  RayTracingTexture.TextureStruct texture) {
-            this.type = type;
-            this.normal = normal;
-            this.vertexOrCenter = vertexOrCenter;
-            this.side1 = side1;
-            this.side2 = side2;
-            this.dot00 = dot00;
-            this.dot01 = dot01;
-            this.dot11 = dot11;
-            this.invDenom = invDenom;
-            this.max = max;
-            this.min = min;
-            this.texture = texture;
-        }
-
-        public RayTraceableStruct(int type,
-                                  cl_float4 normal, cl_float4 vertexOrCenter,
-                                  cl_float4 side1, cl_float4 side2,
-                                  double dot00, double dot01, double dot11, double invDenom,
-                                  cl_float2 max, cl_float2 min,
-                                  RayTracingTexture.TextureStruct texture) {
-            this.type = type;
-            this.normal = normal;
-            this.vertexOrCenter = vertexOrCenter;
-            this.side1 = side1;
-            this.side2 = side2;
-            this.dot00 = (float) dot00;
-            this.dot01 = (float) dot01;
-            this.dot11 = (float) dot11;
-            this.invDenom = (float) invDenom;
-            this.max = max;
-            this.min = min;
-            this.texture = texture;
-        }
-
-        public RayTraceableStruct(int type, Vector3D normal, Vector3D vertexOrCenter,
-                                  Vector3D side1, Vector3D side2,
-                                  double dot00, double dot01, double dot11, double invDenom,
-                                  Vector2D max, Vector2D min,
-                                  RayTracingTexture.TextureStruct texture) {
-            this.type = type;
-            this.normal = normal.toStruct();
-            this.vertexOrCenter = vertexOrCenter.toStruct();
-            this.side1 = side1.toStruct();
-            this.side2 = side2.toStruct();
-            this.dot00 = (float) dot00;
-            this.dot01 = (float) dot01;
-            this.dot11 = (float) dot11;
-            this.invDenom = (float) invDenom;
-            this.max = max.toStruct();
-            this.min = min.toStruct();
-            this.texture = texture;
-        }
+//        // Other
+//        public RayTraceableStruct(int type,
+//                                  cl_float4 normal, cl_float4 vertexOrCenter,
+//                                  cl_float4 side1, cl_float4 side2,
+//                                  float dot00, float dot01, float dot11, float invDenom,
+//                                  cl_float2 max, cl_float2 min,
+//                                  RayTracingTexture.TextureStruct texture) {
+//            this.type = type;
+//            this.normal = normal;
+//            this.vertexOrCenter = vertexOrCenter;
+//            this.side1 = side1;
+//            this.side2 = side2;
+//            this.dot00 = dot00;
+//            this.dot01 = dot01;
+//            this.dot11 = dot11;
+//            this.invDenom = invDenom;
+//            this.max = max;
+//            this.min = min;
+//            this.texture = texture;
+//        }
+//
+//        public RayTraceableStruct(int type,
+//                                  cl_float4 normal, cl_float4 vertexOrCenter,
+//                                  cl_float4 side1, cl_float4 side2,
+//                                  double dot00, double dot01, double dot11, double invDenom,
+//                                  cl_float2 max, cl_float2 min,
+//                                  RayTracingTexture.TextureStruct texture) {
+//            this.type = type;
+//            this.normal = normal;
+//            this.vertexOrCenter = vertexOrCenter;
+//            this.side1 = side1;
+//            this.side2 = side2;
+//            this.dot00 = (float) dot00;
+//            this.dot01 = (float) dot01;
+//            this.dot11 = (float) dot11;
+//            this.invDenom = (float) invDenom;
+//            this.max = max;
+//            this.min = min;
+//            this.texture = texture;
+//        }
+//
+//        public RayTraceableStruct(int type, Vector3D normal, Vector3D vertexOrCenter,
+//                                  Vector3D side1, Vector3D side2,
+//                                  double dot00, double dot01, double dot11, double invDenom,
+//                                  Vector2D max, Vector2D min,
+//                                  RayTracingTexture.TextureStruct texture) {
+//            this.type = type;
+//            this.normal = normal.toStruct();
+//            this.vertexOrCenter = vertexOrCenter.toStruct();
+//            this.side1 = side1.toStruct();
+//            this.side2 = side2.toStruct();
+//            this.dot00 = (float) dot00;
+//            this.dot01 = (float) dot01;
+//            this.dot11 = (float) dot11;
+//            this.invDenom = (float) invDenom;
+//            this.max = max.toStruct();
+//            this.min = min.toStruct();
+//            this.texture = texture;
+//        }
     }
 
 

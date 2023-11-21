@@ -142,14 +142,14 @@ public class RayTracing extends GameDriver3D {
         new QuadRectangle(-1, -2, -3, new Vector3D(2,2, 2),
                 new Metallic(Color.AZURE, 0, reflectivity, specularProbability)).initiate(this);
 
-        newObject(new Sphere(3, -1, -2, 2,
-                new MatteSubsurface(Color.AQUA, 0, reflectivity, specularProbability)));
-        newObject(new Sphere(-1, 2, -3, 3,
-                new Mirrored(Color.GREEN, 0, reflectivity, specularProbability)));
-        newObject(new Sphere(0, 0, 100, 100,
-                new RoughMirror(Color.BROWN, 0, reflectivity, reflectivity, specularProbability)));
+//        newObject(new Sphere(3, -1, -2, 2,
+//                new MatteSubsurface(Color.AQUA, 0, reflectivity, specularProbability)));
+//        newObject(new Sphere(-1, 2, -3, 3,
+//                new Mirrored(Color.GREEN, 0, reflectivity, specularProbability)));
+//        newObject(new Sphere(0, 0, 100, 100,
+//                new RoughMirror(Color.BROWN, 0, reflectivity, reflectivity, specularProbability)));
 
-        newObject(new Sphere(-10, 2, -10, 7, new Metallic(Color.BLACK, 3, Color.WHITE, 0)));
+//        newObject(new Sphere(-10, 2, -10, 7, new Metallic(Color.BLACK, 3, Color.WHITE, 0)));
     }
 
     private void setupScene1_5() {

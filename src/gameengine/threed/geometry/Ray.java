@@ -61,8 +61,6 @@ public class Ray extends VectorLine3D {
                 return;
             }
         }
-//        context = clCreateContextFromType(
-//                contextProperties, CL_DEVICE_TYPE_GPU, null, null, null);
 
         // Enable exceptions and subsequently omit error checks in this sample
         CL.setExceptionsEnabled(true);
@@ -106,8 +104,13 @@ public class Ray extends VectorLine3D {
     }
 
     public static class RayStruct extends Struct {
-        public cl_float4 position;
         public cl_float4 direction;
+        public cl_float4 position;
+
+        public RayStruct() {
+            this.position = new cl_float4();
+            this.direction = new cl_float4();
+        }
 
         public RayStruct(cl_float4 position, cl_float4 direction) {
             this.position = position;
@@ -115,7 +118,7 @@ public class Ray extends VectorLine3D {
         }
 
         public String toString() {
-            return "RayStruct[position=" + position + ",direction=" + direction + "]";
+            return "RayStruct[direction=" + direction + "," + "position=" + position + "]";
         }
     }
 
@@ -126,7 +129,7 @@ public class Ray extends VectorLine3D {
     public static void sendObjects(RayTraceable.RayTraceableStruct[] objectsInField) {
         ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
         cl_mem objectMem = clCreateBuffer(context,
-                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                CL_MEM_READ_WRITE/*CL_MEM_READ_ONLY*/ | CL_MEM_USE_HOST_PTR,
                 RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
         clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(objectMem));
     }
@@ -138,13 +141,14 @@ public class Ray extends VectorLine3D {
 
     public float[] executeKernel(ByteBuffer rayBuffer, int n) {
         float[] distances = new float[n];
+        System.out.println("a");
 
-        rayBuffer.clear();
-        Buffers.writeToBuffer(rayBuffer, toStruct());
-
-        cl_mem rayMem = clCreateBuffer(context,
-                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
+//        rayBuffer.clear();
+//        Buffers.writeToBuffer(rayBuffer, toStruct());
+//
+//        rayMem = clCreateBuffer(context,
+//                CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+//                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
 
         // Set the arguments for the kernel
 //        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
@@ -169,21 +173,18 @@ public class Ray extends VectorLine3D {
 
     private static cl_mem distanceMem;
     private static cl_mem rayMem;
+    // Only called on the first ray of each pixel to set up the memory.
     public float[] executeKernel(int n) {
         RayStruct ray = toStruct();
-        // Allocate a buffer that can store the particle data
         ByteBuffer rayBuffer = Buffers.allocateBuffer(ray);
-        float[] distances = new float[n];
-
-        // Write the particles into the buffer
         Buffers.writeToBuffer(rayBuffer, ray);
+//        System.out.println("Correct Values: " + ray);
 
-        // Allocate the memory object for the particles that
-        // contains the data from the particle buffer
-        cl_mem distanceMem = clCreateBuffer(context,
+        float[] distances = new float[n];
+        distanceMem = clCreateBuffer(context,
                 CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
                 (long) Sizeof.cl_float * n, Pointer.to(distances), null);
-        cl_mem rayMem = clCreateBuffer(context,
+        rayMem = clCreateBuffer(context,
                 /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
                 SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
 
@@ -201,102 +202,7 @@ public class Ray extends VectorLine3D {
                 (long) Sizeof.cl_float * distances.length, Pointer.to(distances),
                 0, null, null);
 
-        // Clean up
-//        clReleaseMemObject(distanceMem);
-//        clReleaseMemObject(rayMem);
-
-        return distances;
-    }
-
-//    public float[] executeKernel(RayTraceable.RayTraceableStruct[] objectsInField) {
-//        RayStruct ray = toStruct();
-//        // Allocate a buffer that can store the particle data
-//        ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
-//        ByteBuffer rayBuffer = Buffers.allocateBuffer(ray);
-//        float[] distances = new float[objectsInField.length];
-//
-//        // Write the particles into the buffer
-//        Buffers.writeToBuffer(objectsBuffer, objectsInField);
-//        Buffers.writeToBuffer(rayBuffer, ray);
-//
-//        // Allocate the memory object for the particles that
-//        // contains the data from the particle buffer
-//        cl_mem vectors1Mem = clCreateBuffer(context,
-//                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-//                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
-//        cl_mem distanceMem = clCreateBuffer(context,
-//                CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-//                (long) Sizeof.cl_float * objectsInField.length, Pointer.to(distances), null);
-//        cl_mem rayMem = clCreateBuffer(context,
-//                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-//                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
-//
-//        // Set the arguments for the kernel
-//        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(vectors1Mem));
-//        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
-//        clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(rayMem));
-//
-//        // Execute the kernel
-//        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
-//                new long[]{objectsInField.length}, null, 0, null, null);
-//
-//
-//        // Read back the data from to memory object to the particle buffer
-////        clEnqueueReadBuffer(commandQueue, vectors1Mem, true, 0,
-////                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), 0, null, null);
-//        clEnqueueReadBuffer(commandQueue, distanceMem, true, 0,
-//                (long) Sizeof.cl_float * distances.length, Pointer.to(distances),
-//                0, null, null);
-//
-//        // Clean up
-//        clReleaseMemObject(vectors1Mem);
-//        clReleaseMemObject(distanceMem);
-//        clReleaseMemObject(rayMem);
-////        clReleaseKernel(kernel);
-////        clReleaseProgram(firstCollisionProgram);
-////        clReleaseCommandQueue(commandQueue);
-////        clReleaseContext(context);
-//
-//        return distances;
-//    }
-
-    public float[] executeKernel(RayTraceable.RayTraceableStruct[] objectsInField,
-                                 ByteBuffer objectsBuffer, ByteBuffer rayBuffer) {
-        RayStruct ray = toStruct();
-        float[] distances = new float[objectsInField.length];
-
-        // Allocate the memory object for the particles that
-        // contains the data from the particle buffer
-        cl_mem vectors1Mem = clCreateBuffer(context,
-                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
-        cl_mem distanceMem = clCreateBuffer(context,
-                CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-                (long) Sizeof.cl_float * objectsInField.length, Pointer.to(distances), null);
-        cl_mem rayMem = clCreateBuffer(context,
-                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
-
-        // Set the arguments for the kernel
-        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(vectors1Mem));
-        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
-        clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(rayMem));
-
-        // Execute the kernel
-        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
-                new long[]{objectsInField.length}, null, 0, null, null);
-
-
-        // Read back the data from to memory object to the particle buffer
-        clEnqueueReadBuffer(commandQueue, distanceMem, true, 0,
-                (long) Sizeof.cl_float * distances.length, Pointer.to(distances),
-                0, null, null);
-
-        // Clean up
-//        clReleaseMemObject(vectors1Mem);
-//        clReleaseMemObject(distanceMem);
-//        clReleaseMemObject(rayMem);
-
+//        System.exit(0);
         return distances;
     }
 
@@ -334,9 +240,9 @@ public class Ray extends VectorLine3D {
     }
 
     public RayTraceable firstCollision(RayTraceable.RayTraceableStruct[] objectsInField, RayTraceable[] objs) {
-//        Ray.sendObjects(objectsInField);
         float[] distances = executeKernel(objectsInField.length);
 
+//        System.out.println(Arrays.toString(distances));
         int i = 0;
         while (distances[i] < 0 || Float.isNaN(distances[i])) {
             i++;
@@ -351,7 +257,6 @@ public class Ray extends VectorLine3D {
                 closest = i;
             }
         }
-
         position = position.addMultiplied(getDirection(), distances[closest] - 0.01);
         return objs[closest];
     }
