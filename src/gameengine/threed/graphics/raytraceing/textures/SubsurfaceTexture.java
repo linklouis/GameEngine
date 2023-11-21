@@ -33,6 +33,16 @@ public abstract class SubsurfaceTexture extends RayTracingTexture {
     }
 
     @Override
+    protected int type() {
+        return RayTracingTexture.SUBSURFACE;
+    }
+
+    @Override
+    protected float[] getOtherVars() {
+        return new float[] {(float) specularProbability};
+    }
+
+    @Override
     public final Reflection reflection(final LightRay lightRay,
                                  final Vector3D surfaceNormal) {
         if (ExtraMath.selectRandom(true, false, specularProbability)) {

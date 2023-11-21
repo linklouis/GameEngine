@@ -71,6 +71,16 @@ public class MatteSubsurface extends RayTracingTexture {
      * Functionality:
      */
 
+    @Override
+    protected int type() {
+        return RayTracingTexture.MATTE_SUBSURFACE;
+    }
+
+    @Override
+    protected float[] getOtherVars() {
+        return new float[] {(float) smoothness, (float) specularProbability};
+    }
+
     /**
      * Calculates how a light lightRay hitting the surface with a given angle should
      * bounce given that the surface has the given normal vector.

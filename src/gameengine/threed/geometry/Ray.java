@@ -105,48 +105,6 @@ public class Ray extends VectorLine3D {
         return source.toString();
     }
 
-    //    public void setupCollisionKernel(RayTraceable.RayTraceableStruct[] objectsInField, float[] distances) {
-//        // Allocate a buffer that can store the particle data
-//        ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
-////        ByteBuffer distancesBuffer = Buffers.allocateBuffer(new float[objectsInField.length]);
-//
-//        // Write the particles into the buffer
-//        Buffers.writeToBuffer(objectsBuffer, objectsInField);
-//
-//        // Allocate the memory object for the particles that
-//        // contains the data from the particle buffer
-//        cl_mem vectors1Mem = clCreateBuffer(context,
-//                CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-//                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
-//        cl_mem distanceMem = clCreateBuffer(context,
-//                CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-//                (long) Sizeof.cl_float * objectsInField.length, Pointer.to(distances), null);
-//
-//        // Set the arguments for the kernel
-//        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(vectors1Mem));
-//        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
-//
-//
-//        // Execute the kernel
-//        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
-//                new long[]{objectsInField.length}, null, 0, null, null);
-//
-//
-//        // Read back the data from to memory object to the particle buffer
-//        clEnqueueReadBuffer(commandQueue, vectors1Mem, true, 0,
-//                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), 0 , null, null);
-//        clEnqueueReadBuffer(commandQueue, distanceMem, true, 0,
-//                (long) Sizeof.cl_float * objectsInField.length, Pointer.to(distances), 0 , null, null);
-//
-//        // Clean up
-//        clReleaseMemObject(vectors1Mem);
-//        clReleaseMemObject(distanceMem);
-//        clReleaseKernel(kernel);
-//        clReleaseProgram(firstCollisionProgram);
-//        clReleaseCommandQueue(commandQueue);
-//        clReleaseContext(context);
-//    }
-
     public static class RayStruct extends Struct {
         public cl_float4 position;
         public cl_float4 direction;
@@ -155,63 +113,152 @@ public class Ray extends VectorLine3D {
             this.position = position;
             this.direction = direction;
         }
+
+        public String toString() {
+            return "RayStruct[position=" + position + ",direction=" + direction + "]";
+        }
     }
 
     public RayStruct toStruct() {
         return new RayStruct(position.toStruct(), getDirection().toStruct());
     }
 
-    public float[] executeKernel(RayTraceable.RayTraceableStruct[] objectsInField) {
-        RayStruct ray = toStruct();
-        // Allocate a buffer that can store the particle data
+    public static void sendObjects(RayTraceable.RayTraceableStruct[] objectsInField) {
         ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
-        ByteBuffer rayBuffer = Buffers.allocateBuffer(ray);
-        float[] distances = new float[objectsInField.length];
-
-        // Write the particles into the buffer
-        Buffers.writeToBuffer(objectsBuffer, objectsInField);
-        Buffers.writeToBuffer(rayBuffer, ray);
-
-        // Allocate the memory object for the particles that
-        // contains the data from the particle buffer
-        cl_mem vectors1Mem = clCreateBuffer(context,
+        cl_mem objectMem = clCreateBuffer(context,
                 /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
                 RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
-        cl_mem distanceMem = clCreateBuffer(context,
-                CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-                (long) Sizeof.cl_float * objectsInField.length, Pointer.to(distances), null);
+        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(objectMem));
+    }
+
+    public static void cleanUp() {
+        clReleaseMemObject(distanceMem);
+        clReleaseMemObject(rayMem);
+    }
+
+    public float[] executeKernel(ByteBuffer rayBuffer, int n) {
+        float[] distances = new float[n];
+
+        rayBuffer.clear();
+        Buffers.writeToBuffer(rayBuffer, toStruct());
+
         cl_mem rayMem = clCreateBuffer(context,
                 /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
                 SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
 
         // Set the arguments for the kernel
-        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(vectors1Mem));
-        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
+//        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
         clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(rayMem));
 
         // Execute the kernel
         clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
-                new long[]{objectsInField.length}, null, 0, null, null);
+                new long[]{n}, null, 0, null, null);
 
 
         // Read back the data from to memory object to the particle buffer
-//        clEnqueueReadBuffer(commandQueue, vectors1Mem, true, 0,
-//                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), 0, null, null);
         clEnqueueReadBuffer(commandQueue, distanceMem, true, 0,
                 (long) Sizeof.cl_float * distances.length, Pointer.to(distances),
                 0, null, null);
 
         // Clean up
-        clReleaseMemObject(vectors1Mem);
-        clReleaseMemObject(distanceMem);
-        clReleaseMemObject(rayMem);
-//        clReleaseKernel(kernel);
-//        clReleaseProgram(firstCollisionProgram);
-//        clReleaseCommandQueue(commandQueue);
-//        clReleaseContext(context);
+//        clReleaseMemObject(distanceMem);
+//        clReleaseMemObject(rayMem);
 
         return distances;
     }
+
+    private static cl_mem distanceMem;
+    private static cl_mem rayMem;
+    public float[] executeKernel(int n) {
+        RayStruct ray = toStruct();
+        // Allocate a buffer that can store the particle data
+        ByteBuffer rayBuffer = Buffers.allocateBuffer(ray);
+        float[] distances = new float[n];
+
+        // Write the particles into the buffer
+        Buffers.writeToBuffer(rayBuffer, ray);
+
+        // Allocate the memory object for the particles that
+        // contains the data from the particle buffer
+        cl_mem distanceMem = clCreateBuffer(context,
+                CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+                (long) Sizeof.cl_float * n, Pointer.to(distances), null);
+        cl_mem rayMem = clCreateBuffer(context,
+                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
+
+        // Set the arguments for the kernel
+        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
+        clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(rayMem));
+
+        // Execute the kernel
+        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
+                new long[]{n}, null, 0, null, null);
+
+
+        // Read back the data from to memory object to the particle buffer
+        clEnqueueReadBuffer(commandQueue, distanceMem, true, 0,
+                (long) Sizeof.cl_float * distances.length, Pointer.to(distances),
+                0, null, null);
+
+        // Clean up
+//        clReleaseMemObject(distanceMem);
+//        clReleaseMemObject(rayMem);
+
+        return distances;
+    }
+
+//    public float[] executeKernel(RayTraceable.RayTraceableStruct[] objectsInField) {
+//        RayStruct ray = toStruct();
+//        // Allocate a buffer that can store the particle data
+//        ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
+//        ByteBuffer rayBuffer = Buffers.allocateBuffer(ray);
+//        float[] distances = new float[objectsInField.length];
+//
+//        // Write the particles into the buffer
+//        Buffers.writeToBuffer(objectsBuffer, objectsInField);
+//        Buffers.writeToBuffer(rayBuffer, ray);
+//
+//        // Allocate the memory object for the particles that
+//        // contains the data from the particle buffer
+//        cl_mem vectors1Mem = clCreateBuffer(context,
+//                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+//                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), null);
+//        cl_mem distanceMem = clCreateBuffer(context,
+//                CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+//                (long) Sizeof.cl_float * objectsInField.length, Pointer.to(distances), null);
+//        cl_mem rayMem = clCreateBuffer(context,
+//                /*CL_MEM_READ_WRITE*/CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+//                SizeofStruct.sizeof(RayStruct.class), Pointer.to(rayBuffer), null);
+//
+//        // Set the arguments for the kernel
+//        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(vectors1Mem));
+//        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(distanceMem));
+//        clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(rayMem));
+//
+//        // Execute the kernel
+//        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
+//                new long[]{objectsInField.length}, null, 0, null, null);
+//
+//
+//        // Read back the data from to memory object to the particle buffer
+////        clEnqueueReadBuffer(commandQueue, vectors1Mem, true, 0,
+////                RayTraceable.STRUCT_SIZE * objectsInField.length, Pointer.to(objectsBuffer), 0, null, null);
+//        clEnqueueReadBuffer(commandQueue, distanceMem, true, 0,
+//                (long) Sizeof.cl_float * distances.length, Pointer.to(distances),
+//                0, null, null);
+//
+//        // Clean up
+//        clReleaseMemObject(vectors1Mem);
+//        clReleaseMemObject(distanceMem);
+//        clReleaseMemObject(rayMem);
+////        clReleaseKernel(kernel);
+////        clReleaseProgram(firstCollisionProgram);
+////        clReleaseCommandQueue(commandQueue);
+////        clReleaseContext(context);
+//
+//        return distances;
+//    }
 
     public float[] executeKernel(RayTraceable.RayTraceableStruct[] objectsInField,
                                  ByteBuffer objectsBuffer, ByteBuffer rayBuffer) {
@@ -246,48 +293,26 @@ public class Ray extends VectorLine3D {
                 0, null, null);
 
         // Clean up
-        clReleaseMemObject(vectors1Mem);
-        clReleaseMemObject(distanceMem);
-        clReleaseMemObject(rayMem);
+//        clReleaseMemObject(vectors1Mem);
+//        clReleaseMemObject(distanceMem);
+//        clReleaseMemObject(rayMem);
 
         return distances;
     }
 
-    private static cl_float4 add(cl_float4 a, cl_float4 b) {
-        return Vector3D.newFloat4(a.get(0) + b.get(0), a.get(1) + b.get(1), a.get(2) + b.get(2));
-    }
-
-    private static cl_float4 subtract(cl_float4 a, cl_float4 b) {
-        return Vector3D.newFloat4(a.get(0) - b.get(0), a.get(1) - b.get(1), a.get(2) - b.get(2));
-    }
-
-    private static cl_float4 scalarMultiply(cl_float4 vector, float multiplier) {
-        return Vector3D.newFloat4(vector.get(0) * multiplier, vector.get(1) * multiplier, vector.get(2) * multiplier);
-    }
-
-    private static float dotProduct(cl_float4 a, cl_float4 b) {
-        return a.get(0) * b.get(0) + a.get(1) * b.get(1) + a.get(2) * b.get(2);
-    }
-
-    private static float distanceSquared(cl_float4 a, cl_float4 b) {
-        return (a.get(0) - b.get(0)) * (a.get(0) - b.get(0))
-                + (a.get(1) - b.get(1)) * (a.get(1) - b.get(1))
-                + (a.get(2) - b.get(2)) * (a.get(2) - b.get(2));
-    }
-
-    public static RayTraceable.RayTraceableStruct[] toStructs(RayTraceable[] objects, Ray ray) {
+    public static RayTraceable.RayTraceableStruct[] toStructs(RayTraceable[] objects) {
         RayTraceable.RayTraceableStruct[] structs = new RayTraceable.RayTraceableStruct[objects.length];
 
         for (int gid = 0; gid < objects.length; gid++) {
-            structs[gid] = objects[gid].toStruct(ray);
+            structs[gid] = objects[gid].toStruct();
         }
 
         return structs;
     }
 
     public RayTraceable firstCollision(RayTraceable.RayTraceableStruct[] objectsInField, RayTraceable[] objs,
-                                       ByteBuffer objectsBuffer, ByteBuffer rayBuffer) {
-        float[] distances = executeKernel(objectsInField, objectsBuffer, rayBuffer);
+                                       ByteBuffer rayBuffer) {
+        float[] distances = executeKernel(rayBuffer, objectsInField.length);
 
         int i = 0;
         while (distances[i] < 0 || Float.isNaN(distances[i])) {
@@ -309,10 +334,8 @@ public class Ray extends VectorLine3D {
     }
 
     public RayTraceable firstCollision(RayTraceable.RayTraceableStruct[] objectsInField, RayTraceable[] objs) {
-//        float[] distances = new float[objs.length];
-//        getCollisionDistances(objectsInField, distances);
-
-        float[] distances = executeKernel(objectsInField);
+//        Ray.sendObjects(objectsInField);
+        float[] distances = executeKernel(objectsInField.length);
 
         int i = 0;
         while (distances[i] < 0 || Float.isNaN(distances[i])) {
@@ -331,99 +354,6 @@ public class Ray extends VectorLine3D {
 
         position = position.addMultiplied(getDirection(), distances[closest] - 0.01);
         return objs[closest];
-    }
-
-    public void getCollisionDistances(RayTraceable.RayTraceableStruct[] objectsInField, float[] distances) {
-        for (int gid = 0; gid < objectsInField.length; gid++) {
-            if (objectsInField[gid].type == 2) {
-                // Quads
-                distances[gid] = distanceToCollideRect(
-                        getDirection().toStruct(), getPosition().toStruct(),
-                        objectsInField[gid]);
-            } else if (objectsInField[gid].type == 1) {
-                // Tris
-                distances[gid] = distanceToCollideTri(
-                        getDirection().toStruct(), getPosition().toStruct(),
-                        objectsInField[gid]);
-            } else if (objectsInField[gid].type == 0) {
-                // Spheres
-                distances[gid] = distanceToCollideSphere(
-                        getDirection().toStruct(), getPosition().toStruct(),
-                        objectsInField[gid]);
-            } else {
-                distances[gid] = 0 / 0f;
-            }
-        }
-    }
-
-    public static cl_float2 projectToPlane(cl_float4 rayPos,
-                                           cl_float4 planeX, cl_float4 planeY,
-                                           cl_float4 direction, float distance) {
-        return Vector2D.newFloat2(
-                (rayPos.get(0) + direction.get(0) * distance) * planeX.get(0)
-                        + (rayPos.get(1) + direction.get(1) * distance) * planeX.get(1)
-                        + (rayPos.get(2) + direction.get(2) * distance) * planeX.get(2),
-                (rayPos.get(0) + direction.get(0) * distance) * planeY.get(0)
-                        + (rayPos.get(1) + direction.get(1) * distance) * planeY.get(1)
-                        + (rayPos.get(2) + direction.get(2) * distance) * planeY.get(2)
-        );
-    }
-
-    public static float distToCollidePlane(cl_float4 normal,
-                                           cl_float4 vertexOrCenter,
-                                           cl_float4 rayPos, cl_float4 rayDir) {
-        return (normal.get(0) * (vertexOrCenter.get(0) - rayPos.get(0))
-                + normal.get(1) * (vertexOrCenter.get(1) - rayPos.get(1))
-                + normal.get(2) * (vertexOrCenter.get(2) - rayPos.get(2)))
-                /
-                (normal.get(0) * rayDir.get(0)
-                        + normal.get(1) * rayDir.get(1)
-                        + normal.get(2) * rayDir.get(2));
-    }
-
-    private static float distanceToCollideRect(cl_float4 rayDir, cl_float4 rayPos,
-                                               RayTraceable.RayTraceableStruct obj
-//                                                cl_float4 normal, cl_float4 center,
-//                                                cl_float4 planeXaxis, cl_float4 planeYaxis,
-//                                                cl_float2 max, cl_float2 min
-    ) {
-        float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, rayPos, rayDir);
-        cl_float2 pointOnPlane = projectToPlane(rayPos, obj.side1, obj.side2, rayDir, distance);
-        if (obj.min.get(0) < pointOnPlane.get(0) && obj.max.get(0) > pointOnPlane.get(0)
-                && obj.min.get(1) < pointOnPlane.get(1) && obj.max.get(1) > pointOnPlane.get(1)) {
-            return distance;
-        }
-        return Float.NaN;
-    }
-
-    private static float distanceToCollideSphere(cl_float4 rayDir, cl_float4 rayPos,
-                                                 RayTraceable.RayTraceableStruct obj) {
-        float amountInDirection = dotProduct(rayDir, subtract(rayPos, obj.vertexOrCenter));
-        if (amountInDirection <= 0) {
-            return (float) (-amountInDirection - Math.sqrt(amountInDirection * amountInDirection + obj.dot00 * obj.dot00 - distanceSquared(rayPos, obj.vertexOrCenter)));
-        }
-        return Float.NaN;
-    }
-
-    private static float distanceToCollideTri(cl_float4 rayDir, cl_float4 rayPos,
-                                              RayTraceable.RayTraceableStruct obj) {
-        float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, rayPos, rayDir);
-
-        if (distance <= 0) {
-            return Float.NaN;
-        }
-
-        cl_float4 point = add(rayPos, scalarMultiply(rayDir, distance));
-        float dot02 = dotProduct(obj.side1, subtract(point, obj.vertexOrCenter));
-        float dot12 = dotProduct(obj.side2, subtract(point, obj.vertexOrCenter));
-        // Compute barycentric coordinates
-        float u = (obj.dot11 * dot02 - obj.dot01 * dot12);
-        float v = (obj.dot00 * dot12 - obj.dot01 * dot02);
-        // Check if the point is inside the triangle
-        if ((u >= 0) && (v >= 0) && ((u + v) <= obj.invDenom)) {
-            return distance;
-        }
-        return Float.NaN;
     }
 
     /**

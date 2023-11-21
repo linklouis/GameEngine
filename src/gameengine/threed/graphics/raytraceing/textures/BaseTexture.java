@@ -27,6 +27,16 @@ public class BaseTexture extends RayTracingTexture {
         super(color, emissionStrength, emissionColor);
     }
 
+    @Override
+    protected int type() {
+        return RayTracingTexture.BASE_TEXTURE;
+    }
+
+    @Override
+    protected float[] getOtherVars() {
+        return new float[0];
+    }
+
     public BaseTexture(final Color color, double emissionStrength) {
         super(color, emissionStrength, new Vector3D(1));
     }

@@ -53,10 +53,13 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
     public Reflection reflection(LightRay lightRay) {
         return texture.reflection(lightRay, surfaceNormal(lightRay));
     }
-    public abstract RayTraceableStruct toStruct(Ray perspective);
+
+    public abstract RayTraceableStruct toStruct();
 
     public static class RayTraceableStruct extends Struct {
         public int type; // 0 = Sphere, 1 = Tri, 2 = Rect
+
+        public RayTracingTexture.TextureStruct texture;
 
         public cl_float4 normal;
         public cl_float4 vertexOrCenter;
@@ -77,7 +80,8 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
         // Sphere
         public RayTraceableStruct(cl_float4 normal,
                                   cl_float4 vertexOrCenter,
-                                  double dot00) {
+                                  double dot00,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = 0;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;
@@ -85,12 +89,14 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.dot01 = 0;
             this.dot11 = 0;
             this.invDenom = 0;
+            this.texture = texture;
         }
 
         // Tri
         public RayTraceableStruct(Vector3D normal, Vector3D vertexOrCenter,
                                   Vector3D side1, Vector3D side2,
-                                  double dot00, double dot01, double dot11, double invDenom) {
+                                  double dot00, double dot01, double dot11, double invDenom,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = 1;
             this.normal = normal.toStruct();
             this.vertexOrCenter = vertexOrCenter.toStruct();
@@ -100,11 +106,13 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.dot01 = (float) dot01;
             this.dot11 = (float) dot11;
             this.invDenom = (float) invDenom;
+            this.texture = texture;
         }
 
         public RayTraceableStruct(cl_float4 normal, cl_float4 vertexOrCenter,
                                   cl_float4 side1, cl_float4 side2,
-                                  float dot00, float dot01, float dot11, float invDenom) {
+                                  float dot00, float dot01, float dot11, float invDenom,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = 1;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;
@@ -114,12 +122,14 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.dot01 = dot01;
             this.dot11 = dot11;
             this.invDenom = invDenom;
+            this.texture = texture;
         }
 
         // Quad
         public RayTraceableStruct(Vector3D normal, Vector3D vertexOrCenter,
                                   Vector3D side1, Vector3D side2,
-                                  Vector2D max, Vector2D min) {
+                                  Vector2D max, Vector2D min,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = 2;
             this.normal = normal.toStruct();
             this.vertexOrCenter = vertexOrCenter.toStruct();
@@ -131,6 +141,7 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.invDenom = 0;
             this.max = max.toStruct();
             this.min = min.toStruct();
+            this.texture = texture;
         }
 
         // Other
@@ -138,7 +149,8 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
                                   cl_float4 normal, cl_float4 vertexOrCenter,
                                   cl_float4 side1, cl_float4 side2,
                                   float dot00, float dot01, float dot11, float invDenom,
-                                  cl_float2 max, cl_float2 min) {
+                                  cl_float2 max, cl_float2 min,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = type;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;
@@ -150,13 +162,15 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.invDenom = invDenom;
             this.max = max;
             this.min = min;
+            this.texture = texture;
         }
 
         public RayTraceableStruct(int type,
                                   cl_float4 normal, cl_float4 vertexOrCenter,
                                   cl_float4 side1, cl_float4 side2,
                                   double dot00, double dot01, double dot11, double invDenom,
-                                  cl_float2 max, cl_float2 min) {
+                                  cl_float2 max, cl_float2 min,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = type;
             this.normal = normal;
             this.vertexOrCenter = vertexOrCenter;
@@ -168,12 +182,14 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.invDenom = (float) invDenom;
             this.max = max;
             this.min = min;
+            this.texture = texture;
         }
 
         public RayTraceableStruct(int type, Vector3D normal, Vector3D vertexOrCenter,
                                   Vector3D side1, Vector3D side2,
                                   double dot00, double dot01, double dot11, double invDenom,
-                                  Vector2D max, Vector2D min) {
+                                  Vector2D max, Vector2D min,
+                                  RayTracingTexture.TextureStruct texture) {
             this.type = type;
             this.normal = normal.toStruct();
             this.vertexOrCenter = vertexOrCenter.toStruct();
@@ -185,6 +201,7 @@ public sealed abstract class RayTraceable extends GraphicsObject3D implements Ra
             this.invDenom = (float) invDenom;
             this.max = max.toStruct();
             this.min = min.toStruct();
+            this.texture = texture;
         }
     }
 

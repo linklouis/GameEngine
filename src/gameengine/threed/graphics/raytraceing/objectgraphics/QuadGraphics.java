@@ -27,11 +27,12 @@ public non-sealed class QuadGraphics extends RayTraceable {
     }
 
     @Override
-    public RayTraceableStruct toStruct(Ray perspective) {
+    public RayTraceableStruct toStruct() {
         return new RayTraceableStruct(
-                surfaceNormal(perspective), rect.vertex1(),
+                rect.normal(), rect.vertex1(),
                 rect.planeXaxis(), rect.planeYaxis(),
-                rect.planeCoords().max(), rect.planeCoords().min());
+                rect.planeCoords().max(), rect.planeCoords().min(),
+                getTexture().toStruct());
     }
 
     @Override

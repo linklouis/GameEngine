@@ -26,11 +26,12 @@ public non-sealed class TriGraphics extends RayTraceable {
     }
 
     @Override
-    public RayTraceableStruct toStruct(Ray perspective) {
+    public RayTraceableStruct toStruct() {
         return new RayTraceableStruct(
-                surfaceNormal(perspective), triData.vertex1(),
+                triData.normal(), triData.vertex1(),
                 triData.v0(), triData.v1(),
-                triData.dot00(), triData.dot01(), triData.dot11(), triData.invDenom());
+                triData.dot00(), triData.dot01(), triData.dot11(), triData.invDenom(),
+                getTexture().toStruct());
     }
 
     @Override

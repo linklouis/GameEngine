@@ -68,7 +68,7 @@ public class LightRay extends Ray {
     public Vector3D getColor(final int maxBounces,
                              final RayTraceable[] objectsInField, int startingBounce) {
         RayTraceable collision;
-        RayTraceable.RayTraceableStruct[] structs = Ray.toStructs(objectsInField, this);
+        RayTraceable.RayTraceableStruct[] structs = Ray.toStructs(objectsInField);
         ByteBuffer objectsBuffer = Buffers.allocateBuffer(structs);
         ByteBuffer rayBuffer = Buffers.allocateBuffer(toStruct());
 
@@ -77,7 +77,7 @@ public class LightRay extends Ray {
 
         for (int bounces = startingBounce; bounces <= maxBounces; bounces++) {
 //            Ray.defaultInitialization();
-            collision = firstCollision(/*Ray.toStructs(objectsInField, this)*/structs, objectsInField, objectsBuffer, rayBuffer);
+            collision = firstCollision(/*Ray.toStructs(objectsInField, this)*/structs, objectsInField, rayBuffer);
 
             if (collision == null) {
                 return getIncomingLight();//.add(getSkyColor(getDirection()));

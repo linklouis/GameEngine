@@ -109,6 +109,16 @@ public class Metallic extends SubsurfaceTexture {
     }
 
     @Override
+    protected int type() {
+        return RayTracingTexture.METALLIC;
+    }
+
+    @Override
+    protected float[] getOtherVars() {
+        return new float[] {(float) smoothness};
+    }
+
+    @Override
     public String toString() {
         return "Metallic: "
                 + getColor()

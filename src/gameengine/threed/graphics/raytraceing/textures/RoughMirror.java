@@ -121,6 +121,16 @@ public class RoughMirror extends SubsurfaceTexture {
     }
 
     @Override
+    protected int type() {
+        return RayTracingTexture.ROUGH_MIRRORED;
+    }
+
+    @Override
+    protected float[] getOtherVars() {
+        return new float[] {(float) reflectivity, (float) smoothness};
+    }
+
+    @Override
     public String toString() {
         return "RoughMirrored: "
                 + getColor()

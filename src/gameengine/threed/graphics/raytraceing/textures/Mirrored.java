@@ -104,6 +104,16 @@ public class Mirrored extends SubsurfaceTexture {
     }
 
     @Override
+    protected int type() {
+        return RayTracingTexture.MIRRORED;
+    }
+
+    @Override
+    protected float[] getOtherVars() {
+        return new float[] {(float) reflectivity};
+    }
+
+    @Override
     public String toString() {
         return "Mirrored: "
                 + getColor()

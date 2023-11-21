@@ -69,6 +69,9 @@ inline float distanceToCollideSphere(Ray ray, RayTraceable obj) {
 }
 
 inline float distanceToCollideTri(Ray ray, RayTraceable obj) {
+    if (dotProduct(obj.normal, ray.direction) > 0) {
+        obj.normal *= -1;
+    }
     float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, ray);
 
     if (distance <= 0) {
@@ -90,6 +93,9 @@ inline float distanceToCollideTri(Ray ray, RayTraceable obj) {
 
 inline float distanceToCollideRect(Ray ray,
                                    RayTraceable obj) {
+    if (dotProduct(obj.normal, ray.direction) > 0) {
+            obj.normal *= -1;
+    }
     float distance = distToCollidePlane(obj.normal, obj.vertexOrCenter, ray);
     float2 pointOnPlane = projectToPlane(ray.position, obj.side1, obj.side2, ray.direction, distance);
     if (obj.min.x < pointOnPlane.x && obj.max.x > pointOnPlane.x
@@ -102,6 +108,7 @@ inline float distanceToCollideRect(Ray ray,
 __kernel void getCollisionDistances(__global RayTraceable* objectsInField, __global float* distances,
                                     Ray ray) {
     int gid = get_global_id(0);
+    printf("gid: %d, rayPos: %f\n", gid, ray.position);
     float distance = -1;
     if (objectsInField[gid].type == 2) {
         // Quads

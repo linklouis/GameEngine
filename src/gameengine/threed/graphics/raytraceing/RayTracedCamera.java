@@ -215,6 +215,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
 //                getLocation()
 //                );
         RayTraceable[] objects = renderableObjects.toArray(new RayTraceable[0]);
+        Ray.sendObjects(Ray.toStructs(objects));
 
         collisionMap = new RayTraceable[getWidth()][getHeight()];
 
@@ -313,7 +314,7 @@ public class RayTracedCamera extends Camera<RayTraceable> {
     protected int calculatePixelColorInt(final LightRay startRay,
                                          final RayTraceable[] objectsInField,
                                          final Vector2D pixelLocation) {
-        RayTraceable firstCollision = startRay.firstCollision(Ray.toStructs(objectsInField, startRay), objectsInField);
+        RayTraceable firstCollision = startRay.firstCollision(Ray.toStructs(objectsInField), objectsInField);
 
         if (firstCollision == null) {
             return 0;

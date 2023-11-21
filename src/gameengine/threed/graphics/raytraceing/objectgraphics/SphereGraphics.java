@@ -40,11 +40,12 @@ public non-sealed class SphereGraphics extends RayTraceable {
     }
 
     @Override
-    public RayTraceableStruct toStruct(Ray perspective) {
+    public RayTraceableStruct toStruct() {
         return new RayTraceableStruct(
-                surfaceNormal(perspective).toStruct(),
+                new Vector3D().toStruct(),
                 getCenter().toStruct(),
-                radius);
+                radius,
+                getTexture().toStruct());
     }
 
     @Override
