@@ -1,0 +1,31 @@
+__kernel void getCollisionDistances(__global RayTraceable* objectsInField, __global float* distances,
+                                    __global Ray *ray) {
+    int gid = get_global_id(0);
+
+    //printf("gid: %d, rayPos: %f %f %f %f\n", gid, ray.position.x, ray.position.y, ray.position.z, ray.position.w);
+    //printf("(rayPos: %f, rayDir: %f)", ray[0].position, ray[0].direction);
+    //printf("gid: %d, rayDir: %f %f %f %f\n", gid, ray.direction.x, ray.direction.y, ray.direction.z, ray.direction.w);
+    //printf("gid: %d, rayDir: %f\n", gid, ray[0].direction);
+
+    //printf("gid: %d, objectType: %f\n", gid, objectsInField[gid].vertexOrCenter);
+    //printf("gid: %d, normal: %f\n", gid, objectsInField[gid].normal);
+    //printf("gid: %d, objectType: %i\n", gid, objectsInField[gid].type);
+    if (objectsInField[gid].type == 2) {
+        // Quads
+        distances[gid] = distanceToCollideRect(ray[0], objectsInField[gid]);
+        //printf("gid: %d, normal: %f, vertex1: %f, side1: %f, side2: %f, max: %f, min: %f\n",
+        //        gid, objectsInField[gid].normal, objectsInField[gid].vertexOrCenter, objectsInField[gid].side1, objectsInField[gid].side2, objectsInField[gid].max, objectsInField[gid].min);
+        //printf("b\n");
+    } else if (objectsInField[gid].type == 1) {
+        // Tris
+        distances[gid] = distanceToCollideTri(ray[0], objectsInField[gid]);
+        //printf("c\n");
+    } else if (objectsInField[gid].type == 0) {
+        // Spheres
+        distances[gid] = distanceToCollideSphere(ray[0], objectsInField[gid]);
+        //printf("a\n");
+    } else {
+        distances[gid] = -2;
+    }
+}
+    

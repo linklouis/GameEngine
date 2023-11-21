@@ -1,0 +1,43 @@
+typedef struct
+{
+    float4 direction;
+    float4 position;
+} Ray;
+
+
+inline float4 pointOnRay(Ray ray, float distance)
+{
+    return ray.position + ray.direction * distance;
+}
+
+inline float2 projectToPlane(Ray ray, float4 planeX, float4 planeY, float distance)
+{
+    return (float2) (dot(pointOnRay(ray, distance), planeX), dot(pointOnRay(ray, distance), planeY));
+}
+
+inline float distToCollidePlane(float4 normal, float4 planePosition, Ray ray)
+{
+    return dot(normal, planePosition - ray.position) / dot(normal, ray.direction);
+}
+
+
+//inline float2 projectToPlane(Ray ray, float4 planeX, float4 planeY, float distance)
+//{
+//    return ((ray.position.x + ray.direction.x * distance) * planeX.x
+//                   + (ray.position.y + ray.direction.y * distance) * planeX.y
+//                   + (ray.position.z + ray.direction.z * distance) * planeX.z,
+//           (ray.position.x + ray.direction.x * distance) * planeY.x
+//                   + (ray.position.y + ray.direction.y * distance) * planeY.y
+//                   + (ray.position.z + ray.direction.z * distance) * planeY.z);
+//}
+//
+//inline float distToCollidePlane(float4 normal, float4 planePosition, Ray ray)
+//{
+//    return (  normal.x * (planePosition.x - ray.position.x)
+//            + normal.y * (planePosition.y - ray.position.y)
+//            + normal.z * (planePosition.z - ray.position.z))
+//            /
+//            (  normal.x * ray.direction.x
+//             + normal.y * ray.direction.y
+//             + normal.z * ray.direction.z);
+//}

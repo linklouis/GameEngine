@@ -2,20 +2,20 @@ package gameengine.threed.geometry;
 
 import gameengine.threed.graphics.raytraceing.LightRay;
 import gameengine.threed.graphics.raytraceing.objectgraphics.RayTraceable;
-import gameengine.vectormath.Vector2D;
 import gameengine.vectormath.Vector3D;
 import org.jocl.*;
 import org.jocl.struct.Buffers;
-import org.jocl.struct.CLTypes.cl_float2;
 import org.jocl.struct.CLTypes.cl_float4;
 import org.jocl.struct.SizeofStruct;
 import org.jocl.struct.Struct;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.jocl.CL.*;
 
@@ -26,7 +26,7 @@ public class Ray extends VectorLine3D {
     private static cl_kernel kernel;
     private static cl_program firstCollisionProgram;
 
-    private static String firstCollisionCode = "firstCollisionKernel.txt";
+    private static String firstCollisionCode = "firstCollisionKernel";
 
     public Ray(final Vector3D startPosition, final Vector3D direction) {
         super(startPosition, direction);
@@ -80,12 +80,11 @@ public class Ray extends VectorLine3D {
                 Pointer.to(devices), null);
 
         // Create a command-queue
-        commandQueue =
-                clCreateCommandQueue(context, devices[0], 0, null);
+        commandQueue = clCreateCommandQueue(context, devices[0], 0, null);
 
         // Create the program from the source code
         firstCollisionProgram = clCreateProgramWithSource(context,
-                1, new String[]{readKernelSource(firstCollisionCode)}, null, null);
+                1, new String[]{readKernelSources("VectorUtilities", "Ray", "Object", firstCollisionCode)}, null, null);
 
         // Build the program
         clBuildProgram(firstCollisionProgram, 0, null, null, null, null);
@@ -96,7 +95,7 @@ public class Ray extends VectorLine3D {
 
     private static String readKernelSource(String filePath) {
         StringBuilder source = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("oclcode/" + filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 source.append(line).append("\n");
@@ -106,6 +105,101 @@ public class Ray extends VectorLine3D {
         }
         return source.toString();
     }
+
+    /**
+     * Reads OpenCL kernel code from several files into a single program
+     * in the order they appear in the input.
+     * <p></p>
+     * By default, all file paths not containing the indented OCL code
+     * directory ("oclcode") will have the directory appended to the front,
+     * and all file paths not containing a '.' indicating a file type, will
+     * have ".txt" appended to the end.
+     * <p>
+     * If the omission of the oclcode directory or file type is intentional,
+     * include a '*' at the beginning or the end of the path, respectively.
+     * <p></p>
+     *
+     * @param filePaths The paths to the OpenCL kernel files.
+     * @return A single {@code String} containing the contents of all the files
+     * in {@code filePaths}.
+     */
+    private static String readKernelSources(String... filePaths) {
+        if (filePaths.length == 0) {
+            return "";
+        }
+
+        filePaths = Arrays.stream(filePaths)
+                .filter(path -> path != null && !path.isEmpty())
+                .map(path -> {
+                    if (!path.contains("oclcode/")) {
+                        if (path.indexOf("*") == 0) {
+                            path = path.substring(1);
+                        } else {
+                            path = "oclcode/" + path;
+                        }
+                    }
+
+                    if (!path.contains(".")) {
+                        if (path.indexOf("*") == path.length() - 1) {
+                            path = path.substring(0, path.length() - 1);
+                        } else {
+                            path += ".txt";
+                        }
+                    }
+
+                    return path;
+                }).toArray(String[]::new);
+
+        StringBuilder source = new StringBuilder();
+        int i = 0;
+        int lineNumber;
+        for (String filePath : filePaths) {
+            lineNumber = 0;
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    source.append(line).append("\n");
+                    lineNumber++;
+                }
+            } catch (IOException e) {
+                System.err.println("An IOException occurred while reading OpenCL kernels from files."
+                        + "\nException: " + e.getClass().toString().substring(6)
+                        + "\nRelevant file(index=" + i + ", line=" + lineNumber + "): " + filePath
+                        + (source.isEmpty() ? "" : ("\n\nProcessed code:\n" + source))
+                        + "\nAll source files: " + Arrays.toString(filePaths)
+                        + (e.getCause() == null ? "" : ("\nCause: " + e.getCause()))
+                        + "\n\nOccurred at: " + extractLocation(e)
+                );
+                System.exit(0);
+            }
+            i++;
+        }
+        return source.toString();
+    }
+
+    private static String extractLocation(IOException e) {
+        StackTraceElement[] stackTrace = e.getStackTrace();
+        StringBuilder locationInfo = new StringBuilder();
+
+        for (StackTraceElement element : stackTrace) {
+            if (!element.toString().contains("java.io")
+                && !element.toString().contains("QuantumToolkit")
+                    && !element.toString().contains("com.sun.")) {
+                locationInfo
+                        .append("\n")
+                        .append(element.getClassName())
+                        .append(".")
+                        .append(element.getMethodName())
+                        .append("(")
+                        .append(element.getFileName())
+                        .append(":")
+                        .append(element.getLineNumber())
+                        .append(")");
+            }
+        }
+        return locationInfo.isEmpty() ? "unknown location" : locationInfo.toString();
+    }
+
 
     public static class RayStruct extends Struct {
         public cl_float4 direction;
@@ -132,8 +226,10 @@ public class Ray extends VectorLine3D {
 
     public static void sendObjects(RayTraceable.RayTraceableStruct[] objectsInField) {
         Arrays.stream(objectsInField).forEach(object -> System.out.println(object.normal));
-//        System.out.println();
-//        Arrays.stream(objectsInField).forEach(object -> System.out.println((int) object.type));
+        System.out.println();
+        Arrays.stream(objectsInField)
+                .filter(object -> object.type == 2)
+                .forEach(obj -> System.out.println("normal: " + obj.normal + ", vertex1: " + obj.vertexOrCenter + ", side1: " + obj.side1 + ", side2: " + obj.side2 + ", max: " + obj.max + ", min: " + obj.min));
         ByteBuffer objectsBuffer = Buffers.allocateBuffer(objectsInField);
         Buffers.writeToBuffer(objectsBuffer, objectsInField);
         cl_mem objectMem = clCreateBuffer(context,

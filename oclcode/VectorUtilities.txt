@@ -1,0 +1,9 @@
+inline float distanceSquared(float4 a, float4 b) {
+        return    (a.x - b.x) * (a.x - b.x)
+                + (a.y - b.y) * (a.y - b.y)
+                + (a.z - b.z) * (a.z - b.z);
+}
+
+inline float square(float num) {
+    return num * num;
+}
