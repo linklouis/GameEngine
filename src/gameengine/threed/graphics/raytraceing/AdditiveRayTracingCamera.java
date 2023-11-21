@@ -183,7 +183,8 @@ public class AdditiveRayTracingCamera extends RayTracedCamera {
     protected void calculatePixelColorVector(final LightRay startRay,
                                                  final RayTraceable[] objectsInField,
                                                  Vector3D averageColor) {
-        RayTraceable firstCollision = startRay.firstCollision(Ray.toStructs(objectsInField), objectsInField);
+        startRay.claimBuffer();
+        RayTraceable firstCollision = startRay.firstCollision(objectsInField);
 
         if (firstCollision == null) {
 //            averageColor.addMutable(new Vector3D(Color.SKYBLUE));
